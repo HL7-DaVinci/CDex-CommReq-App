@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>DaVinci CDex App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="node_modules/fhirclient/fhir-client.js"></script>
+    <script src="lib/jquery-3.3.1.js"></script>
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/bootstrap-toggle.css" rel="stylesheet">
+    <script src="lib/bootstrap-toggle.js"></script>
+    <link href="css/custom.css" rel="stylesheet">
+    <script src="js/config.js"></script>
+</head>
+<body>
+<div id="data-request-screen" class="screen">
+    <h1>Data requests for <span id="patient-name"></span></h1>
+
+    <div id="menu-request-list"><p><div class='dvt'>
+        <div id='selection-query-list'></div>
+    </div></p></div>
+    <button type="button" class="btn btn-secondary" id="btn-add">Add</button>
+    <button type="button" class="btn btn-primary" id="btn-review">Review data requests</button>
+</div>
+<div id="review-screen" class="screen">
+    <h1>Data requests for <span id="review-name"></span></h1>
+    <div id="review-lists"><p><div class='dvt'>
+        <div id='final-list'></div>
+    </div></p></div>
+    <div>
+        <button type="button" class="btn btn-secondary" id="btn-edit">Edit requests</button>
+        <button type="button" class="btn btn-secondary" id="btn-configuration">Configure endpoint</button>
+        <button type="button" class="btn btn-primary" id="btn-submit">Submit reconciled query strings</button>
+    </div>
+</div>
+<div id="confirm-screen" class="card alert-info screen">
+    <div class="card-body">
+        <h5 class="card-title">Confirmation</h5>
+        <p class="card-text">Communication request sent to provider</p>
+    </div>
+</div>
+<div id="config-screen" class="card alert-info screen">
+    <div class="card-body">
+        <h5 class="card-title">CDex Endpoint Configuration</h5>
+        <p class='card-text'>
+        <p>
+            <select class='custom-select' id='config-select'></select>
+        </p>
+        <p>
+            <textarea id="config-text"></textarea>
+        </p>
+        </p>
+        <a href="#" class="btn btn-primary" id="btn-config">Save configuration</a>
+    </div>
+</div>
+<div id="error-screen" class="card alert-danger screen">
+    <div class="card-body">
+        <h5 class="card-title" id='error-title'>Error</h5>
+        <p class='card-text' id='error-message'></p>
+    </div>
+</div>
+<script src="js/app.js"></script>
+</body>
+</html>

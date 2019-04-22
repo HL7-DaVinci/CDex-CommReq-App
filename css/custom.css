@@ -1,0 +1,29 @@
+body {
+    margin: 20px;
+}
+
+.medtd {
+    width: 350px;
+}
+
+td {
+    vertical-align: middle;
+}
+
+#chk-post-discharge {
+    margin-left: 10px;
+}
+
+#intro-screen, #confirm-screen, #config-screen, .dvt {
+    align-self: center;
+    width: 700px;
+}
+
+.screen, #medrec-meds {
+    display: none;
+}
+
+#config-text {
+    width: 660px;
+    height: 200px;
+}
