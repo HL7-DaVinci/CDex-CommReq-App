@@ -33,8 +33,43 @@ if (!CDEX) {
 
   CDEX.menu = {
       "DocRef": ["type1", "type2", "type3", "type4"],
-      "FHIRQuery": [{"name": "Observation", "FHIRQueryString": "Observation?category=vital-signs"},
-          {"name": "Encounter", "FHIRQueryString": "Encounter?status=planned"}],
+      "FHIRQuery": [
+          {
+              "name": "What are the A1C results after 2018-01-01 for this patient?",
+              "FHIRQueryString": "Observation?patient=[the patient's id]&date=ge2018-01-01&code=4548-4",
+          },
+          {
+              "name": "What are the patient's vital sign measurements in reverse chronological order?",
+              "FHIRQueryString": "Observation?_sort=-date&patient=[this patient's id]&category=vital-signs"
+          },
+          {
+              "name": "What are the patient's active conditions?",
+              "FHIRQueryString": "Condition?patient=[this patient's id]&clinicalstatus=active"
+          },
+          {
+              "name": "What is the patient's current smoking status?",
+              "FHIRQueryString": "Observation?patient=1032702&code=72166-2&_sort=-date&_count=1"
+          },
+          {
+              "name": "What medications is the patient taking?",
+              "FHIRQueryString": "MedicationStatement?patient=[this patient's id]"
+          },
+          {
+              "name": "What devices does the patient have?",
+              "FHIRQueryString": "Device?patient=[this patient's id]"
+          },
+          {
+              "name": "What procedures has the patient had?",
+              "FHIRQueryString": "Procedure?patient=[this patient's id]"
+          },
+          {
+              "name": "Who is the patient's Primary Care Provider?",
+              "FHIRQueryString": "Patient/this patient's id"
+          },
+          {
+              "name": "What type of health insurance does the patient have?",
+              "FHIRQueryString": "Coverage?patient=[this patient's id]&status=active"
+          }],
       "Input": []
 
   };
