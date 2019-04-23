@@ -51,33 +51,39 @@ if (!CDEX) {
             const secondaryTypeId = "finalSecondaryTypeId" + idx;
             const primaryTypeSelected = $("#typeId" + idx).find(":selected").text();
             const secondaryTypeSelected = $("#secondaryTypeId" + idx).find(":selected").text();
+            const secondaryFreeText = $("#secondaryTypeId" + idx).val();
 
-            if(primaryTypeSelected === "DocRef") {
-                $('#final-list').append("<div><select disabled='disabled' id='" + primaryTypeId + "'></select><div>Document Type:   <select id='" +
+            if(primaryTypeSelected === CDEX.menu.DocRef.name) {
+                $('#final-list').append("<div><select disabled='disabled' id='" + primaryTypeId +
+                    "'></select><div><label>" + CDEX.menu.DocRef.description + "</label><select id='" +
                     secondaryTypeId +"' disabled='disabled'></select></div></div>");
 
-                for (let secondary in CDEX.menu.DocRef) {
-                    if(secondaryTypeSelected === secondary) {
-                        $('#' + secondaryTypeId).append("<option selected='selected' disabled='disabled'>" + secondary + "</option>");
-                    }
-                }
-            }else if(primaryTypeSelected === "FHIRQuery"){
-                $('#final-list').append("<div><select id='" + primaryTypeId + "' disabled='disabled'></select><div>FHIR Query:   <select id='" +
-                    secondaryTypeId +"' disabled='disabled'></select></div></div>");
-
-                CDEX.menu.FHIRQuery.forEach((secondary) => {
+                CDEX.menu.DocRef.values.forEach((secondary) => {
                     if(secondaryTypeSelected === secondary.name) {
-                        $('#' + secondaryTypeId).append("<option selected='selected' disabled='disabled'>" + secondary.name + "</option>");
+                        $('#' + secondaryTypeId).append("<option selected='selected' disabled='disabled'>" +
+                            secondary.name + "</option>");
                     }
                 });
-            }else if(primaryTypeSelected === "Input"){
+            }else if(primaryTypeSelected === CDEX.menu.FHIRQuery.name){
+                $('#final-list').append("<div><select id='" + primaryTypeId +
+                    "' disabled='disabled'></select><div><label>" + CDEX.menu.FHIRQuery.description +
+                    "</label><select id='" + secondaryTypeId +"' disabled='disabled'></select></div></div>");
+
+                CDEX.menu.FHIRQuery.values.forEach((secondary) => {
+                    if(secondaryTypeSelected === secondary.name) {
+                        $('#' + secondaryTypeId).append("<option selected='selected' disabled='disabled'>" +
+                            secondary.name + "</option>");
+                    }
+                });
+            }else if(primaryTypeSelected === CDEX.menu.FreeText.name){
                 $('#final-list').append("<div><select disabled='disabled' id='" + primaryTypeId +
-                    "'></select><div >Input:   <input id='" + secondaryTypeId + "' disabled='disabled' value='" + secondaryTypeSelected + "'></div></div>");
+                    "'></select><div><label>" + CDEX.menu.FreeText.description + "</label><input id='" +
+                    secondaryTypeId + "' disabled='disabled' value='" + secondaryFreeText + "'></div></div>");
             }
 
             for (let key in CDEX.menu) {
-                if(key === primaryTypeSelected) {
-                    $('#' + primaryTypeId).append("<option selected='selected' disabled='disabled'>" + key + "</option>");
+                if(primaryTypeSelected === CDEX.menu[key].name) {
+                    $('#' + primaryTypeId).append("<option selected='selected' disabled='disabled'>" + CDEX.menu[key].name + "</option>");
                 }
             }
         }
@@ -106,57 +112,61 @@ if (!CDEX) {
     CDEX.addTypeSelection = () => {
         const typeId = "typeId" + CDEX.index;
         const divId = "divId" + CDEX.index;
-        const secondaryType = "secondaryTypeId" + CDEX.index;
+        const secondaryTypeId = "secondaryTypeId" + CDEX.index;
         const id = CDEX.index;
 
         $('#selection-query-list').append("<div id='" + divId + "'><select id='"+ typeId +
-            "'></select><div>Document Type:   <select id='" + secondaryType + "'></select></div></div>");
+            "'></select><div><label>" + CDEX.menu.DocRef.description + "</label><select id='" +
+            secondaryTypeId + "'></select></div></div>");
         $('#' + typeId).change(() => {CDEX.selectType(id)});
 
         for (let key in CDEX.menu) {
-            $('#' + typeId).append("<option>" + key + "</option>");
+            $('#' + typeId).append("<option>" + CDEX.menu[key].name + "</option>");
         }
 
-        for (let t in CDEX.menu.DocRef) {
-            $('#' + secondaryType).append("<option>" + t + "</option>");
-        }
+        CDEX.menu.DocRef.values.forEach((secondaryType) => {
+            $('#' + secondaryTypeId).append("<option>" + secondaryType.name + "</option>");
+        });
 
         CDEX.index++;
     }
 
     CDEX.selectType = (typeId) => {
-        const secondaryType = "secondaryTypeId" + typeId;
+        const secondaryTypeId = "secondaryTypeId" + typeId;
         const type = $("#typeId" + typeId).find(":selected").text();
         $('#divId' + typeId).empty();
 
-        if(type === "DocRef") {
-            $('#divId' + typeId).append("<select id='typeId" + typeId + "'></select><div>Document Type:   <select id='" +
-                secondaryType +"'></select></div>");
+        if(type === CDEX.menu.DocRef.name) {
+            $('#divId' + typeId).append("<select id='typeId" + typeId + "'></select><div><label>" +
+                CDEX.menu.DocRef.description + "</label><select id='" + secondaryTypeId +"'></select></div>");
 
-            for (let secondary in CDEX.menu.DocRef) {
-                $('#' + secondaryType).append("<option>" + secondary + "</option>");
-            }
-        }else if(type === "FHIRQuery"){
-            $('#divId' + typeId).append("<select id='typeId" + typeId + "'></select><div>FHIR Query:   <select id='" +
-                secondaryType +"'></select></div>");
-
-            CDEX.menu.FHIRQuery.forEach((secondary) => {
-                $('#' + secondaryType).append("<option>" + secondary.name + "</option>");
+            CDEX.menu.DocRef.values.forEach((secondary) => {
+                $('#' + secondaryTypeId).append("<option>" + secondary.name + "</option>");
             });
-        }else if(type === "Input"){
+        }else if(type === CDEX.menu.FHIRQuery.name){
+            $('#divId' + typeId).append("<select id='typeId" + typeId + "'></select><div><label>" +
+                CDEX.menu.FHIRQuery.description + "</label><select id='" + secondaryTypeId +"'></select></div>");
+
+            CDEX.menu.FHIRQuery.values.forEach((secondary) => {
+                $('#' + secondaryTypeId).append("<option>" + secondary.name + "</option>");
+            });
+        }else if(type === CDEX.menu.FreeText.name){
             $('#divId' + typeId).append("<select id='typeId" + typeId +
-                "'></select><div >Input:   <input id='" + secondaryType + "'></div>");
+                "'></select><div><label>" + CDEX.menu.FreeText.description + "</label><input id='" +
+                secondaryTypeId + "'></div>");
         }
 
         $('#typeId' + typeId).change(() => {CDEX.selectType(typeId)});
+
         for (let key in CDEX.menu) {
-            if(key === type) {
-                $('#typeId' + typeId).append("<option selected='selected'>" + key + "</option>");
+            if(type === CDEX.menu[key].name) {
+                $('#typeId' + typeId).append("<option selected='selected'>" + CDEX.menu[key].name + "</option>");
             }else{
-                $('#typeId' + typeId).append("<option>" + key + "</option>");
+                $('#typeId' + typeId).append("<option>" + CDEX.menu[key].name + "</option>");
             }
         }
     }
+
     CDEX.loadData = (client) => {
         try {
             CDEX.client = client;
