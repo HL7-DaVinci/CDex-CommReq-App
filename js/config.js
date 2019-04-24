@@ -10,25 +10,17 @@ if (!CDEX) {
     "scope"    : "patient/*.* openid profile"
   };
 
-  CDEX.submitEndpoint = "/CommunicationRequest?_id=cdex-example-solicited-attachment-request$submit-data";
+  CDEX.submitEndpoint = "/CommunicationRequest?_id=";
 
   CDEX.providerEndpoints = [{
       "name": "DaVinci CDex Provider (Open)",
       "type": "open",
       "url": "https://api-v8-r4.hspconsortium.org/DaVinciCDexProvider/open"
   }
-    ,
-    {
-      "name": "DaVinci CDex Provider",
-      "type": "secure-smart",
-      "url": "https://api-v8-r4.hspconsortium.org/DaVinciCDexProvider/data",
-      "clientID": "4a71a430-0316-4e2a-8477-7671d7d3b862",
-      "scope": "user/*.write"
-    }
   ];
 
   // default configuration
-  CDEX.configSetting = 0; // HSPC Payer Demo (Open)
+  CDEX.configSetting = 0; // HSPC Provider Demo (Open)
   CDEX.providerEndpoint = CDEX.providerEndpoints[CDEX.configSetting];
 
   CDEX.menu = {
@@ -37,16 +29,28 @@ if (!CDEX) {
           "description": "Clinical Note Type",
           "values": [
               {
-                  "name": "type1"
+                  "name": "History and Physical Note",
+                  "generalCode": "34117-2"
               },
               {
-                  "name": "type2"
+                  "name": "Progress Note",
+                  "generalCode": "11506-3"
               },
               {
-                  "name": "type3"
+                  "name": "Referral Note",
+                  "generalCode": "57133-1"
               },
               {
-                  "name": "type4"
+                  "name": "Consultation Note",
+                  "generalCode": "11488-4"
+              },
+              {
+                  "name": "Procedure Note",
+                  "generalCode": "28570-0"
+              },
+              {
+                  "name": "Care Plan",
+                  "generalCode": "18776-5"
               }
           ],
         },
@@ -56,7 +60,7 @@ if (!CDEX) {
           "values": [
               {
                   "name": "What are the A1C results after 2018-01-01 for this patient?",
-                  "FHIRQueryString": "Observation?patient=[the patient's id]&date=ge2018-01-01&code=4548-4",
+                  "FHIRQueryString": "Observation?patient=[this patient's id]&date=ge2018-01-01&code=4548-4",
               },
               {
                   "name": "What are the patient's vital sign measurements in reverse chronological order?",
@@ -64,11 +68,11 @@ if (!CDEX) {
               },
               {
                   "name": "What are the patient's active conditions?",
-                  "FHIRQueryString": "Condition?patient=[this patient's id]&clinicalstatus=active"
+                  "FHIRQueryString": "Condition?patient=[this patient's id]&clinical-status=active"
               },
               {
                   "name": "What is the patient's current smoking status?",
-                  "FHIRQueryString": "Observation?patient=1032702&code=72166-2&_sort=-date&_count=1"
+                  "FHIRQueryString": "Observation?patient=[this patient's id]&code=72166-2&_sort=-date&_count=1"
               },
               {
                   "name": "What medications is the patient taking?",
@@ -84,7 +88,7 @@ if (!CDEX) {
               },
               {
                   "name": "Who is the patient's Primary Care Provider?",
-                  "FHIRQueryString": "Patient/this patient's id"
+                  "FHIRQueryString": "Patient/[this patient's id]"
               },
               {
                   "name": "What type of health insurance does the patient have?",
@@ -107,7 +111,7 @@ if (!CDEX) {
         },
         "text": {
             "status": "generated",
-            "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">TEXT_DIV</div>"
+            "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Request for Condition resources</div>"
         },
         "identifier": [
             {
@@ -154,23 +158,7 @@ if (!CDEX) {
             "reference": "Encounter/cdex-example-encounter"
         },
           "payload": [
-              {
-                  "extension": [
-                      {
-                          "url": "http://hl7.org/fhir/us/davinci-cdex/StructureDefinition/cdex-payload-query-string",
-                          "valueString": "Condition?patient=cdex-example-patient",
-                          "valueCodeableConcept": {
-                              "coding": [
-                                  {
-                                      "system": "http://loinc.org",
-                                      "code": "18842-5"
-                                  }
-                              ]
-                          }
-                      }
-                  ],
-                  "contentString": "Please provide the patient's conditions."
-              }
+
           ],
         "occurrenceDateTime": "2016-06-10T11:01:10-08:00",
         "authoredOn": "TIMESTAMP",
@@ -187,5 +175,36 @@ if (!CDEX) {
     }
 
   };
+
+    CDEX.extensionDocRef = {
+        "extension": [
+            {
+                "url": "URL", //"http://hl7.org/fhir/us/davinci-cdex/StructureDefinition/cdex-payload-clinical-note-type"
+                "valueCodeableConcept": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "CODE"
+                        }
+                    ]
+                }
+            }
+        ],
+        "contentString": "CONTENT"
+    };
+
+  CDEX.extensionQuery = {
+        "extension": [
+            {
+                "url": "http://hl7.org/fhir/us/davinci-cdex/StructureDefinition/cdex-payload-query-string",
+                "valueString": "VALUE_STRING"
+            }
+        ],
+        "contentString": "CONTENT"
+    };
+
+    CDEX.contentString = {
+        "contentString": "CONTENT"
+    };
 
 }());

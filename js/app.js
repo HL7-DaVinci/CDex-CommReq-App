@@ -51,7 +51,7 @@ if (!CDEX) {
             const secondaryTypeId = "finalSecondaryTypeId" + idx;
             const primaryTypeSelected = $("#typeId" + idx).find(":selected").text();
             const secondaryTypeSelected = $("#secondaryTypeId" + idx).find(":selected").text();
-            const secondaryFreeText = $("#secondaryTypeId" + idx).val();
+            const secondaryFreeText = $('#secondaryTypeId' + idx).val();
 
             if(primaryTypeSelected === CDEX.menu.DocRef.name) {
                 $('#final-list').append("<div><select disabled='disabled' id='" + primaryTypeId +
@@ -77,8 +77,8 @@ if (!CDEX) {
                 });
             }else if(primaryTypeSelected === CDEX.menu.FreeText.name){
                 $('#final-list').append("<div><select disabled='disabled' id='" + primaryTypeId +
-                    "'></select><div><label>" + CDEX.menu.FreeText.description + "</label><input id='" +
-                    secondaryTypeId + "' disabled='disabled' value='" + secondaryFreeText + "'></div></div>");
+                    "'></select><div><label>" + CDEX.menu.FreeText.description + "</label><textarea id='" +
+                    secondaryTypeId + "' disabled='disabled'>" + secondaryFreeText + "</textarea></div></div>");
             }
 
             for (let key in CDEX.menu) {
@@ -152,8 +152,8 @@ if (!CDEX) {
             });
         }else if(type === CDEX.menu.FreeText.name){
             $('#divId' + typeId).append("<select id='typeId" + typeId +
-                "'></select><div><label>" + CDEX.menu.FreeText.description + "</label><input id='" +
-                secondaryTypeId + "'></div>");
+                "'></select><div><label>" + CDEX.menu.FreeText.description + "</label><textarea id='" +
+                secondaryTypeId + "'></textarea></div>");
         }
 
         $('#typeId' + typeId).change(() => {CDEX.selectType(typeId)});
@@ -165,6 +165,55 @@ if (!CDEX) {
                 $('#typeId' + typeId).append("<option>" + CDEX.menu[key].name + "</option>");
             }
         }
+    }
+
+    CDEX.addToPayload = () => {
+        let timestamp = CDEX.now();
+        let communicationRequest = CDEX.operationPayload;
+
+        communicationRequest.authoredOn = timestamp;
+        let payload = [];
+        for(let idx = 0; idx <= CDEX.index; idx++){
+            const primaryTypeSelected = $("#finalPrimaryTypeId" + idx).find(":selected").text();
+            const secondaryTypeSelected = $("#finalSecondaryTypeId" + idx).find(":selected").text();
+            const secondaryFreeText = $("#finalSecondaryTypeId" + idx).val();
+
+            if(primaryTypeSelected === CDEX.menu.DocRef.name) {
+                CDEX.menu.DocRef.values.forEach((secondaryType) => {
+                    if(secondaryType.name === secondaryTypeSelected) {
+                        payload[idx] = {
+                            "extension": [{
+                                    "url": "http://hl7.org/fhir/us/davinci-cdex/StructureDefinition/cdex-payload-clinical-note-type",
+                                    "valueCodeableConcept": {
+                                        "coding": [{
+                                                "system": "http://loinc.org",
+                                                "code": "CODE"}]}}],
+                            "contentString": ""};
+                        payload[idx].extension[0].valueCodeableConcept.coding[0].code = secondaryType.generalCode;
+                        payload[idx].contentString = secondaryType.name + "s";
+
+                    }
+                });
+            }else if(primaryTypeSelected === CDEX.menu.FHIRQuery.name){
+                CDEX.menu.FHIRQuery.values.forEach((secondaryType) => {
+                    if(secondaryType.name === secondaryTypeSelected) {
+                        let queryString = secondaryType.FHIRQueryString.replace("[this patient's id]", CDEX.patient.id);
+                        payload[idx] = {"extension": [{
+                                    "url": "http://hl7.org/fhir/us/davinci-cdex/StructureDefinition/cdex-payload-query-string",
+                                    "valueString": "VALUE_STRING"}],
+                            "contentString": "CONTENT"
+                        };
+                        payload[idx].extension[0].valueString = queryString;
+                        payload[idx].contentString = secondaryType.name;
+                    }
+                });
+            }else if(primaryTypeSelected === CDEX.menu.FreeText.name){
+                payload[idx] = {"contentString": "CONTENT"};
+                payload[idx].contentString = secondaryFreeText;
+            }
+        }
+        communicationRequest.payload = payload;
+        CDEX.operationPayload = communicationRequest;
     }
 
     CDEX.loadData = (client) => {
@@ -182,41 +231,15 @@ if (!CDEX) {
     };
 
     CDEX.reconcile = () => {
-        let timestamp = CDEX.now();
 
         $('#discharge-selection').hide();
         CDEX.disable('btn-submit');
         CDEX.disable('btn-edit');
         $('#btn-submit').html("<i class='fa fa-circle-o-notch fa-spin'></i> Submit Communication Request");
 
-        let communicationRequest = CDEX.operationPayload;
+        CDEX.addToPayload();
+        CDEX.finalize();
 
-        // CDEX.operationPayload.id = CDEX.getGUID();
-        communicationRequest.authoredOn = timestamp;
-        communicationRequest.payload[0].contentString = CDEX.contentString;
-
-        CDEX.operationPayload = communicationRequest;
-
-        if (CDEX.providerEndpoint.type === "secure-smart") {
-            sessionStorage.operationPayload = JSON.stringify(CDEX.operationPayload);
-            if (localStorage.tokenResponse) {
-                // load state from localStorage
-                let state = JSON.parse(localStorage.tokenResponse).state;
-                sessionStorage.tokenResponse = localStorage.tokenResponse;
-                sessionStorage[state] = localStorage[state];
-                FHIR.oauth2.ready(CDEX.initialize);
-            } else {
-                FHIR.oauth2.authorize({
-                    "client": {
-                        "client_id": CDEX.providerEndpoint.clientID,
-                        "scope":  CDEX.providerEndpoint.scope
-                    },
-                    "server": CDEX.providerEndpoint.url
-                });
-            }
-        } else {
-            CDEX.finalize();
-        }
     };
 
     CDEX.initialize = (client) => {
@@ -252,19 +275,13 @@ if (!CDEX) {
 
     CDEX.finalize = () => {
         let promise;
-        console.log(CDEX.operationPayload);
-        var config = {
+        console.log(CDEX.providerEndpoint.url);
+        let config = {
             type: 'PUT',
-            url: CDEX.providerEndpoint.url + CDEX.submitEndpoint,
+            url: CDEX.providerEndpoint.url + CDEX.submitEndpoint + CDEX.operationPayload.id + "$submit-data",
             data: JSON.stringify(CDEX.operationPayload),
             contentType: "application/fhir+json"
         };
-
-        if (CDEX.providerEndpoint.type !== "open") {
-            config['beforeSend'] = function (xhr) {
-                xhr.setRequestHeader ("Authorization", "Bearer " + CDEX.providerEndpoint.accessToken);
-            };
-        }
 
         promise = $.ajax(config);
 

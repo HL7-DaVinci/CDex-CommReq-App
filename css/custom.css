@@ -27,3 +27,22 @@ td {
     width: 660px;
     height: 200px;
 }
+
+
+img {
+    margin-right:10px;
+    width: 66px;
+}
+
+.wine-row {
+    display: flex;
+    flex-direction: row;
+    height: 120px;
+    padding: 10px 0;
+}
+
+.wine-text-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
