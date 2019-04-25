@@ -51,6 +51,10 @@ if (!CDEX) {
               {
                   "name": "Care Plan",
                   "generalCode": "18776-5"
+              },
+              {
+                  "name": "Continuity of Care Document",
+                  "generalCode": "34133-9"
               }
           ],
         },
