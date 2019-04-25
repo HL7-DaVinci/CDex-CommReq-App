@@ -287,7 +287,7 @@ if (!CDEX) {
 
         promise.then(() => {
             CDEX.displayConfirmScreen();
-        }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the submit endpoint configuration"));
+        }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the submit endpoint configuration \n You can close this window now"));
     }
 
     $('#btn-add').click(CDEX.addTypeSelection);
