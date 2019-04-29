@@ -25,3 +25,10 @@ At this point your Launch URI is http://127.0.0.1:9090/launch.html and your
 Redirect URI is http://127.0.0.1:9090. Please follow the instructions from
 http://docs.smarthealthit.org to get this SMART application registered and
 configured against your SMART on FHIR server.
+
+
+## Building Releases
+A Dockerfile is included for customization to easily distribute complete application images. For example:
+
+    docker build -t hspc/davinci-cdex-commreq:latest .
+    docker run -it --name davinci-cdex-commreq --rm -p 9090:9090 hspc/davinci-cdex-commreq:latest
