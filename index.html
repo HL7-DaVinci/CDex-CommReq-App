@@ -13,8 +13,23 @@
 </head>
 <body>
 <div class="wine-row">
-    <img src="images/request.png" height="100" width="100">
+    <img src="images/request.png" style="height:100px; width:150px">
     <div class="wine-text-container"><h1>CDex Communication Request Application</h1></div>
+</div>
+<div id="communication-request-screen" class="screen">
+    <h1>Data requests for <span id="commRes-patient-name"></span></h1>
+
+    <div><p><div class='dvt'>
+        <table>
+            <thead>
+            <th>ID</th>
+            <th>Open/Completed</th>
+            <th>Show</th>
+            </thead>
+            <tbody id='comm-request-list'></tbody>
+        </table>
+    </div></p></div>
+    <button type="button" class="btn btn-primary" id="btn-create">Create Communication Request</button>
 </div>
 <div id="data-request-screen" class="screen">
     <h1>Data requests for <span id="patient-name"></span></h1>

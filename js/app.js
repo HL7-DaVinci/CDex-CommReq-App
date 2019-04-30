@@ -15,7 +15,7 @@ if (!CDEX) {
     };
 
     CDEX.displayPatient = (pt) => {
-        $('#patient-name, #review-name').html(CDEX.getPatientName(pt));
+        $('#commRes-patient-name, #patient-name, #review-name').html(CDEX.getPatientName(pt));
     };
 
     CDEX.displayScreen = (screenID) => {
@@ -23,7 +23,12 @@ if (!CDEX) {
         $('#review-screen').hide();
         $('#confirm-screen').hide();
         $('#config-screen').hide();
+        $('#communication-request-screen').hide();
         $('#'+screenID).show();
+    };
+
+    CDEX.displayCommReqScreen = () => {
+        CDEX.displayScreen('communication-request-screen');
     };
 
     CDEX.displayDataRequestScreen = () => {
@@ -216,15 +221,54 @@ if (!CDEX) {
         CDEX.operationPayload = communicationRequest;
     }
 
+    CDEX.previewCommunication = (communication) => {
+
+    }
+
     CDEX.loadData = (client) => {
+        CDEX.communications = [];
         try {
             CDEX.client = client;
-            CDEX.displayDataRequestScreen();
+            CDEX.displayCommReqScreen();
             CDEX.client.patient.read().then((pt) => {
                 CDEX.patient = pt;
                 CDEX.displayPatient (pt);
+            }).then(() => {
+
+            CDEX.client.api.fetchAll(
+                {
+                    type: "CommunicationRequest",
+                    query: {
+                        subject: CDEX.patient.id
+                    }
+                }
+            ).then(function (commRequests) {
+                commRequests.forEach((commReq) => {
+                    CDEX.client.api.fetchAll(
+                        {
+                            type: "Communication",
+                            query: {
+                                'based-on' : commReq.id
+                            }
+                        }
+                    ).then(function (communications) {
+                        if(communications.length === 0){
+                            $('#comm-request-list').append("<tr><td>" + commReq.id + "</td><td>Open</td></tr>");
+                        }
+                        communications.forEach((communication) => {
+                            CDEX.communications.push(communication);
+                            let idButton = "Communication" + communication.id;
+                            $('#comm-request-list').append("<tr><td>" + commReq.id + "</td><td>Completed</td><td><button id='" +
+                                idButton + "'>Show Communication</button></td></tr>");
+                            $('#' + idButton).click(() => {
+                                CDEX.previewCommunication(communication);
+                            });
+                        });
+                    });
+
+                });
             });
-            CDEX.addTypeSelection();
+        });
         } catch (err) {
             CDEX.displayErrorScreen("Failed to initialize request menu", "Please make sure that everything is OK with request configuration");
         }
@@ -274,22 +318,37 @@ if (!CDEX) {
     }
 
     CDEX.finalize = () => {
-        let promise;
-        console.log(CDEX.providerEndpoint.url);
-        let config = {
+        let promiseProvider;
+
+        let configProvider = {
             type: 'PUT',
             url: CDEX.providerEndpoint.url + CDEX.submitEndpoint + CDEX.operationPayload.id + "$submit-data",
             data: JSON.stringify(CDEX.operationPayload),
             contentType: "application/fhir+json"
         };
 
-        promise = $.ajax(config);
+        let configPayer = {
+            type: 'PUT',
+            url: CDEX.providerEndpoint.url + CDEX.submitEndpoint + CDEX.operationPayload.id + "$submit-data",
+            data: JSON.stringify(CDEX.operationPayload),
+            contentType: "application/fhir+json"
+        };
 
-        promise.then(() => {
+        promiseProvider = $.ajax(configProvider);
+
+        promiseProvider.then(() => {
             CDEX.displayConfirmScreen();
+            let promisePayer;
+            promisePayer = $.ajax(configPayer);
+            promisePayer.then(() => {
+            }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the submit endpoint configuration \n You can close this window now"));
         }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the submit endpoint configuration \n You can close this window now"));
-    }
+    };
 
+    $('#btn-create').click(function() {
+        CDEX.displayDataRequestScreen();
+        CDEX.addTypeSelection();
+    });
     $('#btn-add').click(CDEX.addTypeSelection);
     $('#btn-review').click(CDEX.displayReviewScreen);
 

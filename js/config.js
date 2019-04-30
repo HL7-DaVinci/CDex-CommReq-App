@@ -19,6 +19,12 @@ if (!CDEX) {
   }
   ];
 
+  CDEX.payerEndpoint = {
+      "name": "DaVinci CDex Payer (Open)",
+      "type": "open",
+      "url": "https://api-v8-r4.hspconsortium.org/DaVinciCDexPayer/open"
+  };
+
   // default configuration
   CDEX.configSetting = 0; // HSPC Provider Demo (Open)
   CDEX.providerEndpoint = CDEX.providerEndpoints[CDEX.configSetting];
@@ -175,7 +181,7 @@ if (!CDEX) {
         }
     ],
         "sender": {
-        "reference": "Organization/cdex-example-payer"
+        "reference": "Organization/DaVinci-CDEX-Payer"
     }
 
   };
