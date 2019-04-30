@@ -253,12 +253,12 @@ if (!CDEX) {
                         }
                     ).then(function (communications) {
                         if(communications.length === 0){
-                            $('#comm-request-list').append("<tr><td>" + commReq.id + "</td><td>Open</td></tr>");
+                            $('#comm-request-list').append("<tr><td>" + commReq.id + "</td><td>" + commReq.authoredOn + "</td></tr>");
                         }
                         communications.forEach((communication) => {
                             CDEX.communications.push(communication);
                             let idButton = "Communication" + communication.id;
-                            $('#comm-request-list').append("<tr><td>" + commReq.id + "</td><td>Completed</td><td><button id='" +
+                            $('#comm-request-list').append("<tr><td>" + commReq.id + "</td><td>" + commReq.authoredOn + "</td><td><button id='" +
                                 idButton + "'>Show Communication</button></td></tr>");
                             $('#' + idButton).click(() => {
                                 CDEX.previewCommunication(communication);
@@ -288,19 +288,7 @@ if (!CDEX) {
 
     CDEX.initialize = (client) => {
         CDEX.loadConfig();
-        if (sessionStorage.operationPayload) {
-            if (JSON.parse(sessionStorage.tokenResponse).refresh_token) {
-                // save state in localStorage
-                let state = JSON.parse(sessionStorage.tokenResponse).state;
-                localStorage.tokenResponse = sessionStorage.tokenResponse;
-                localStorage[state] = sessionStorage[state];
-            }
-            CDEX.operationPayload = JSON.parse(sessionStorage.operationPayload);
-            CDEX.providerEndpoint.accessToken = JSON.parse(sessionStorage.tokenResponse).access_token;
-            CDEX.finalize();
-        } else {
-            CDEX.loadData(client);
-        }
+        CDEX.loadData(client);
     };
 
     CDEX.loadConfig = () => {
@@ -329,7 +317,7 @@ if (!CDEX) {
 
         let configPayer = {
             type: 'PUT',
-            url: CDEX.providerEndpoint.url + CDEX.submitEndpoint + CDEX.operationPayload.id + "$submit-data",
+            url: CDEX.payerEndpoint.url + CDEX.submitEndpoint + CDEX.operationPayload.id + "$submit-data",
             data: JSON.stringify(CDEX.operationPayload),
             contentType: "application/fhir+json"
         };
@@ -341,8 +329,8 @@ if (!CDEX) {
             let promisePayer;
             promisePayer = $.ajax(configPayer);
             promisePayer.then(() => {
-            }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the submit endpoint configuration \n You can close this window now"));
-        }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the submit endpoint configuration \n You can close this window now"));
+            }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the endpoint configuration <br> You can close this window now"));
+        }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the submit endpoint configuration <br> You can close this window now"));
     };
 
     $('#btn-create').click(function() {
