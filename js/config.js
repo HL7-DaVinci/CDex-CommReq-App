@@ -29,6 +29,10 @@ if (!CDEX) {
   CDEX.configSetting = 0; // HSPC Provider Demo (Open)
   CDEX.providerEndpoint = CDEX.providerEndpoints[CDEX.configSetting];
 
+   CDEX.scenarioDescription = {
+        "description" : "DESCRIPTION"
+   }
+
   CDEX.menu = {
       "DocRef": {
           "name": "Structure Document Clinical Note Type",

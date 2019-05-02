@@ -19,6 +19,7 @@ if (!CDEX) {
     };
 
     CDEX.displayScreen = (screenID) => {
+        $('#intro-screen').hide();
         $('#data-request-screen').hide();
         $('#review-screen').hide();
         $('#confirm-screen').hide();
@@ -26,6 +27,10 @@ if (!CDEX) {
         $('#communication-request-screen').hide();
         $('#'+screenID).show();
     };
+
+    CDEX.displayIntroScreen = () => {
+        CDEX.displayScreen('intro-screen');
+    }
 
     CDEX.displayCommReqScreen = () => {
         CDEX.displayScreen('communication-request-screen');
@@ -226,52 +231,9 @@ if (!CDEX) {
     }
 
     CDEX.loadData = (client) => {
-        CDEX.communications = [];
-        try {
-            CDEX.client = client;
-            CDEX.displayCommReqScreen();
-            CDEX.client.patient.read().then((pt) => {
-                CDEX.patient = pt;
-                CDEX.displayPatient (pt);
-            }).then(() => {
-
-            CDEX.client.api.fetchAll(
-                {
-                    type: "CommunicationRequest",
-                    query: {
-                        subject: CDEX.patient.id
-                    }
-                }
-            ).then(function (commRequests) {
-                commRequests.forEach((commReq) => {
-                    CDEX.client.api.fetchAll(
-                        {
-                            type: "Communication",
-                            query: {
-                                'based-on' : commReq.id
-                            }
-                        }
-                    ).then(function (communications) {
-                        if(communications.length === 0){
-                            $('#comm-request-list').append("<tr><td>" + commReq.id + "</td><td>" + commReq.authoredOn + "</td></tr>");
-                        }
-                        communications.forEach((communication) => {
-                            CDEX.communications.push(communication);
-                            let idButton = "Communication" + communication.id;
-                            $('#comm-request-list').append("<tr><td>" + commReq.id + "</td><td>" + commReq.authoredOn + "</td><td><button id='" +
-                                idButton + "'>Show Communication</button></td></tr>");
-                            $('#' + idButton).click(() => {
-                                CDEX.previewCommunication(communication);
-                            });
-                        });
-                    });
-
-                });
-            });
-        });
-        } catch (err) {
-            CDEX.displayErrorScreen("Failed to initialize request menu", "Please make sure that everything is OK with request configuration");
-        }
+        CDEX.client = client;
+        $('#scenario-intro').html(CDEX.scenarioDescription.description);
+        CDEX.displayIntroScreen();
     };
 
     CDEX.reconcile = () => {
@@ -332,6 +294,55 @@ if (!CDEX) {
             }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the endpoint configuration <br> You can close this window now"));
         }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the submit endpoint configuration <br> You can close this window now"));
     };
+
+
+    $('#btn-start').click(function (){
+        CDEX.communications = [];
+        try {
+            CDEX.displayCommReqScreen();
+            CDEX.client.patient.read().then((pt) => {
+                CDEX.patient = pt;
+                CDEX.displayPatient (pt);
+            }).then(() => {
+
+                CDEX.client.api.fetchAll(
+                    {
+                        type: "CommunicationRequest",
+                        query: {
+                            subject: CDEX.patient.id
+                        }
+                    }
+                ).then(function (commRequests) {
+                    commRequests.forEach((commReq) => {
+                        CDEX.client.api.fetchAll(
+                            {
+                                type: "Communication",
+                                query: {
+                                    'based-on' : commReq.id
+                                }
+                            }
+                        ).then(function (communications) {
+                            if(communications.length === 0){
+                                $('#comm-request-list').append("<tr><td>" + commReq.id + "</td><td>" + commReq.authoredOn + "</td></tr>");
+                            }
+                            communications.forEach((communication) => {
+                                CDEX.communications.push(communication);
+                                let idButton = "Communication" + communication.id;
+                                $('#comm-request-list').append("<tr><td>" + commReq.id + "</td><td>" + commReq.authoredOn +
+                                    "</td><td><button id='" + idButton + "'>" + communication.sent + "</button></td></tr>");
+                                $('#' + idButton).click(() => {
+                                    CDEX.previewCommunication(communication);
+                                });
+                            });
+                        });
+
+                    });
+                });
+            });
+        } catch (err) {
+            CDEX.displayErrorScreen("Failed to initialize request menu", "Please make sure that everything is OK with request configuration");
+        }
+    });
 
     $('#btn-create').click(function() {
         CDEX.displayDataRequestScreen();

@@ -16,6 +16,13 @@
     <img src="images/request.png" style="height:100px; width:150px">
     <div class="wine-text-container"><h1>CDex Communication Request Application</h1></div>
 </div>
+<div id="intro-screen" class="card alert-info screen">
+    <div class="card-body">
+        <h5 class="card-title">Scenario Description</h5>
+        <p class='card-text' id='scenario-intro'></p>
+        <a href="#" class="btn btn-primary" id="btn-start">Communication Requests</a>
+    </div>
+</div>
 <div id="communication-request-screen" class="screen">
     <h3>Communication requests for <span id="commRes-patient-name"></span></h3>
 
@@ -30,6 +37,16 @@
         </table>
     </div></p></div>
     <button type="button" class="btn btn-primary" id="btn-create">New Request</button>
+</div>
+<div id="communication-screen" class="screen">
+    <h1>Data requests for <span id="comm-patient-name"></span></h1>
+
+    <div id="menu-request-list"><p><div class='dvt'>
+        <div id='selection-query-list'></div>
+    </div></p></div>
+    <div>
+        <button type="button" class="btn btn-secondary" id="btn-back">Back</button>
+    </div>
 </div>
 <div id="data-request-screen" class="screen">
     <h1>Data requests for <span id="patient-name"></span></h1>
