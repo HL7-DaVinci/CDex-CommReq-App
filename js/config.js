@@ -13,14 +13,14 @@ if (!CDEX) {
   CDEX.submitEndpoint = "/CommunicationRequest?_id=";
 
   CDEX.providerEndpoints = [{
-      "name": "DaVinci CDex Provider (Open)",
+      "name": "HSPC CDex Provider (Open)",
       "type": "open",
       "url": "https://api-v8-r4.hspconsortium.org/DaVinciCDexProvider/open"
   }
   ];
 
   CDEX.payerEndpoint = {
-      "name": "DaVinci CDex Payer (Open)",
+      "name": "HSPC CDex Payer (Open)",
       "type": "open",
       "url": "https://api-v8-r4.hspconsortium.org/DaVinciCDexPayer/open"
   };
@@ -31,41 +31,41 @@ if (!CDEX) {
 
   CDEX.menu = {
       "DocRef": {
-          "name": "Structure Document Clinical Note Type",
-          "description": "Clinical Note Type",
+          "name": "Clinical Notes",
+          "description": "Type",
           "values": [
               {
-                  "name": "History and Physical Note",
+                  "name": "History and Physical Notes",
                   "generalCode": "34117-2"
               },
               {
-                  "name": "Progress Note",
+                  "name": "Progress Notes",
                   "generalCode": "11506-3"
               },
               {
-                  "name": "Referral Note",
+                  "name": "Referral Notes",
                   "generalCode": "57133-1"
               },
               {
-                  "name": "Consultation Note",
+                  "name": "Consultation Notes",
                   "generalCode": "11488-4"
               },
               {
-                  "name": "Procedure Note",
+                  "name": "Procedure Notes",
                   "generalCode": "28570-0"
               },
               {
-                  "name": "Care Plan",
+                  "name": "Care Plans",
                   "generalCode": "18776-5"
               },
               {
-                  "name": "Continuity of Care Document",
+                  "name": "Continuity of Care Documents",
                   "generalCode": "34133-9"
               }
           ],
         },
       "FHIRQuery": {
-          "name": "Structured Data Codes",
+          "name": "Structured Data",
           "description": "Request",
           "values": [
               {
@@ -108,7 +108,7 @@ if (!CDEX) {
       },
       "FreeText": {
           "name": "Free text",
-          "description": "Enter Text"
+          "description": "Request"
       }
 
   };
