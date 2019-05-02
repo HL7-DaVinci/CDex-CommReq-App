@@ -19,6 +19,7 @@ if (!CDEX) {
     };
 
     CDEX.displayScreen = (screenID) => {
+        $('#intro-screen').hide();
         $('#data-request-screen').hide();
         $('#review-screen').hide();
         $('#confirm-screen').hide();
@@ -26,6 +27,10 @@ if (!CDEX) {
         $('#communication-request-screen').hide();
         $('#'+screenID).show();
     };
+
+    CDEX.displayIntroScreen = () => {
+        CDEX.displayScreen('intro-screen');
+    }
 
     CDEX.displayCommReqScreen = () => {
         CDEX.displayScreen('communication-request-screen');
@@ -51,46 +56,13 @@ if (!CDEX) {
 
     CDEX.displayReviewScreen = () => {
         $('#final-list').empty();
-        for(let idx = 0; idx <= CDEX.index; idx++){
-            const primaryTypeId = "finalPrimaryTypeId" + idx;
-            const secondaryTypeId = "finalSecondaryTypeId" + idx;
+        for(let idx = 0; idx < CDEX.index; idx++){
             const primaryTypeSelected = $("#typeId" + idx).find(":selected").text();
             const secondaryTypeSelected = $("#secondaryTypeId" + idx).find(":selected").text();
             const secondaryFreeText = $('#secondaryTypeId' + idx).val();
-
-            if(primaryTypeSelected === CDEX.menu.DocRef.name) {
-                $('#final-list').append("<div><select disabled='disabled' id='" + primaryTypeId +
-                    "'></select><div><label>" + CDEX.menu.DocRef.description + "</label><select id='" +
-                    secondaryTypeId +"' disabled='disabled'></select></div></div>");
-
-                CDEX.menu.DocRef.values.forEach((secondary) => {
-                    if(secondaryTypeSelected === secondary.name) {
-                        $('#' + secondaryTypeId).append("<option selected='selected' disabled='disabled'>" +
-                            secondary.name + "</option>");
-                    }
-                });
-            }else if(primaryTypeSelected === CDEX.menu.FHIRQuery.name){
-                $('#final-list').append("<div><select id='" + primaryTypeId +
-                    "' disabled='disabled'></select><div><label>" + CDEX.menu.FHIRQuery.description +
-                    "</label><select id='" + secondaryTypeId +"' disabled='disabled'></select></div></div>");
-
-                CDEX.menu.FHIRQuery.values.forEach((secondary) => {
-                    if(secondaryTypeSelected === secondary.name) {
-                        $('#' + secondaryTypeId).append("<option selected='selected' disabled='disabled'>" +
-                            secondary.name + "</option>");
-                    }
-                });
-            }else if(primaryTypeSelected === CDEX.menu.FreeText.name){
-                $('#final-list').append("<div><select disabled='disabled' id='" + primaryTypeId +
-                    "'></select><div><label>" + CDEX.menu.FreeText.description + "</label><textarea id='" +
-                    secondaryTypeId + "' disabled='disabled'>" + secondaryFreeText + "</textarea></div></div>");
-            }
-
-            for (let key in CDEX.menu) {
-                if(primaryTypeSelected === CDEX.menu[key].name) {
-                    $('#' + primaryTypeId).append("<option selected='selected' disabled='disabled'>" + CDEX.menu[key].name + "</option>");
-                }
-            }
+            //let out = "<div><div>"+primaryTypeSelected+"</div><div>"+((primaryTypeSelected === CDEX.menu.FreeText.name)?secondaryFreeText:secondaryTypeSelected)+"</div></div>";
+            let out = "<li><span class='request-type'>"+primaryTypeSelected+":</span> <span>"+((primaryTypeSelected === CDEX.menu.FreeText.name)?secondaryFreeText:secondaryTypeSelected)+"</span></li>";
+            $('#final-list').append(out);
         }
         CDEX.displayScreen('review-screen');
     }
@@ -120,9 +92,14 @@ if (!CDEX) {
         const secondaryTypeId = "secondaryTypeId" + CDEX.index;
         const id = CDEX.index;
 
-        $('#selection-query-list').append("<div id='" + divId + "'><select id='"+ typeId +
-            "'></select><div><label>" + CDEX.menu.DocRef.description + "</label><select id='" +
-            secondaryTypeId + "'></select></div></div>");
+        let out = "<div class='card alert-info'><div class='card-body' id='" + divId + 
+        "'><div class='form-group'><label for='"+ typeId +
+                    "'>Type</label><select class='form-control' id='"+ typeId +
+                    "'></select></div><div class='secondary form-group'><label for='"+ secondaryTypeId +
+                    "'>Request</label><select class='form-control' id='" +
+        secondaryTypeId + "'></select></div></div></div>";
+
+        $('#selection-query-list').append(out);
         $('#' + typeId).change(() => {CDEX.selectType(id)});
 
         for (let key in CDEX.menu) {
@@ -139,36 +116,26 @@ if (!CDEX) {
     CDEX.selectType = (typeId) => {
         const secondaryTypeId = "secondaryTypeId" + typeId;
         const type = $("#typeId" + typeId).find(":selected").text();
-        $('#divId' + typeId).empty();
+        $('#divId' + typeId + ' div.secondary').empty();
 
         if(type === CDEX.menu.DocRef.name) {
-            $('#divId' + typeId).append("<select id='typeId" + typeId + "'></select><div><label>" +
-                CDEX.menu.DocRef.description + "</label><select id='" + secondaryTypeId +"'></select></div>");
+            $('#divId' + typeId + ' div.secondary').append("<label for='"+ secondaryTypeId +
+            "'>Request</label><select class='form-control' id='" + secondaryTypeId +"'></select>");
 
             CDEX.menu.DocRef.values.forEach((secondary) => {
                 $('#' + secondaryTypeId).append("<option>" + secondary.name + "</option>");
             });
         }else if(type === CDEX.menu.FHIRQuery.name){
-            $('#divId' + typeId).append("<select id='typeId" + typeId + "'></select><div><label>" +
-                CDEX.menu.FHIRQuery.description + "</label><select id='" + secondaryTypeId +"'></select></div>");
+            $('#divId' + typeId + ' div.secondary').append("<label for='"+ secondaryTypeId +
+            "'>Request</label><select class='form-control' id='" + secondaryTypeId +"'></select>");
 
             CDEX.menu.FHIRQuery.values.forEach((secondary) => {
                 $('#' + secondaryTypeId).append("<option>" + secondary.name + "</option>");
             });
         }else if(type === CDEX.menu.FreeText.name){
-            $('#divId' + typeId).append("<select id='typeId" + typeId +
-                "'></select><div><label>" + CDEX.menu.FreeText.description + "</label><textarea id='" +
-                secondaryTypeId + "'></textarea></div>");
-        }
-
-        $('#typeId' + typeId).change(() => {CDEX.selectType(typeId)});
-
-        for (let key in CDEX.menu) {
-            if(type === CDEX.menu[key].name) {
-                $('#typeId' + typeId).append("<option selected='selected'>" + CDEX.menu[key].name + "</option>");
-            }else{
-                $('#typeId' + typeId).append("<option>" + CDEX.menu[key].name + "</option>");
-            }
+            $('#divId' + typeId + ' div.secondary').append("<label for='"+ secondaryTypeId +
+            "'>Request</label><textarea class='form-control' id='" +
+                secondaryTypeId + "'></textarea>");
         }
     }
 
@@ -178,10 +145,10 @@ if (!CDEX) {
 
         communicationRequest.authoredOn = timestamp;
         let payload = [];
-        for(let idx = 0; idx <= CDEX.index; idx++){
-            const primaryTypeSelected = $("#finalPrimaryTypeId" + idx).find(":selected").text();
-            const secondaryTypeSelected = $("#finalSecondaryTypeId" + idx).find(":selected").text();
-            const secondaryFreeText = $("#finalSecondaryTypeId" + idx).val();
+        for(let idx = 0; idx < CDEX.index; idx++){
+            const primaryTypeSelected = $("#typeId" + idx).find(":selected").text();
+            const secondaryTypeSelected = $("#secondaryTypeId" + idx).find(":selected").text();
+            const secondaryFreeText = $("#secondaryTypeId" + idx).val();
 
             if(primaryTypeSelected === CDEX.menu.DocRef.name) {
                 CDEX.menu.DocRef.values.forEach((secondaryType) => {
@@ -222,14 +189,21 @@ if (!CDEX) {
     }
 
     CDEX.previewCommunication = (communication) => {
+        // TODO: render communication sensibly on screen
+        alert (JSON.stringify(communication, null, '  '));
+    }
 
+    CDEX.formatDate = (date) => {
+        // TODO: implement a more sensible screen date formatter that uses an ISO date parser and translates to local time
+        const d = date.split('T');
+        return d[0] + ' ' + d[1].substring(0,5);
     }
 
     CDEX.loadData = (client) => {
-        CDEX.communications = [];
         try {
             CDEX.client = client;
-            CDEX.displayCommReqScreen();
+            CDEX.displayIntroScreen();
+
             CDEX.client.patient.read().then((pt) => {
                 CDEX.patient = pt;
                 CDEX.displayPatient (pt);
@@ -243,29 +217,38 @@ if (!CDEX) {
                     }
                 }
             ).then(function (commRequests) {
-                commRequests.forEach((commReq) => {
-                    CDEX.client.api.fetchAll(
-                        {
-                            type: "Communication",
-                            query: {
-                                'based-on' : commReq.id
+                let reqs = [];
+                for (let commReq of commRequests) {
+                    const a = {
+                        commReq: commReq
+                    };
+                    a.promise = (async () => {
+                        a.communications = await CDEX.client.api.fetchAll(
+                            {
+                                type: "Communication",
+                                query: {
+                                    'based-on' : commReq.id
+                                }
                             }
-                        }
-                    ).then(function (communications) {
-                        if(communications.length === 0){
-                            $('#comm-request-list').append("<tr><td>" + commReq.id + "</td><td>" + commReq.authoredOn + "</td></tr>");
-                        }
-                        communications.forEach((communication) => {
-                            CDEX.communications.push(communication);
-                            let idButton = "Communication" + communication.id;
-                            $('#comm-request-list').append("<tr><td>" + commReq.id + "</td><td>" + commReq.authoredOn + "</td><td><button id='" +
-                                idButton + "'>Show Communication</button></td></tr>");
+                        );
+                    })();
+                    reqs.push(a);
+                }
+                Promise.all(reqs.map((r)=>r.promise)).then(()=>{
+                    reqs.sort((a,b) => a.commReq.authoredOn > b.commReq.authoredOn).forEach((c) => {
+                        const reqTagID = 'REQ-' + c.commReq.id;
+                        const out = "<tr><td>" + c.commReq.id + "</td><td>" + CDEX.formatDate(c.commReq.authoredOn) + "</td><td id='" + reqTagID + "'></td></tr>";
+                        $('#comm-request-list').append(out);
+                        c.communications.sort((a,b) => a.sent > b.sent).forEach((comm) => {
+                            const idButton = "COMM-" + comm.id;
+                            $('#'+reqTagID).append("<div><a href='#' id='" + idButton + "'>" + CDEX.formatDate(comm.sent) + "</a></div>");
                             $('#' + idButton).click(() => {
-                                CDEX.previewCommunication(communication);
+                                CDEX.previewCommunication(comm);
+                                return false;
                             });
                         });
                     });
-
+                    $('#communication-request-screen-loader').hide();
                 });
             });
         });
@@ -337,9 +320,12 @@ if (!CDEX) {
         CDEX.displayDataRequestScreen();
         CDEX.addTypeSelection();
     });
-    $('#btn-add').click(CDEX.addTypeSelection);
+    $('#btn-add').click(() => {
+        CDEX.addTypeSelection();
+        return false;
+    });
     $('#btn-review').click(CDEX.displayReviewScreen);
-
+    $('#btn-start').click(CDEX.displayCommReqScreen);
     $('#btn-edit').click(CDEX.displayDataRequestScreen);
     $('#btn-submit').click(CDEX.reconcile);
     $('#btn-configuration').click(CDEX.displayConfigScreen);
@@ -378,5 +364,4 @@ if (!CDEX) {
     });
 
     FHIR.oauth2.ready(CDEX.initialize);
-
 }());
