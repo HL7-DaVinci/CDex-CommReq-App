@@ -1,5 +1,5 @@
 body {
-    margin: 20px;
+    margin-left: 20px;
 }
 
 .medtd {
@@ -28,7 +28,6 @@ td {
     height: 200px;
 }
 
-
 img {
     margin-right:10px;
     width: 66px;
@@ -37,12 +36,23 @@ img {
 .wine-row {
     display: flex;
     flex-direction: row;
-    height: 120px;
-    padding: 10px 0;
+    height: 80px;
 }
 
 .wine-text-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
+}
+
+#selection-query-list div.card{
+    margin-bottom: 5px;
+}
+
+.request-type {
+    font-weight: bold;
+}
+
+#review-lists {
+    width: 700px;
 }

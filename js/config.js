@@ -6,21 +6,21 @@ if (!CDEX) {
 (function () {
 
   CDEX.clientSettings = {
-    "client_id": "bed3bfd0-17d1-473f-90ac-c006fec5e9c9", //"4a7d2298-1c2d-463d-bf78-3a26d3312716",
+    "client_id": "bed3bfd0-17d1-473f-90ac-c006fec5e9c9",
     "scope"    : "patient/*.* openid profile"
   };
 
   CDEX.submitEndpoint = "/CommunicationRequest?_id=";
 
   CDEX.providerEndpoints = [{
-      "name": "DaVinci CDex Provider (Open)",
+      "name": "HSPC CDex Provider (Open)",
       "type": "open",
       "url": "https://api-v8-r4.hspconsortium.org/DaVinciCDexProvider/open"
   }
   ];
 
   CDEX.payerEndpoint = {
-      "name": "DaVinci CDex Payer (Open)",
+      "name": "HSPC CDex Payer (Open)",
       "type": "open",
       "url": "https://api-v8-r4.hspconsortium.org/DaVinciCDexPayer/open"
   };
@@ -30,46 +30,53 @@ if (!CDEX) {
   CDEX.providerEndpoint = CDEX.providerEndpoints[CDEX.configSetting];
 
    CDEX.scenarioDescription = {
-        "description" : "DESCRIPTION"
+        "description" : "Lorem ipsum dolor sit amet, consectetur adipiscing elit,\n" +
+            "            sed do eiusmod tempor incididunt ut labore et dolore magna\n" +
+            "            aliqua. Ut enim ad minim veniam, quis nostrud exercitation\n" +
+            "            ullamco laboris nisi ut aliquip ex ea commodo consequat.\n" +
+            "            Duis aute irure dolor in reprehenderit in voluptate velit\n" +
+            "            esse cillum dolore eu fugiat nulla pariatur. Excepteur sint\n" +
+            "            occaecat cupidatat non proident, sunt in culpa qui officia\n" +
+            "            deserunt mollit anim id est laborum."
    }
 
   CDEX.menu = {
       "DocRef": {
-          "name": "Structure Document Clinical Note Type",
-          "description": "Clinical Note Type",
+          "name": "Clinical Notes",
+          "description": "Type",
           "values": [
               {
-                  "name": "History and Physical Note",
+                  "name": "History and Physical Notes",
                   "generalCode": "34117-2"
               },
               {
-                  "name": "Progress Note",
+                  "name": "Progress Notes",
                   "generalCode": "11506-3"
               },
               {
-                  "name": "Referral Note",
+                  "name": "Referral Notes",
                   "generalCode": "57133-1"
               },
               {
-                  "name": "Consultation Note",
+                  "name": "Consultation Notes",
                   "generalCode": "11488-4"
               },
               {
-                  "name": "Procedure Note",
+                  "name": "Procedure Notes",
                   "generalCode": "28570-0"
               },
               {
-                  "name": "Care Plan",
+                  "name": "Care Plans",
                   "generalCode": "18776-5"
               },
               {
-                  "name": "Continuity of Care Document",
+                  "name": "Continuity of Care Documents",
                   "generalCode": "34133-9"
               }
           ],
         },
       "FHIRQuery": {
-          "name": "Structured Data Codes",
+          "name": "Structured Data",
           "description": "Request",
           "values": [
               {
@@ -112,7 +119,7 @@ if (!CDEX) {
       },
       "FreeText": {
           "name": "Free text",
-          "description": "Enter Text"
+          "description": "Request"
       }
 
   };

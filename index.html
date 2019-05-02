@@ -6,36 +6,35 @@
     <script src="lib/fhir-client-0.1.8.js"></script>
     <script src="lib/jquery-3.3.1.js"></script>
     <link href="css/bootstrap.css" rel="stylesheet">
-    <link href="css/bootstrap-toggle.css" rel="stylesheet">
-    <script src="lib/bootstrap-toggle.js"></script>
     <link href="css/custom.css" rel="stylesheet">
     <script src="js/config.js"></script>
 </head>
 <body>
 <div class="wine-row">
-    <img src="images/request.png" style="height:100px; width:150px">
-    <div class="wine-text-container"><h1>CDex Communication Request Application</h1></div>
+    <img src="images/request.png" style="height:80px; width:130px">
+    <div class="wine-text-container"><h1>CDex Communication Requests</h1></div>
 </div>
+
 <div id="intro-screen" class="card alert-info screen">
     <div class="card-body">
         <h5 class="card-title">Scenario Description</h5>
         <p class='card-text' id='scenario-intro'></p>
-        <a href="#" class="btn btn-primary" id="btn-start">Communication Requests</a>
+        <a href="#" class="btn btn-primary" id="btn-start">Proceed</a>
     </div>
 </div>
 <div id="communication-request-screen" class="screen">
-    <h3>Communication requests for <span id="commRes-patient-name"></span></h3>
-
+    <h3>Patient: <span id="commRes-patient-name">[loading...]</span></h3>
     <div><p><div class='dvt'>
         <table class='table'>
             <thead>
-            <th>ID</th>
-            <th>Submit on</th>
-            <th>Communication Received</th>
+            <th>Request ID</th>
+            <th>Submitted on</th>
+            <th>Responses Received</th>
             </thead>
             <tbody id='comm-request-list'></tbody>
         </table>
     </div></p></div>
+    <div id='communication-request-screen-loader'><p>[loading...]</p></div>
     <button type="button" class="btn btn-primary" id="btn-create">New Request</button>
 </div>
 <div id="communication-screen" class="screen">
@@ -49,39 +48,36 @@
     </div>
 </div>
 <div id="data-request-screen" class="screen">
-    <h1>Data requests for <span id="patient-name"></span></h1>
+    <h3>Edit communication request (patient: <span id="patient-name"><p>[loading...]</p></span>)</h3>
 
     <div id="menu-request-list"><p><div class='dvt'>
         <div id='selection-query-list'></div>
     </div></p></div>
-    <div>
-    <button type="button" class="btn btn-secondary" id="btn-add">Add</button>
-    </div>
+    <div><a href='#' id="btn-add">Add request</a></div>
     <div><br>
-    <button type="button" class="btn btn-primary" id="btn-review">Review data requests</button>
+    <button type="button" class="btn btn-primary" id="btn-review">Review</button>
     </div>
 </div>
 <div id="review-screen" class="screen">
-    <h1>Data requests for <span id="review-name"></span></h1>
-    <div id="review-lists"><p><div class='dvt'>
-        <div id='final-list'></div>
+    <h3>Review communication request (patient: <span id="review-name"><p>[loading...]</p></span>)</h3>
+    <div class="alert-warning" id="review-lists"><p><div class='dvt'>
+        <ul id='final-list'></ul>
     </div></p></div>
     <div>
-        <button type="button" class="btn btn-secondary" id="btn-edit">Edit requests</button>
+        <button type="button" class="btn btn-secondary" id="btn-edit">Edit</button>
         <button type="button" class="btn btn-secondary" id="btn-configuration">Configure endpoint</button>
-        <button type="button" class="btn btn-primary" id="btn-submit">Submit communication request</button>
+        <button type="button" class="btn btn-primary" id="btn-submit">Submit</button>
     </div>
 </div>
 <div id="confirm-screen" class="card alert-info screen">
     <div class="card-body">
         <h5 class="card-title">Confirmation</h5>
-        <p class="card-text">Communication request sent to provider</p>
-        <p class="card-text">You can close this window now</p>
+        <p class="card-text">Communication request successfully sent to provider. You can close the application now.</p>
     </div>
 </div>
 <div id="config-screen" class="card alert-info screen">
     <div class="card-body">
-        <h5 class="card-title">CDex Endpoint Configuration</h5>
+        <h5 class="card-title">Provider Endpoint Configuration</h5>
         <p class='card-text'>
         <p>
             <select class='custom-select' id='config-select'></select>
