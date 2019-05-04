@@ -312,6 +312,7 @@ if (!CDEX) {
             CDEX.displayConfirmScreen();
             let promisePayer;
             promisePayer = $.ajax(configPayer);
+            console.log(CDEX.operationPayload);
             promisePayer.then(() => {
             }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the endpoint configuration <br> You can close this window now"));
         }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the submit endpoint configuration <br> You can close this window now"));
