@@ -14,6 +14,15 @@ if (!CDEX) {
         return date.toISOString();
     };
 
+    CDEX.getGUID = () => {
+        let s4 = () => {
+            return Math.floor((1 + Math.random()) * 0x10000)
+                .toString(16)
+                .substring(1);
+        };
+        return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+    }
+
     CDEX.displayPatient = (pt) => {
         $('#commRes-patient-name, #patient-name, #review-name').html(CDEX.getPatientName(pt));
     };
@@ -143,6 +152,11 @@ if (!CDEX) {
         let timestamp = CDEX.now();
         let communicationRequest = CDEX.operationPayload;
 
+        communicationRequest.id = CDEX.getGUID();
+        communicationRequest.contained[0].id = CDEX.getGUID();
+        communicationRequest.contained[0].identifier[0].system = CDEX.providerEndpoint.url;
+        communicationRequest.contained[0].identifier[0].value = CDEX.providerEndpoint.name;
+        communicationRequest.sender.reference = "#" + communicationRequest.contained[0].id;
         communicationRequest.authoredOn = timestamp;
         let payload = [];
         for(let idx = 0; idx < CDEX.index; idx++){
@@ -294,14 +308,14 @@ if (!CDEX) {
 
         let configProvider = {
             type: 'PUT',
-            url: CDEX.providerEndpoint.url + CDEX.submitEndpoint + CDEX.operationPayload.id + "$submit-data",
+            url: CDEX.providerEndpoint.url + CDEX.submitEndpoint + CDEX.operationPayload.id,
             data: JSON.stringify(CDEX.operationPayload),
             contentType: "application/fhir+json"
         };
 
         let configPayer = {
             type: 'PUT',
-            url: CDEX.payerEndpoint.url + CDEX.submitEndpoint + CDEX.operationPayload.id + "$submit-data",
+            url: CDEX.payerEndpoint.url + CDEX.submitEndpoint + CDEX.operationPayload.id,
             data: JSON.stringify(CDEX.operationPayload),
             contentType: "application/fhir+json"
         };

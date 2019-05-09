@@ -10,7 +10,7 @@ if (!CDEX) {
     "scope"    : "patient/*.* openid profile"
   };
 
-  CDEX.submitEndpoint = "/CommunicationRequest?_id=";
+  CDEX.submitEndpoint = "/CommunicationRequest/";
 
   CDEX.providerEndpoints = [{
       "name": "HSPC CDex Provider (Open)",
@@ -126,6 +126,17 @@ if (!CDEX) {
 
   CDEX.operationPayload = {
         "resourceType": "CommunicationRequest",
+        "contained": [
+            {
+                "resourceType": "Organization",
+                "id": "ORGANIZATIONID",
+                "identifier": [
+                    {
+                        "system": "SYSTEMURL",
+                        "value": "SYSTEMNAME"
+                    }
+                ]
+            }],
         "id": "RESOURCE_ID",
         "meta": {
             "versionId": "1",
@@ -192,7 +203,7 @@ if (!CDEX) {
         }
     ],
         "sender": {
-        "reference": "Organization/DaVinci-CDEX-Payer"
+        "reference": "ORGANIZATIONID"
     }
 
   };
