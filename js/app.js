@@ -154,8 +154,8 @@ if (!CDEX) {
 
         communicationRequest.id = CDEX.getGUID();
         communicationRequest.contained[0].id = CDEX.getGUID();
-        communicationRequest.contained[0].identifier[0].system = CDEX.providerEndpoint.url;
-        communicationRequest.contained[0].identifier[0].value = CDEX.providerEndpoint.name;
+        communicationRequest.contained[0].identifier[0].system = CDEX.payerEndpoint.url;
+        communicationRequest.contained[0].identifier[0].value = CDEX.payerEndpoint.name;
         communicationRequest.sender.reference = "#" + communicationRequest.contained[0].id;
         communicationRequest.authoredOn = timestamp;
         let payload = [];

@@ -19,6 +19,7 @@ if (!CDEX) {
   }
   ];
 
+  //Change URL and Name if you want to change the destination of returned Communication to this CommunicationRequest
   CDEX.payerEndpoint = {
       "name": "HSPC CDex Payer (Open)",
       "type": "open",
@@ -211,7 +212,7 @@ if (!CDEX) {
     CDEX.extensionDocRef = {
         "extension": [
             {
-                "url": "URL", //"http://hl7.org/fhir/us/davinci-cdex/StructureDefinition/cdex-payload-clinical-note-type"
+                "url": "URL",
                 "valueCodeableConcept": {
                     "coding": [
                         {
