@@ -55,7 +55,7 @@ if (!CDEX) {
             comm.payload.forEach(function (content, index) {
                 if(comm.payload[index].extension) {
                     if (comm.payload[index].extension[0].valueString) {
-                        resources.queries.push(comm.payload[index].extension[0]);
+                        resources.queries.push(comm.payload[index]);
                         console.log(comm.payload[index].extension[0]);
                     }else if(comm.payload[index].extension[0].valueCodeableConcept){
                         let key = comm.payload[index].extension[0].valueCodeableConcept.coding[0].code;
@@ -76,7 +76,7 @@ if (!CDEX) {
             if (resources.docRef[code]) {
                 CDEX.menu.DocRef.values.forEach(function(loincCode){
                     if(loincCode.generalCode === code){
-                        table += "<table><thead><th>" + loincCode.name +
+                        table += "<table class='table'><thead><th>" + loincCode.name +
                             "</th></thead><tbody>";
                     }
                 });
@@ -86,9 +86,11 @@ if (!CDEX) {
                 table += "</tbody></table>";
             }
         }
-        // resources.queries.forEach(function(query){
-        //     table += "<tr><td></td></tr>";
-        // })
+        resources.queries.forEach(function(query){
+            table += "<table class='table'><tbody><tr><td><h5>" + query.extension[0].valueString +
+                "</h5></td></tr><tr><td>" + JSON.stringify(atob(query.contentAttachment.data)) + "</td></tr></tbody></table>";
+        });
+
         $('#resources-list').append(table);
     }
 
