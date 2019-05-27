@@ -29,6 +29,8 @@ if (!CDEX) {
 
     CDEX.displayScreen = (screenID) => {
         $('#intro-screen').hide();
+        $('#preview-communication-screen').hide();
+        $('#preview-screen').hide();
         $('#data-request-screen').hide();
         $('#review-screen').hide();
         $('#confirm-screen').hide();
@@ -39,6 +41,118 @@ if (!CDEX) {
 
     CDEX.displayIntroScreen = () => {
         CDEX.displayScreen('intro-screen');
+    }
+
+    CDEX.displayPreviewCommunicationScreen = (comm) => {
+        CDEX.displayScreen('preview-communication-screen');
+
+        let resources = {
+            "docRef" : {},
+            "queries" : []
+        }
+
+        if(comm.payload){
+            comm.payload.forEach(function (content, index) {
+                if(comm.payload[index].extension) {
+                    if (comm.payload[index].extension[0].valueString) {
+                        resources.queries.push(comm.payload[index].extension[0]);
+                        console.log(comm.payload[index].extension[0]);
+                    }else if(comm.payload[index].extension[0].valueCodeableConcept){
+                        let key = comm.payload[index].extension[0].valueCodeableConcept.coding[0].code;
+                        if((key in resources.docRef)){
+                            resources.docRef[key].push(comm.payload[index]);
+                        }else{
+                            resources.docRef[key] = [];
+                            resources.docRef[key].push(comm.payload[index]);
+                        }
+                    }
+                }
+            });
+            console.log(resources);
+        }
+
+        let table = "";
+        for (let code in resources.docRef) {
+            if (resources.docRef[code]) {
+                CDEX.menu.DocRef.values.forEach(function(loincCode){
+                    if(loincCode.generalCode === code){
+                        table += "<table><thead><th>" + loincCode.name +
+                            "</th></thead><tbody>";
+                    }
+                });
+                resources.docRef[code].forEach(function(resource){
+                    table += "<tr><td>" + CDEX.openPreview(resource) + "</td></tr>";
+                })
+                table += "</tbody></table>";
+            }
+        }
+        // resources.queries.forEach(function(query){
+        //     table += "<tr><td></td></tr>";
+        // })
+        $('#resources-list').append(table);
+    }
+
+
+
+    CDEX.openPreview = (docRef) => {
+        let attachment = docRef.contentAttachment;
+
+        const displayBlob = (blob) => {
+            const blobUrl = URL.createObjectURL(blob);
+            const blobType = blob.type;
+            return "<p><object data='" + blobUrl + "' type='" + blobType + "' width='100%' height='600px' /></p>";
+        }
+
+        // based on https://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript
+        const b64toBlob = (b64Data, contentType='', sliceSize=512) => {
+            const byteCharacters = atob(b64Data);
+            const byteArrays = [];
+
+            for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+                const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+                const byteNumbers = new Array(slice.length);
+                for (let i = 0; i < slice.length; i++) {
+                    byteNumbers[i] = slice.charCodeAt(i);
+                }
+
+                const byteArray = new Uint8Array(byteNumbers);
+                byteArrays.push(byteArray);
+            }
+
+            const blob = new Blob(byteArrays, {type: contentType});
+            return blob;
+        }
+
+        if (attachment.contentType === "application/pdf") {
+            if (attachment.data.startsWith('%')) {
+                const blob = new Blob([attachment.data], {type: "application/pdf"});
+                return displayBlob(blob);
+            } else if (attachment.data) {
+                const blob = b64toBlob(attachment.data, "application/pdf");
+                return displayBlob(blob);
+            }
+        }
+        else if(attachment.contentType === "application/hl7-v3+xml"){
+            const blob = b64toBlob(attachment.data, "application/hl7-v3+xml");
+            return displayBlob(blob);
+        }else if(attachment.contentType === "application/fhir+xml"){
+            let bundle = JSON.parse(atob(attachment.data));
+            result = "";
+            bundle.entry.forEach(function (content) {
+                if (content.resource.text) {
+                    result += content.resource.text.div ;
+                }
+            });
+            return result;
+        }
+    };
+
+
+
+
+    CDEX.displayPreviewScreen = () => {
+        CDEX.displayScreen('preview-screen');
     }
 
     CDEX.displayCommReqScreen = () => {
@@ -202,11 +316,6 @@ if (!CDEX) {
         CDEX.operationPayload = communicationRequest;
     }
 
-    CDEX.previewCommunication = (communication) => {
-        // TODO: render communication sensibly on screen
-        alert (JSON.stringify(communication, null, '  '));
-    }
-
     CDEX.formatDate = (date) => {
         // TODO: implement a more sensible screen date formatter that uses an ISO date parser and translates to local time
         const d = date.split('T');
@@ -258,7 +367,7 @@ if (!CDEX) {
                             const idButton = "COMM-" + comm.id;
                             $('#'+reqTagID).append("<div><a href='#' id='" + idButton + "'>" + CDEX.formatDate(comm.sent) + "</a></div>");
                             $('#' + idButton).click(() => {
-                                CDEX.previewCommunication(comm);
+                                CDEX.displayPreviewCommunicationScreen(comm);
                                 return false;
                             });
                         });
