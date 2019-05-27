@@ -361,7 +361,7 @@ if (!CDEX) {
                     reqs.push(a);
                 }
                 Promise.all(reqs.map((r)=>r.promise)).then(()=>{
-                    reqs.sort((a,b) => a.commReq.authoredOn > b.commReq.authoredOn).forEach((c) => {
+                    reqs.sort((a,b) => (a.commReq.authoredOn > b.commReq.authoredOn) ? 1 : ((b.commReq.authoredOn > a.commReq.authoredOn) ? -1 : 0)).forEach((c) => {
                         const reqTagID = 'REQ-' + c.commReq.id;
                         const out = "<tr><td>" + c.commReq.id + "</td><td>" + CDEX.formatDate(c.commReq.authoredOn) + "</td><td id='" + reqTagID + "'></td></tr>";
                         $('#comm-request-list').append(out);
