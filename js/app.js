@@ -292,7 +292,7 @@ if (!CDEX) {
                                                 "code": "CODE"}]}}],
                             "contentString": ""};
                         payload[idx].extension[0].valueCodeableConcept.coding[0].code = secondaryType.generalCode;
-                        payload[idx].contentString = secondaryType.name + "s";
+                        payload[idx].contentString = secondaryType.name;
 
                     }
                 });
