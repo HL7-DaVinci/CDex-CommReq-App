@@ -82,8 +82,20 @@ if (!CDEX) {
             }
         }
         resources.queries.forEach(function(query){
-            table += "<table class='table'><tbody><tr><td><h5>" + query.extension[0].valueString +
-                "</h5></td></tr><tr><td>" + JSON.stringify(atob(query.contentAttachment.data)) + "</td></tr></tbody></table>";
+            const decoded = JSON.parse(atob(query.contentAttachment.data));
+            let result = "";
+            if(decoded[0]){
+                result = decoded[0].resource.type.coding[0].display;
+            }else{
+                result = atob(query.contentAttachment.data).replace("//", "/");
+            }
+            CDEX.menu.FHIRQuery.values.forEach(function (fhirQuery) {
+                let queryString = fhirQuery.FHIRQueryString.replace("[this patient's id]", CDEX.patient.id);
+                if(queryString === query.extension[0].valueString){
+                    table += "<table class='table'><tbody><tr><td><h5>" + fhirQuery.name + "</h5></td></tr>";
+                }
+            })
+            table += "<tr><td>" + result + "</td></tr></tbody></table>";
         });
 
         $('#resources-list').append(table);
