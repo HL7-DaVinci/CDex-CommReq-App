@@ -6,7 +6,7 @@ if (!CDEX) {
 (function () {
 
   CDEX.clientSettings = {
-    "client_id": "bed3bfd0-17d1-473f-90ac-c006fec5e9c9", //"4a7d2298-1c2d-463d-bf78-3a26d3312716", //
+    "client_id": "bed3bfd0-17d1-473f-90ac-c006fec5e9c9",
     "scope"    : "patient/*.* openid profile"
   };
 
@@ -15,7 +15,7 @@ if (!CDEX) {
   CDEX.providerEndpoints = [{
       "name": "HSPC CDex Provider (Open)",
       "type": "open",
-      "url": "https://api-v8-r4.hspconsortium.org/DaVinciCDexProvider/open"
+      "url": "https://api.logicahealth.org/DaVinciCDexProvider/open"
   }
   ];
 
@@ -23,7 +23,7 @@ if (!CDEX) {
   CDEX.payerEndpoint = {
       "name": "HSPC CDex Payer (Open)",
       "type": "open",
-      "url": "https://api-v8-r4.hspconsortium.org/DaVinciCDexPayer/open"
+      "url": "https://api.logicahealth.org/DaVinciCDexPayer/open"
   };
 
   // default configuration
