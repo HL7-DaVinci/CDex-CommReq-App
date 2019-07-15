@@ -198,15 +198,12 @@ if (!CDEX) {
         "requester": {
             "reference": "Practitioner/cdex-example-practitioner"
         },
-        "recipient": [
-        {
-            "reference": "Organization/cdex-example-provider"
-        }
-    ],
         "sender": {
-        "reference": "ORGANIZATIONID"
-    }
-
+            "reference": "Organization/cdex-example-provider"
+        },
+        "recipient": [{
+            "reference": "ORGANIZATIONID"
+        }]
   };
 
     CDEX.extensionDocRef = {

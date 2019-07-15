@@ -267,7 +267,7 @@ if (!CDEX) {
         communicationRequest.contained[0].id = CDEX.getGUID();
         communicationRequest.contained[0].identifier[0].system = CDEX.payerEndpoint.url;
         communicationRequest.contained[0].identifier[0].value = CDEX.payerEndpoint.name;
-        communicationRequest.sender.reference = "#" + communicationRequest.contained[0].id;
+        communicationRequest.recipient[0].reference = "#" + communicationRequest.contained[0].id;
         communicationRequest.authoredOn = timestamp;
 
         for(let idx = 0; idx < CDEX.index; idx++){
