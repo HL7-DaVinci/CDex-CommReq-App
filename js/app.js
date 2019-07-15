@@ -446,6 +446,7 @@ if (!CDEX) {
     });
     $('#btn-review').click(CDEX.displayReviewScreen);
     $('#btn-start').click(CDEX.displayCommReqScreen);
+    $('#btn-back').click(CDEX.displayCommReqScreen);
     $('#btn-edit').click(CDEX.displayDataRequestScreen);
     $('#btn-submit').click(CDEX.reconcile);
     $('#btn-configuration').click(CDEX.displayConfigScreen);
