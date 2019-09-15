@@ -184,6 +184,14 @@ if (!CDEX) {
             let out = "<li><span class='request-type'>"+primaryTypeSelected+":</span> <span>"+((primaryTypeSelected === CDEX.menu.FreeText.name)?secondaryFreeText:secondaryTypeSelected)+"</span></li>";
             $('#final-list').append(out);
         }
+        CDEX.addToPayload();
+        let operationPayload = CDEX.operationPayload;
+        $('#final-details-list').empty();
+        let sendingInfo = "<li>Requester: " + operationPayload.requester.reference + "</li>" +
+            "            <li>Sender: " + operationPayload.sender.reference + "</li>" +
+            "            <li>Recipient: " + operationPayload.contained[0].resourceType + "/" + operationPayload.contained[0].id + "</li>";
+        $('#final-details-list').append(sendingInfo);
+
         CDEX.displayScreen('review-screen');
     }
 
@@ -377,13 +385,11 @@ if (!CDEX) {
     };
 
     CDEX.reconcile = () => {
-
         $('#discharge-selection').hide();
         CDEX.disable('btn-submit');
         CDEX.disable('btn-edit');
         $('#btn-submit').html("<i class='fa fa-circle-o-notch fa-spin'></i> Submit Communication Request");
 
-        CDEX.addToPayload();
         CDEX.finalize();
     };
 
@@ -426,6 +432,8 @@ if (!CDEX) {
         promiseProvider = $.ajax(configProvider);
 
         promiseProvider.then(() => {
+            $('#request-id').empty();
+            $('#request-id').append("<p><strong>Request ID:</strong> " + CDEX.operationPayload.id + "</p>");
             CDEX.displayConfirmScreen();
 
             let promisePayer;
