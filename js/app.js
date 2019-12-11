@@ -98,7 +98,7 @@ if (!CDEX) {
             table += "<tr><td>" + result + "</td></tr></tbody></table>";
         });
 
-        $('#resources-list').append(table);
+        $('#resources-list').html(table);
     }
 
 
