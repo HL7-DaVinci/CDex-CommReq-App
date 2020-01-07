@@ -31,14 +31,16 @@ if (!CDEX) {
   CDEX.providerEndpoint = CDEX.providerEndpoints[CDEX.configSetting];
 
    CDEX.scenarioDescription = {
-        "description" : "Lorem ipsum dolor sit amet, consectetur adipiscing elit,\n" +
-            "            sed do eiusmod tempor incididunt ut labore et dolore magna\n" +
-            "            aliqua. Ut enim ad minim veniam, quis nostrud exercitation\n" +
-            "            ullamco laboris nisi ut aliquip ex ea commodo consequat.\n" +
-            "            Duis aute irure dolor in reprehenderit in voluptate velit\n" +
-            "            esse cillum dolore eu fugiat nulla pariatur. Excepteur sint\n" +
-            "            occaecat cupidatat non proident, sunt in culpa qui officia\n" +
-            "            deserunt mollit anim id est laborum."
+        "description" : "In this scenario, the user works for a payer and wishes to\n" +
+            "            request clinical data from the provider to support\n" +
+            "            a post-payment audit. In the next screens, the user\n" +
+            "            will select clinical documents, specific clinical\n" +
+            "            data, or create a general information request that\n" +
+            "            will be sent to and fulfilled by the provider. The\n" +
+            "            selection options are examples and not wholly representative\n" +
+            "            of all therequested  data available. Data that can be\n" +
+            "            represented in FHIR and supported by the provider system\n" +
+            "            could be created using the CDex approach."
    }
 
   CDEX.menu = {
