@@ -98,6 +98,7 @@ if (!CDEX) {
             table += "<tr><td>" + result + "</td></tr></tbody></table>";
         });
 
+        if (table.length === 0) table = "<h4>No content found in communication</h4>"
         $('#resources-list').html(table);
     }
 
