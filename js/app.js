@@ -84,7 +84,7 @@ if (!CDEX) {
         resources.queries.forEach(function(query){
             const decoded = JSON.parse(atob(query.contentAttachment.data));
             let result = "";
-            if(decoded[0]){
+            if(decoded[0] && decoded[0].resource.type){
                 result = decoded[0].resource.type.coding[0].display;
             }else{
                 result = atob(query.contentAttachment.data).replace("//", "/");
