@@ -46,61 +46,35 @@ if (!CDEX) {
     CDEX.displayPreviewCommunicationScreen = (comm) => {
         CDEX.displayScreen('preview-communication-screen');
 
-        /*
         let resources = {
-            "docRef" : {},
+            "docRefs" : [],
             "queries" : []
         }
-        */
-
-        /*
-        comm.forEach(function (content, index) {
-            if(comm.payload[index].extension) {
-                if (comm.payload[index].extension[0].valueString) {
-                    resources.queries.push(comm.payload[index]);
-                }else if(comm.payload[index].extension[0].valueCodeableConcept){
-                    let key = comm.payload[index].extension[0].valueCodeableConcept.coding[0].code;
-                    if((key in resources.docRef)){
-                        resources.docRef[key].push(comm.payload[index]);
-                    }else{
-                        resources.docRef[key] = [comm.payload[index]];
-                    }
-                }
-            }
-        });
-        */
 
         let table = "";
-        comm.forEach ((resource) => {
+
+        comm.forEach(function (content, index) {
+            if(content.resourceType === "DocumentReference") {
+                resources.docRefs.push(content);
+            } else {
+                resources.queries.push(content);
+            }
+        });
+        
+        resources.docRefs.forEach ((resource) => {
                 table += "<table class='table'><thead><th>Document</th></thead><tbody>";
                 table += "<tr><td>" + CDEX.openPreview(resource) + "</td></tr>";
                 table += "</tbody></table>";
         });
 
-        /*
-        resources.queries.forEach(function(query){
-            const decoded = JSON.parse(atob(query.contentAttachment.data));
-            let result = "";
-            if(decoded[0] && decoded[0].resource.type){
-                result = decoded[0].resource.type.coding[0].display;
-            }else{
-                result = atob(query.contentAttachment.data).replace("//", "/");
-            }
-            CDEX.menu.FHIRQuery.values.forEach(function (fhirQuery) {
-                let queryString = fhirQuery.FHIRQueryString.replace("[this patient's id]", CDEX.patient.id);
-                if(queryString === query.extension[0].valueString){
-                    table += "<table class='table'><tbody><tr><td><h5>" + fhirQuery.name + "</h5></td></tr>";
-                }
-            })
-            table += "<tr><td>" + result + "</td></tr></tbody></table>";
+        resources.queries.forEach ((resource) => {
+            table += "<table class='table'><tbody><tr><td><h5>Resource</h5></td></tr>";
+            table += "<tr><td><pre>" + JSON.stringify(resource, null, "  ") + "</pre></td></tr></tbody></table>";
         });
-        */
 
         if (table.length === 0) table = "<h4>No content found in communication</h4>"
         $('#resources-list').html(table);
     }
-
-
 
     CDEX.openPreview = (docRef) => {
         let attachment = docRef.content[0].attachment;
