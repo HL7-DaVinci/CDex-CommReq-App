@@ -11,6 +11,7 @@ if (!CDEX) {
   };
 
   CDEX.submitEndpoint = "/CommunicationRequest/";
+  CDEX.submitTaskEndpoint = "/Task/";
 
   CDEX.providerEndpoints = [{
       "name": "HSPC CDex Provider (Open)",
@@ -128,115 +129,97 @@ if (!CDEX) {
   };
 
   CDEX.operationPayload = {
-        "resourceType": "CommunicationRequest",
-        "contained": [
-            {
-                "resourceType": "Organization",
-                "id": "ORGANIZATIONID",
-                "identifier": [
-                    {
-                        "system": "SYSTEMURL",
-                        "value": "SYSTEMNAME"
-                    }
-                ]
-            }],
-        "id": "RESOURCE_ID",
-        "meta": {
-            "versionId": "1",
-        },
-        "text": {
-            "status": "generated",
-            "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Request for Condition resources</div>"
-        },
-        "identifier": [
-            {
-                "system": "http://www.jurisdiction.com/insurer/123456",
-                "value": "ABC123"
-            }
-        ],
-        "groupIdentifier": {
-        "value": "12345"
-        },
-        "status": "active",
-        "category": [
+    "resourceType": "CommunicationRequest",
+    "contained": [
         {
-            "coding": [
-                    {
-                        "system": "http://acme.org/messagetypes",
-                        "code": "SolicitedAttachmentRequest"
-                    }
-                ]
-            }
-        ],
-        "priority": "routine",
-        "medium": [
-        {
-                "coding": [
-                    {
-                        "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationMode",
-                        "code": "WRITTEN",
-                        "display": "written"
-                    }
-                ],
-                "text": "written"
-            }
-        ],
-        "subject": {
-            "reference": "Patient/cdex-example-patient"
-         },
-        "about": [
-            {
-                "reference": "Claim/cdex-example-claim"
-            }
-        ],
-        "encounter": {
-            "reference": "Encounter/cdex-example-encounter"
-        },
-          "payload": [
-
-          ],
-        "occurrenceDateTime": "2016-06-10T11:01:10-08:00",
-        "authoredOn": "TIMESTAMP",
-        "requester": {
-            "reference": "Practitioner/cdex-example-practitioner"
-        },
-        "sender": {
-            "reference": "Organization/cdex-example-provider"
-        },
-        "recipient": [{
-            "reference": "ORGANIZATIONID"
-        }]
+            "resourceType": "Organization",
+            "id": "ORGANIZATIONID",
+            "identifier": [
+                {
+                    "system": "SYSTEMURL",
+                    "value": "SYSTEMNAME"
+                }
+            ]
+        }],
+    "id": "RESOURCE_ID",
+    "status": "active",
+    "priority": "routine",
+    "subject": {
+        "reference": "Patient/cdex-example-patient"
+     },
+    "authoredOn": "TIMESTAMP",
+    "recipient": [{
+        "reference": "ORGANIZATIONID"
+    }]
   };
 
-    CDEX.extensionDocRef = {
-        "extension": [
-            {
-                "url": "URL",
-                "valueCodeableConcept": {
-                    "coding": [
-                        {
-                            "system": "http://loinc.org",
-                            "code": "CODE"
-                        }
-                    ]
+  CDEX.taskPayload = {
+    "resourceType": "Task",
+    "id": "RESOURCEID",
+    "basedOn": [
+      {
+        "reference": "Claim/cdex-example-claim"
+      }
+    ],
+    "status": "requested",
+    "intent": "order",
+    "code": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/us/davinci-hrex/CodeSystem/hrex-temp",
+            "code": "data-request"
+          }
+        ]
+    },
+    "for": {
+      "reference": "Patient/cdex-example-patient"
+    },
+    "authoredOn": "TIMESTAMP",
+    "lastModified": "TIMESTAMP",
+    "requester": {
+      "reference": "Organization/cdex-example-payer"
+    },
+    "owner": {
+      "reference": "Organization/cdex-example-payer"
+    },
+    "reasonCode": {
+        "text": "Support prior authorization decision-making"
+    },
+    "reasonReference": {
+        "reference": "Claim/cdex-example-claim"
+    },
+    "input": []
+  };
+
+  CDEX.extensionDocRef = {
+        "type": {
+            "coding": [
+                {
+                "system": "http://hl7.org/fhir/us/davinci-hrex/CodeSystem/hrex-temp",
+                "code": "data-code"
                 }
-            }
-        ],
-        "contentString": "CONTENT"
-    };
+            ]
+        },
+        "valueCodeableConcept": {
+            "coding": [
+                {
+                "system": "http://loinc.org",
+                "code": "CODE"
+                }
+            ]
+        }
+  };
 
   CDEX.extensionQuery = {
-        "extension": [
+        "type": {
+          "coding": [
             {
-                "url": "http://hl7.org/fhir/us/davinci-cdex/StructureDefinition/cdex-payload-query-string",
-                "valueString": "VALUE_STRING"
+              "system": "http://hl7.org/fhir/us/davinci-hrex/CodeSystem/hrex-temp",
+              "code": "data-query"
             }
-        ],
-        "contentString": "CONTENT"
-    };
-
-    CDEX.contentString = {
-        "contentString": "CONTENT"
-    };
+          ]
+        },
+        "valueString": "VALUE_STRING"
+  };
 
 }());

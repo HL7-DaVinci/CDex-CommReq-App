@@ -46,41 +46,38 @@ if (!CDEX) {
     CDEX.displayPreviewCommunicationScreen = (comm) => {
         CDEX.displayScreen('preview-communication-screen');
 
+        /*
         let resources = {
             "docRef" : {},
             "queries" : []
         }
+        */
 
-        if(comm.payload){
-            comm.payload.forEach(function (content, index) {
-                if(comm.payload[index].extension) {
-                    if (comm.payload[index].extension[0].valueString) {
-                        resources.queries.push(comm.payload[index]);
-                    }else if(comm.payload[index].extension[0].valueCodeableConcept){
-                        let key = comm.payload[index].extension[0].valueCodeableConcept.coding[0].code;
-                        if((key in resources.docRef)){
-                            resources.docRef[key].push(comm.payload[index]);
-                        }else{
-                            resources.docRef[key] = [comm.payload[index]];
-                        }
+        /*
+        comm.forEach(function (content, index) {
+            if(comm.payload[index].extension) {
+                if (comm.payload[index].extension[0].valueString) {
+                    resources.queries.push(comm.payload[index]);
+                }else if(comm.payload[index].extension[0].valueCodeableConcept){
+                    let key = comm.payload[index].extension[0].valueCodeableConcept.coding[0].code;
+                    if((key in resources.docRef)){
+                        resources.docRef[key].push(comm.payload[index]);
+                    }else{
+                        resources.docRef[key] = [comm.payload[index]];
                     }
                 }
-            });
-        }
-        let table = "";
-        for (let code in resources.docRef) {
-            if (resources.docRef[code]) {
-                CDEX.menu.DocRef.values.forEach(function(loincCode){
-                    if(loincCode.generalCode === code){
-                        table += "<table class='table'><thead><th>" + loincCode.name + "</th></thead><tbody>";
-                    }
-                });
-                resources.docRef[code].forEach(function(resource){
-                    table += "<tr><td>" + CDEX.openPreview(resource) + "</td></tr>";
-                })
-                table += "</tbody></table>";
             }
-        }
+        });
+        */
+
+        let table = "";
+        comm.forEach ((resource) => {
+                table += "<table class='table'><thead><th>Document</th></thead><tbody>";
+                table += "<tr><td>" + CDEX.openPreview(resource) + "</td></tr>";
+                table += "</tbody></table>";
+        });
+
+        /*
         resources.queries.forEach(function(query){
             const decoded = JSON.parse(atob(query.contentAttachment.data));
             let result = "";
@@ -97,6 +94,7 @@ if (!CDEX) {
             })
             table += "<tr><td>" + result + "</td></tr></tbody></table>";
         });
+        */
 
         if (table.length === 0) table = "<h4>No content found in communication</h4>"
         $('#resources-list').html(table);
@@ -105,7 +103,7 @@ if (!CDEX) {
 
 
     CDEX.openPreview = (docRef) => {
-        let attachment = docRef.contentAttachment;
+        let attachment = docRef.content[0].attachment;
 
         const displayBlob = (blob) => {
             const blobUrl = URL.createObjectURL(blob);
@@ -186,13 +184,7 @@ if (!CDEX) {
             $('#final-list').append(out);
         }
         CDEX.addToPayload();
-        let operationPayload = CDEX.operationPayload;
         $('#final-details-list').empty();
-        let sendingInfo = "<li>Requester: " + operationPayload.requester.reference + "</li>" +
-            "            <li>Sender: " + operationPayload.sender.reference + "</li>" +
-            "            <li>Recipient: " + operationPayload.contained[0].resourceType + "/" + operationPayload.contained[0].id + "</li>";
-        $('#final-details-list').append(sendingInfo);
-
         CDEX.displayScreen('review-screen');
     }
 
@@ -270,14 +262,16 @@ if (!CDEX) {
     CDEX.addToPayload = () => {
         let timestamp = CDEX.now();
         let communicationRequest = CDEX.operationPayload;
+        let task = CDEX.taskPayload;
         let payload = [];
 
         communicationRequest.id = CDEX.getGUID();
         communicationRequest.contained[0].id = CDEX.getGUID();
-        communicationRequest.contained[0].identifier[0].system = CDEX.payerEndpoint.url;
-        communicationRequest.contained[0].identifier[0].value = CDEX.payerEndpoint.name;
+        communicationRequest.contained[0].identifier[0].system = CDEX.providerEndpoint.url;
+        communicationRequest.contained[0].identifier[0].value = CDEX.providerEndpoint.name;
         communicationRequest.recipient[0].reference = "#" + communicationRequest.contained[0].id;
         communicationRequest.authoredOn = timestamp;
+        CDEX.operationPayload = communicationRequest;
 
         for(let idx = 0; idx < CDEX.index; idx++){
             const primaryTypeSelected = $("#typeId" + idx).find(":selected").text();
@@ -287,29 +281,20 @@ if (!CDEX) {
             if(primaryTypeSelected === CDEX.menu.DocRef.name) {
                 CDEX.menu.DocRef.values.forEach((secondaryType) => {
                     if(secondaryType.name === secondaryTypeSelected) {
-                        payload[idx] = {
-                            "extension": [{
-                                    "url": "http://hl7.org/fhir/us/davinci-cdex/StructureDefinition/cdex-payload-clinical-note-type",
-                                    "valueCodeableConcept": {
-                                        "coding": [{
-                                                "system": "http://loinc.org",
-                                                "code": "CODE"}]}}],
-                            "contentString": ""};
-                        payload[idx].extension[0].valueCodeableConcept.coding[0].code = secondaryType.generalCode;
-                        payload[idx].contentString = secondaryType.name;
+                        payload[idx] = {};
+                        Object.assign(payload[idx], CDEX.extensionDocRef);
+                        payload[idx].valueCodeableConcept.coding[0].code = secondaryType.generalCode;
+                        //payload[idx].contentString = secondaryType.name;
                     }
                 });
             }else if(primaryTypeSelected === CDEX.menu.FHIRQuery.name){
                 CDEX.menu.FHIRQuery.values.forEach((secondaryType) => {
                     if(secondaryType.name === secondaryTypeSelected) {
                         let queryString = secondaryType.FHIRQueryString.replace("[this patient's id]", CDEX.patient.id);
-                        payload[idx] = {"extension": [{
-                                    "url": "http://hl7.org/fhir/us/davinci-cdex/StructureDefinition/cdex-payload-query-string",
-                                    "valueString": "VALUE_STRING"}],
-                                    "contentString": "CONTENT"
-                        };
-                        payload[idx].extension[0].valueString = queryString;
-                        payload[idx].contentString = secondaryType.name;
+                        payload[idx] = {};
+                        Object.assign(payload[idx], CDEX.extensionQuery);
+                        payload[idx].valueString = queryString;
+                        //payload[idx].contentString = secondaryType.name;
                     }
                 });
             }else if(primaryTypeSelected === CDEX.menu.FreeText.name){
@@ -317,8 +302,12 @@ if (!CDEX) {
                 payload[idx].contentString = secondaryFreeText;
             }
         }
-        communicationRequest.payload = payload;
-        CDEX.operationPayload = communicationRequest;
+
+        task.id = communicationRequest.id;
+        task.authoredOn = timestamp;
+        task.lastModified = timestamp;
+        task.input = payload;
+        CDEX.taskPayload = task;
     }
 
     CDEX.formatDate = (date) => {
@@ -351,14 +340,19 @@ if (!CDEX) {
                             commReq: commReq
                         };
                         a.promise = (async () => {
-                            a.communications = await CDEX.client.api.fetchAll(
-                                {
-                                    type: "Communication",
-                                    query: {
-                                        'based-on' : commReq.id
-                                    }
+                            let conf = {
+                                type: 'GET',
+                                url: commReq.contained[0].identifier[0].system + CDEX.submitTaskEndpoint + commReq.id,
+                                contentType: "application/fhir+json"
+                            };
+
+                            let result = await $.ajax(conf);
+                            a.status = result.status;
+                            if (a.status === "completed") {
+                                if (result.contained[0].entry) {
+                                    a.comm = result.contained[0].entry.map((e) => e.resource);
                                 }
-                            );
+                            }
                         })();
                         reqs.push(a);
                     }
@@ -367,14 +361,17 @@ if (!CDEX) {
                             const reqTagID = 'REQ-' + c.commReq.id;
                             const out = "<tr><td>" + c.commReq.id + "</td><td>" + CDEX.formatDate(c.commReq.authoredOn) + "</td><td id='" + reqTagID + "'></td></tr>";
                             $('#comm-request-list').append(out);
-                            c.communications.sort((a,b) => a.sent > b.sent).forEach((comm) => {
-                                const idButton = "COMM-" + comm.id;
-                                $('#'+reqTagID).append("<div><a href='#' id='" + idButton + "'>" + CDEX.formatDate(comm.sent) + "</a></div>");
+
+                            if (c.status === "completed") {
+                                const idButton = "COMM-" + c.commReq.id;
+                                $('#'+reqTagID).append("<div><a href='#' id='" + idButton + "'>" + c.status + "</a></div>");
                                 $('#' + idButton).click(() => {
-                                    CDEX.displayPreviewCommunicationScreen(comm);
+                                    CDEX.displayPreviewCommunicationScreen(c.comm);
                                     return false;
                                 });
-                            });
+                            } else {
+                                $('#'+reqTagID).append("<div>" + c.status + "</div>");
+                            }
                         });
                         $('#communication-request-screen-loader').hide();
                     });
@@ -418,8 +415,8 @@ if (!CDEX) {
 
         let configProvider = {
             type: 'PUT',
-            url: CDEX.providerEndpoint.url + CDEX.submitEndpoint + CDEX.operationPayload.id,
-            data: JSON.stringify(CDEX.operationPayload),
+            url: CDEX.providerEndpoint.url + CDEX.submitTaskEndpoint + CDEX.taskPayload.id,
+            data: JSON.stringify(CDEX.taskPayload),
             contentType: "application/fhir+json"
         };
 
@@ -434,14 +431,13 @@ if (!CDEX) {
 
         promiseProvider.then(() => {
             $('#request-id').empty();
-            $('#request-id').append("<p><strong>Request ID:</strong> " + CDEX.operationPayload.id + "</p>");
+            $('#request-id').append("<p><strong>Request ID:</strong> " + CDEX.taskPayload.id + "</p>");
             CDEX.displayConfirmScreen();
 
             let promisePayer;
             promisePayer = $.ajax(configPayer);
-            console.log(CDEX.operationPayload);
-            promisePayer.then(() => {
-            }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the endpoint configuration <br> You can close this window now"));
+            console.log(CDEX.taskPayload);
+            promisePayer.then(() => {}, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the endpoint configuration <br> You can close this window now"));
         }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the submit endpoint configuration <br> You can close this window now"));
     };
 
