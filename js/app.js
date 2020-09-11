@@ -298,43 +298,37 @@ if (!CDEX) {
                         }
                     }
                 ).then(function (commRequests) {
-                    let reqs = [];
+                    let promises = [];
                     for (let commReq of commRequests) {
-                        const a = {
-                            commReq: commReq
-                        };
-                        a.promise = (async () => {
+                        const url = commReq.contained[0].identifier[0].system + CDEX.submitTaskEndpoint + commReq.id;
+                        const promise = (async () => {
                             let conf = {
                                 type: 'GET',
-                                url: commReq.contained[0].identifier[0].system + CDEX.submitTaskEndpoint + commReq.id,
+                                url: url,
                                 contentType: "application/fhir+json"
                             };
-
-                            let result = await $.ajax(conf);
-                            a.status = result.status;
-                            if (a.status === "completed") {
-                                if (result.contained[0].entry) {
-                                    a.comm = result.contained[0].entry.map((e) => e.resource);
-                                }
-                            }
+                            let task = await $.ajax(conf);
+                            return {url: url, task: task};
                         })();
-                        reqs.push(a);
+                        promises.push(promise);
                     }
-                    Promise.all(reqs.map((r)=>r.promise)).then(()=>{
-                        reqs.sort((a,b) => (a.commReq.authoredOn > b.commReq.authoredOn) ? 1 : ((b.commReq.authoredOn > a.commReq.authoredOn) ? -1 : 0)).forEach((c) => {
-                            const reqTagID = 'REQ-' + c.commReq.id;
-                            const out = "<tr><td>" + c.commReq.id + "</td><td>" + CDEX.formatDate(c.commReq.authoredOn) + "</td><td id='" + reqTagID + "'></td></tr>";
+                    Promise.all(promises).then((results)=>{
+                        results.sort((a,b) => (a.task.authoredOn > b.task.authoredOn) ? 1 : ((b.task.authoredOn > a.task.authoredOn) ? -1 : 0)).forEach((result) => {
+                            const task = result.task;
+                            const url = result.url;
+                            const reqTagID = 'REQ-' + task.id;
+                            const out = "<tr><td><a href='" + url + "' target='_blank'>" + task.id + "</a></td><td>" + CDEX.formatDate(task.authoredOn) + "</td><td id='" + reqTagID + "'></td></tr>";
                             $('#comm-request-list').append(out);
 
-                            if (c.status === "completed") {
-                                const idButton = "COMM-" + c.commReq.id;
-                                $('#'+reqTagID).append("<div><a href='#' id='" + idButton + "'>" + c.status + "</a></div>");
+                            if (task.status === "completed") {
+                                const idButton = "COMM-" + task.id;
+                                $('#'+reqTagID).append("<div><a href='#' id='" + idButton + "'>" + task.status + "</a></div>");
                                 $('#' + idButton).click(() => {
-                                    CDEX.displayPreviewCommunicationScreen(c.comm);
+                                    CDEX.displayPreviewCommunicationScreen(task.contained[0].entry.map((e) => e.resource));
                                     return false;
                                 });
                             } else {
-                                $('#'+reqTagID).append("<div>" + c.status + "</div>");
+                                $('#'+reqTagID).append("<div>" + task.status + "</div>");
                             }
                         });
                         $('#communication-request-screen-loader').hide();
