@@ -308,7 +308,7 @@ if (!CDEX) {
                                 contentType: "application/fhir+json"
                             };
                             let task = await $.ajax(conf);
-                            return {url: url, task: task};
+                            return {url: url, base: commReq.contained[0].identifier[0].system, task: task};
                         })();
                         promises.push(promise);
                     }
@@ -316,6 +316,7 @@ if (!CDEX) {
                         results.sort((a,b) => (a.task.authoredOn > b.task.authoredOn) ? 1 : ((b.task.authoredOn > a.task.authoredOn) ? -1 : 0)).forEach((result) => {
                             const task = result.task;
                             const url = result.url;
+                            const base = result.base;
                             const reqTagID = 'REQ-' + task.id;
                             const out = "<tr><td><a href='" + url + "' target='_blank'>" + task.id + "</a></td><td>" + CDEX.formatDate(task.authoredOn) + "</td><td id='" + reqTagID + "'></td></tr>";
                             $('#comm-request-list').append(out);
@@ -324,7 +325,55 @@ if (!CDEX) {
                                 const idButton = "COMM-" + task.id;
                                 $('#'+reqTagID).append("<div><a href='#' id='" + idButton + "'>" + task.status + "</a></div>");
                                 $('#' + idButton).click(() => {
-                                    CDEX.displayPreviewCommunicationScreen(task.contained[0].entry.map((e) => e.resource));
+                                    let resources = [];
+                                    let promises = [];
+
+                                    task.output.map((e) => e.valueReference.reference).forEach((resourceURI) => {
+                                        promises.push ((async (resourceURI) => {
+                                            let result = null;
+                                            if (resourceURI.startsWith("#")) {
+                                                result = task.contained.find((e) => {
+                                                    return e.id === resourceURI.substring(1);
+                                                });
+                                            } else {
+                                                // based on https://stackoverflow.com/questions/14780350/convert-relative-path-to-absolute-using-javascript
+                                                function absolute(base, relative) {
+                                                    var stack = base.split("/"),
+                                                        parts = relative.split("/");
+                                                    for (var i=0; i<parts.length; i++) {
+                                                        if (parts[i] == ".")
+                                                            continue;
+                                                        if (parts[i] == "..")
+                                                            stack.pop();
+                                                        else
+                                                            stack.push(parts[i]);
+                                                    }
+                                                    return stack.join("/");
+                                                }
+
+                                                let url = absolute (base, resourceURI);
+                                                let conf = {
+                                                    type: 'GET',
+                                                    url: url,
+                                                    contentType: "application/fhir+json"
+                                                };
+                                                
+                                                result = await $.ajax(conf);
+                                            }
+
+                                            if (result.resourceType === "Bundle") {
+                                                result.entry.map((e) => e.resource).forEach((r) => {
+                                                    resources.push(r);
+                                                });
+                                            } else {
+                                                resources.push(result);
+                                            }
+                                        })(resourceURI));
+                                    });
+
+                                    Promise.all(promises).then(() => {
+                                        CDEX.displayPreviewCommunicationScreen(resources);
+                                    });
                                     return false;
                                 });
                             } else {
