@@ -152,9 +152,7 @@ if (!CDEX) {
         for(let idx = 0; idx < CDEX.index; idx++){
             const primaryTypeSelected = $("#typeId" + idx).find(":selected").text();
             const secondaryTypeSelected = $("#secondaryTypeId" + idx).find(":selected").text();
-            const secondaryFreeText = $('#secondaryTypeId' + idx).val();
-            //let out = "<div><div>"+primaryTypeSelected+"</div><div>"+((primaryTypeSelected === CDEX.menu.FreeText.name)?secondaryFreeText:secondaryTypeSelected)+"</div></div>";
-            let out = "<li><span class='request-type'>"+primaryTypeSelected+":</span> <span>"+((primaryTypeSelected === CDEX.menu.FreeText.name)?secondaryFreeText:secondaryTypeSelected)+"</span></li>";
+            let out = "<li><span class='request-type'>"+primaryTypeSelected+":</span> <span>"+secondaryTypeSelected+"</span></li>";
             $('#final-list').append(out);
         }
         CDEX.addToPayload();
@@ -226,10 +224,6 @@ if (!CDEX) {
             CDEX.menu.FHIRQuery.values.forEach((secondary) => {
                 $('#' + secondaryTypeId).append("<option>" + secondary.name + "</option>");
             });
-        }else if(type === CDEX.menu.FreeText.name){
-            $('#divId' + typeId + ' div.secondary').append("<label for='"+ secondaryTypeId +
-            "'>Request</label><textarea class='form-control' id='" +
-                secondaryTypeId + "'></textarea>");
         }
     }
 
@@ -250,7 +244,6 @@ if (!CDEX) {
         for(let idx = 0; idx < CDEX.index; idx++){
             const primaryTypeSelected = $("#typeId" + idx).find(":selected").text();
             const secondaryTypeSelected = $("#secondaryTypeId" + idx).find(":selected").text();
-            const secondaryFreeText = $("#secondaryTypeId" + idx).val();
 
             if(primaryTypeSelected === CDEX.menu.DocRef.name) {
                 CDEX.menu.DocRef.values.forEach((secondaryType) => {
@@ -271,9 +264,6 @@ if (!CDEX) {
                         //payload[idx].contentString = secondaryType.name;
                     }
                 });
-            }else if(primaryTypeSelected === CDEX.menu.FreeText.name){
-                payload[idx] = {"contentString": "CONTENT"};
-                payload[idx].contentString = secondaryFreeText;
             }
         }
 
@@ -405,7 +395,7 @@ if (!CDEX) {
 
         promiseProvider.then(() => {
             $('#request-id').empty();
-            $('#request-id').append("<p><strong>Request ID:</strong> " + CDEX.taskPayload.id + "</p>");
+            $('#request-id').append("<p><strong>Task ID:</strong> " + CDEX.taskPayload.id + "</p>");
             CDEX.displayConfirmScreen();
 
             let promisePayer;
