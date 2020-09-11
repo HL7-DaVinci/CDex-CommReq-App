@@ -328,7 +328,11 @@ if (!CDEX) {
                                     return false;
                                 });
                             } else {
-                                $('#'+reqTagID).append("<div>" + task.status + "</div>");
+                                let message = task.status;
+                                if (task.businessStatus && task.businessStatus.text) {
+                                    message += " (" + task.businessStatus.text + ")";
+                                }
+                                $('#'+reqTagID).append("<div>" + message + "</div>");
                             }
                         });
                         $('#communication-request-screen-loader').hide();
