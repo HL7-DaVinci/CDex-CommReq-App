@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>DaVinci CDex App</title>
+    <title>DaVinci CDex (Payer)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="lib/fhir-client-0.1.8.js"></script>
     <script src="lib/jquery-3.3.1.js"></script>
@@ -12,7 +12,7 @@
 <body>
 <div class="wine-row">
     <img src="images/request.png" style="height:80px; width:130px">
-    <div class="wine-text-container"><h1>CDex Communication Requests</h1></div>
+    <div class="wine-text-container"><h1>CDex Data Consumer (Payer)</h1></div>
 </div>
 
 <div id="intro-screen" class="card alert-info screen">
@@ -42,29 +42,29 @@
     <div><p><div class='dvt'>
         <table class='table'>
             <thead>
-            <th>Request ID</th>
-            <th>Submitted on</th>
+            <th>Data Request (Task)</th>
+            <th>Created</th>
             <th>Status</th>
             </thead>
             <tbody id='comm-request-list'></tbody>
         </table>
     </div></p></div>
     <div id='communication-request-screen-loader'><p>[loading...]</p></div>
-    <button type="button" class="btn btn-primary" id="btn-create">New Request</button>
+    <button type="button" class="btn btn-primary" id="btn-create">Create Data Request</button>
 </div>
 <div id="data-request-screen" class="screen">
-    <h3>Edit communication request (patient: <span id="patient-name"><p>[loading...]</p></span>)</h3>
+    <h3>Edit data request (patient: <span id="patient-name"><p>[loading...]</p></span>)</h3>
 
     <div id="menu-request-list"><p><div class='dvt'>
         <div id='selection-query-list'></div>
     </div></p></div>
-    <div><a href='#' id="btn-add">Add request</a></div>
+    <div><a href='#' id="btn-add">add another request</a></div>
     <div><br>
     <button type="button" class="btn btn-primary" id="btn-review">Review</button>
     </div>
 </div>
 <div id="review-screen" class="screen">
-    <h3>Review communication request (patient: <span id="review-name"><p>[loading...]</p></span>)</h3>
+    <h3>Review data request (patient: <span id="review-name"><p>[loading...]</p></span>)</h3>
     <div class="alert-warning" id="review-lists"><p><div class='dvt'>
         <ul id='final-list'></ul>
     </div></p></div>
@@ -81,7 +81,7 @@
     <div class="card-body">
         <h5 class="card-title">Confirmation</h5>
         <div id="request-id"></div>
-        <p class="card-text">Communication request successfully sent to provider. </p>
+        <p class="card-text">Data request (Task) successfully sent to Data Source (Provider). </p>
         <p class="card-text">You can close the application now.</p>
         <p class="card-text">See the console for details </p>
     </div>
