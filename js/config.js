@@ -120,10 +120,6 @@ if (!CDEX) {
                   "FHIRQueryString": "Coverage?patient=[this patient's id]&status=active"
               }
           ]
-      },
-      "FreeText": {
-          "name": "Free text",
-          "description": "Request"
       }
 
   };
