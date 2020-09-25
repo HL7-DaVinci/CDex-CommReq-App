@@ -251,7 +251,7 @@ if (!CDEX) {
                         payload[idx] = {};
                         Object.assign(payload[idx], CDEX.extensionDocRef);
                         payload[idx].valueCodeableConcept.coding[0].code = secondaryType.generalCode;
-                        //payload[idx].contentString = secondaryType.name;
+                        payload[idx].valueCodeableConcept.text = secondaryType.name;
                     }
                 });
             }else if(primaryTypeSelected === CDEX.menu.FHIRQuery.name){
@@ -261,7 +261,7 @@ if (!CDEX) {
                         payload[idx] = {};
                         Object.assign(payload[idx], CDEX.extensionQuery);
                         payload[idx].valueString = queryString;
-                        //payload[idx].contentString = secondaryType.name;
+                        payload[idx].text = secondaryType.name;
                     }
                 });
             }

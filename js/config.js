@@ -202,7 +202,8 @@ if (!CDEX) {
                 "system": "http://loinc.org",
                 "code": "CODE"
                 }
-            ]
+            ],
+            "text": "DESCRIPTION"
         }
   };
 
@@ -215,7 +216,8 @@ if (!CDEX) {
             }
           ]
         },
-        "valueString": "VALUE_STRING"
+        "valueString": "VALUE_STRING",
+        "text": "DESCRIPTION"
   };
 
 }());
