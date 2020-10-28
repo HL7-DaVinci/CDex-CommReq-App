@@ -268,6 +268,7 @@ if (!CDEX) {
         }
 
         task.id = communicationRequest.id;
+        task.basedOn[0].reference = "CommunicationRequest/" + CDEX.operationPayload.id;
         task.authoredOn = timestamp;
         task.lastModified = timestamp;
         task.input = payload;
@@ -438,17 +439,28 @@ if (!CDEX) {
             contentType: "application/fhir+json"
         };
 
-        promiseProvider = $.ajax(configProvider);
+        let configPayer2 = {
+            type: 'PUT',
+            url: CDEX.providerEndpoint.url + CDEX.submitEndpoint + CDEX.operationPayload.id,
+            data: JSON.stringify(CDEX.operationPayload),
+            contentType: "application/fhir+json"
+        };
+        let promiseProvider2 = $.ajax(configPayer2);
 
-        promiseProvider.then(() => {
-            $('#request-id').empty();
-            $('#request-id').append("<p><strong>Task ID:</strong> " + CDEX.taskPayload.id + "</p>");
-            CDEX.displayConfirmScreen();
+        promiseProvider2.then(() => {
+            promiseProvider = $.ajax(configProvider);
 
-            let promisePayer;
-            promisePayer = $.ajax(configPayer);
-            console.log(CDEX.taskPayload);
-            promisePayer.then(() => {}, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the endpoint configuration <br> You can close this window now"));
+            promiseProvider.then(() => {
+                $('#request-id').empty();
+                $('#request-id').append("<p><strong>Task ID:</strong> " + CDEX.taskPayload.id + "</p>");
+                CDEX.displayConfirmScreen();
+
+                let promisePayer;
+                promisePayer = $.ajax(configPayer);
+
+                console.log(CDEX.taskPayload);
+                promisePayer.then(() => {}, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the endpoint configuration <br> You can close this window now"));
+            }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the submit endpoint configuration <br> You can close this window now"));
         }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the submit endpoint configuration <br> You can close this window now"));
     };
 

@@ -159,7 +159,7 @@ if (!CDEX) {
     },
     "basedOn": [
       {
-        "reference": "Claim/cdex-example-claim"
+        "reference": "CommunicationRequest/cdex-example-communication-request"
       }
     ],
     "status": "requested",
