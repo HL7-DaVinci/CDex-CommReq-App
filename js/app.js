@@ -500,15 +500,16 @@ if (!CDEX) {
 
     CDEX.restart = () => {        
         $('#discharge-selection').show();
+        $('#comm-request-list').html('');
         CDEX.enable('btn-submit');
         CDEX.enable('btn-edit');
         $('#btn-submit').html("Submit");
         $('#selection-query-list').html('');
+        $('#communication-request-screen-loader').show();
         CDEX.index = 0;
 
         CDEX.loadData(CDEX.client);
     }
-        
 
     $('#btn-create').click(function() {
         CDEX.displayDataRequestScreen();
