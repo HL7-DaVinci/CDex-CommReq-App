@@ -14,7 +14,7 @@ if (!CDEX) {
   CDEX.submitTaskEndpoint = "/Task/";
 
   CDEX.providerEndpoints = [{
-      "name": "HSPC CDex Provider (Open)",
+      "name": "DaVinci CDex Provider (Open)",
       "type": "open",
       "url": "https://api.logicahealth.org/DaVinciCDexProvider/open"
   }
@@ -22,7 +22,7 @@ if (!CDEX) {
 
   //Change URL and Name if you want to change the destination of returned Communication to this CommunicationRequest
   CDEX.payerEndpoint = {
-      "name": "HSPC CDex Payer (Open)",
+      "name": "DaVinci CDex Payer (Open)",
       "type": "open",
       "url": "https://api.logicahealth.org/DaVinciCDexPayer/open"
   };
