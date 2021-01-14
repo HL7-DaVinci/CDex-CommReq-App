@@ -50,7 +50,7 @@
         </table>
     </div></p></div>
     <div id='communication-request-screen-loader'><p>[loading...]</p></div>
-    <button type="button" class="btn btn-primary" id="btn-create">Create Data Request</button>
+    <p><button type="button" class="btn btn-primary" id="btn-create">Create Data Request</button></p>
 </div>
 <div id="data-request-screen" class="screen">
     <h3>Edit data request (patient: <span id="patient-name"><p>[loading...]</p></span>)</h3>
@@ -58,18 +58,15 @@
     <div id="menu-request-list"><p><div class='dvt'>
         <div id='selection-query-list'></div>
     </div></p></div>
-    <div><a href='#' id="btn-add">add another request</a></div>
-    <div><br>
+    <!--<div><a href='#' id="btn-add">add another request</a></div>-->
+    <div><!--<br>-->
     <button type="button" class="btn btn-primary" id="btn-review">Review</button>
     </div>
 </div>
 <div id="review-screen" class="screen">
     <h3>Review data request (patient: <span id="review-name"><p>[loading...]</p></span>)</h3>
     <div class="alert-warning" id="review-lists"><p><div class='dvt'>
-        <ul id='final-list'></ul>
-    </div></p></div>
-    <div id="review-lists-2"><p><div class='dvt'>
-        <ul id='final-details-list'></ul>
+        <div id='final-list'></div>
     </div></p></div>
     <div>
         <button type="button" class="btn btn-secondary" id="btn-edit">Edit</button>
@@ -82,8 +79,11 @@
         <h5 class="card-title">Confirmation</h5>
         <div id="request-id"></div>
         <p class="card-text">Data request (Task) successfully sent to Data Source (Provider). </p>
-        <p class="card-text">You can close the application now.</p>
-        <p class="card-text">See the console for details </p>
+        <p class="card-text" id="submit-endpoint"></p>
+        <p class="card-text"><textarea id="text-output"></textarea></p>
+        <p class="card-text" id="submit-endpoint2"></p>
+        <p class="card-text"><textarea id="text-output2"></textarea></p>
+        <p class="card-text"><a href="#" class="btn btn-primary" id="btn-restart">Restart</a></p>
     </div>
 </div>
 <div id="config-screen" class="card alert-info screen">

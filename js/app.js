@@ -148,15 +148,14 @@ if (!CDEX) {
     };
 
     CDEX.displayReviewScreen = () => {
-        $('#final-list').empty();
+        $('#final-list').html('');
         for(let idx = 0; idx < CDEX.index; idx++){
             const primaryTypeSelected = $("#typeId" + idx).find(":selected").text();
             const secondaryTypeSelected = $("#secondaryTypeId" + idx).find(":selected").text();
-            let out = "<li><span class='request-type'>"+primaryTypeSelected+":</span> <span>"+secondaryTypeSelected+"</span></li>";
+            let out = "<span class='request-type'>"+primaryTypeSelected+":</span> <span>"+secondaryTypeSelected+"</span>";
             $('#final-list').append(out);
         }
         CDEX.addToPayload();
-        $('#final-details-list').empty();
         CDEX.displayScreen('review-screen');
     }
 
@@ -164,6 +163,10 @@ if (!CDEX) {
         $('#error-title').html(title);
         $('#error-message').html(message);
         CDEX.displayScreen('error-screen');
+    }
+
+    CDEX.enable = (id) => {
+        $("#"+id).prop("disabled",false);
     }
 
     CDEX.disable = (id) => {
@@ -281,6 +284,105 @@ if (!CDEX) {
         return d[0] + ' ' + d[1].substring(0,5);
     }
 
+    CDEX.processRequests = function (commRequests, firstRun = true) {
+        let promises = [];
+        for (let commReq of commRequests) {
+            const url = commReq.contained[0].identifier[0].system + CDEX.submitTaskEndpoint + commReq.id;
+            const promise = (async () => {
+                let conf = {
+                    type: 'GET',
+                    url: url,
+                    contentType: "application/fhir+json"
+                };
+                let task = await $.ajax(conf);
+                return {url: url, base: commReq.contained[0].identifier[0].system, task: task};
+            })();
+            promises.push(promise);
+        }
+        let promise = $.Deferred();
+        Promise.all(promises).then((results)=>{
+            if (firstRun) {
+                $('#comm-request-list').html('');
+            }
+            results.sort((a,b) => (a.task.authoredOn > b.task.authoredOn) ? 1 : ((b.task.authoredOn > a.task.authoredOn) ? -1 : 0)).forEach((result) => {
+                const task = result.task;
+                const url = result.url;
+                const base = result.base;
+                const reqTagID = 'REQ-' + task.id;
+                if (firstRun) {
+                    const out = "<tr><td><a href='" + url + "' target='_blank'>" + task.id + "</a></td><td>" + CDEX.formatDate(task.authoredOn) + "</td><td id='" + reqTagID + "'></td></tr>";
+                    $('#comm-request-list').append(out);
+                }
+
+                if (task.status === "completed") {
+                    const idButton = "COMM-" + task.id;
+                    $('#'+reqTagID).html("<div><a href='#' id='" + idButton + "'>" + task.status + "</a></div>");
+                    $('#' + idButton).click(() => {
+                        let resources = [];
+                        let promises = [];
+
+                        task.output.map((e) => e.valueReference.reference).forEach((resourceURI) => {
+                            promises.push ((async (resourceURI) => {
+                                let result = null;
+                                if (resourceURI.startsWith("#")) {
+                                    result = task.contained.find((e) => {
+                                        return e.id === resourceURI.substring(1);
+                                    });
+                                } else {
+                                    // based on https://stackoverflow.com/questions/14780350/convert-relative-path-to-absolute-using-javascript
+                                    function absolute(base, relative) {
+                                        var stack = base.split("/"),
+                                            parts = relative.split("/");
+                                        for (var i=0; i<parts.length; i++) {
+                                            if (parts[i] == ".")
+                                                continue;
+                                            if (parts[i] == "..")
+                                                stack.pop();
+                                            else
+                                                stack.push(parts[i]);
+                                        }
+                                        return stack.join("/");
+                                    }
+
+                                    let url = absolute (base, resourceURI);
+                                    let conf = {
+                                        type: 'GET',
+                                        url: url,
+                                        contentType: "application/fhir+json"
+                                    };
+                                    
+                                    result = await $.ajax(conf);
+                                }
+
+                                if (result.resourceType === "Bundle") {
+                                    result.entry.map((e) => e.resource).forEach((r) => {
+                                        resources.push(r);
+                                    });
+                                } else {
+                                    resources.push(result);
+                                }
+                            })(resourceURI));
+                        });
+
+                        Promise.all(promises).then(() => {
+                            CDEX.displayPreviewCommunicationScreen(resources);
+                        });
+                        return false;
+                    });
+                } else {
+                    let message = task.status;
+                    if (task.businessStatus && task.businessStatus.text) {
+                        message += " (" + task.businessStatus.text + ")";
+                    }
+                    $('#'+reqTagID).html("<div>" + message + "</div>");
+                }
+            });
+            $('#communication-request-screen-loader').hide();
+            promise.resolve();
+        });
+        return promise;
+    }
+
     CDEX.loadData = (client) => {
         $('#scenario-intro').html(CDEX.scenarioDescription.description);
         try {
@@ -298,95 +400,11 @@ if (!CDEX) {
                             subject: CDEX.patient.id
                         }
                     }
-                ).then(function (commRequests) {
-                    let promises = [];
-                    for (let commReq of commRequests) {
-                        const url = commReq.contained[0].identifier[0].system + CDEX.submitTaskEndpoint + commReq.id;
-                        const promise = (async () => {
-                            let conf = {
-                                type: 'GET',
-                                url: url,
-                                contentType: "application/fhir+json"
-                            };
-                            let task = await $.ajax(conf);
-                            return {url: url, base: commReq.contained[0].identifier[0].system, task: task};
-                        })();
-                        promises.push(promise);
-                    }
-                    Promise.all(promises).then((results)=>{
-                        results.sort((a,b) => (a.task.authoredOn > b.task.authoredOn) ? 1 : ((b.task.authoredOn > a.task.authoredOn) ? -1 : 0)).forEach((result) => {
-                            const task = result.task;
-                            const url = result.url;
-                            const base = result.base;
-                            const reqTagID = 'REQ-' + task.id;
-                            const out = "<tr><td><a href='" + url + "' target='_blank'>" + task.id + "</a></td><td>" + CDEX.formatDate(task.authoredOn) + "</td><td id='" + reqTagID + "'></td></tr>";
-                            $('#comm-request-list').append(out);
-
-                            if (task.status === "completed") {
-                                const idButton = "COMM-" + task.id;
-                                $('#'+reqTagID).append("<div><a href='#' id='" + idButton + "'>" + task.status + "</a></div>");
-                                $('#' + idButton).click(() => {
-                                    let resources = [];
-                                    let promises = [];
-
-                                    task.output.map((e) => e.valueReference.reference).forEach((resourceURI) => {
-                                        promises.push ((async (resourceURI) => {
-                                            let result = null;
-                                            if (resourceURI.startsWith("#")) {
-                                                result = task.contained.find((e) => {
-                                                    return e.id === resourceURI.substring(1);
-                                                });
-                                            } else {
-                                                // based on https://stackoverflow.com/questions/14780350/convert-relative-path-to-absolute-using-javascript
-                                                function absolute(base, relative) {
-                                                    var stack = base.split("/"),
-                                                        parts = relative.split("/");
-                                                    for (var i=0; i<parts.length; i++) {
-                                                        if (parts[i] == ".")
-                                                            continue;
-                                                        if (parts[i] == "..")
-                                                            stack.pop();
-                                                        else
-                                                            stack.push(parts[i]);
-                                                    }
-                                                    return stack.join("/");
-                                                }
-
-                                                let url = absolute (base, resourceURI);
-                                                let conf = {
-                                                    type: 'GET',
-                                                    url: url,
-                                                    contentType: "application/fhir+json"
-                                                };
-                                                
-                                                result = await $.ajax(conf);
-                                            }
-
-                                            if (result.resourceType === "Bundle") {
-                                                result.entry.map((e) => e.resource).forEach((r) => {
-                                                    resources.push(r);
-                                                });
-                                            } else {
-                                                resources.push(result);
-                                            }
-                                        })(resourceURI));
-                                    });
-
-                                    Promise.all(promises).then(() => {
-                                        CDEX.displayPreviewCommunicationScreen(resources);
-                                    });
-                                    return false;
-                                });
-                            } else {
-                                let message = task.status;
-                                if (task.businessStatus && task.businessStatus.text) {
-                                    message += " (" + task.businessStatus.text + ")";
-                                }
-                                $('#'+reqTagID).append("<div>" + message + "</div>");
-                            }
-                        });
-                        $('#communication-request-screen-loader').hide();
+                ).then((commRequests) => {
+                    CDEX.processRequests(commRequests).then(() => {
+                        setInterval(() => CDEX.processRequests(commRequests, false), 3000);
                     });
+                    
                 });
             });
         } catch (err) {
@@ -398,7 +416,7 @@ if (!CDEX) {
         $('#discharge-selection').hide();
         CDEX.disable('btn-submit');
         CDEX.disable('btn-edit');
-        $('#btn-submit').html("<i class='fa fa-circle-o-notch fa-spin'></i> Submit Communication Request");
+        $('#btn-submit').html("<i class='fa fa-circle-o-notch fa-spin'></i> Submit");
 
         CDEX.finalize();
     };
@@ -445,6 +463,16 @@ if (!CDEX) {
             data: JSON.stringify(CDEX.operationPayload),
             contentType: "application/fhir+json"
         };
+
+        /*
+        CDEX.displayConfirmScreen();
+        $("#submit-endpoint").html("POST " + CDEX.providerEndpoint.url + CDEX.submitEndpoint + CDEX.operationPayload.id);
+        $("#text-output").html(JSON.stringify(CDEX.operationPayload, null, '  '));
+        $("#submit-endpoint2").html("POST " + CDEX.providerEndpoint.url + CDEX.submitTaskEndpoint + CDEX.taskPayload.id);
+        $("#text-output2").html(JSON.stringify(CDEX.taskPayload, null, '  '));
+        */
+
+        
         let promiseProvider2 = $.ajax(configPayer2);
 
         promiseProvider2.then(() => {
@@ -459,21 +487,42 @@ if (!CDEX) {
                 promisePayer = $.ajax(configPayer);
 
                 console.log(CDEX.taskPayload);
+                $("#submit-endpoint").html("POST " + CDEX.providerEndpoint.url + CDEX.submitEndpoint + CDEX.operationPayload.id);
+                $("#text-output").html(JSON.stringify(CDEX.operationPayload, null, '  '));
+                $("#submit-endpoint2").html("POST " + CDEX.providerEndpoint.url + CDEX.submitTaskEndpoint + CDEX.taskPayload.id);
+                $("#text-output2").html(JSON.stringify(CDEX.taskPayload, null, '  '));
+
                 promisePayer.then(() => {}, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the endpoint configuration <br> You can close this window now"));
             }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the submit endpoint configuration <br> You can close this window now"));
         }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the submit endpoint configuration <br> You can close this window now"));
+        
     };
+
+    CDEX.restart = () => {        
+        $('#discharge-selection').show();
+        CDEX.enable('btn-submit');
+        CDEX.enable('btn-edit');
+        $('#btn-submit').html("Submit");
+        $('#selection-query-list').html('');
+        CDEX.index = 0;
+
+        CDEX.loadData(CDEX.client);
+    }
+        
 
     $('#btn-create').click(function() {
         CDEX.displayDataRequestScreen();
         CDEX.addTypeSelection();
     });
+    /*
     $('#btn-add').click(() => {
         CDEX.addTypeSelection();
         return false;
     });
+    */
     $('#btn-review').click(CDEX.displayReviewScreen);
     $('#btn-start').click(CDEX.displayCommReqScreen);
+    $('#btn-restart').click(CDEX.restart);
     $('#btn-back').click(CDEX.displayCommReqScreen);
     $('#btn-edit').click(CDEX.displayDataRequestScreen);
     $('#btn-submit').click(CDEX.reconcile);
