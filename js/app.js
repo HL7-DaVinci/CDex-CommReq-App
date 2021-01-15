@@ -287,7 +287,7 @@ if (!CDEX) {
     CDEX.processRequests = function (commRequests, firstRun = true) {
         let promises = [];
         for (let commReq of commRequests) {
-            const url = commReq.contained[0].identifier[0].system + CDEX.submitTaskEndpoint + commReq.id;
+            const url = commReq.about[0].reference;
             const promise = (async () => {
                 let conf = {
                     type: 'GET',
@@ -441,58 +441,48 @@ if (!CDEX) {
     }
 
     CDEX.finalize = () => {
-        let promiseProvider;
-
-        let configProvider = {
-            type: 'PUT',
-            url: CDEX.providerEndpoint.url + CDEX.submitTaskEndpoint + CDEX.taskPayload.id,
-            data: JSON.stringify(CDEX.taskPayload),
-            contentType: "application/fhir+json"
-        };
 
         let configPayer = {
-            type: 'PUT',
-            url: CDEX.payerEndpoint.url + CDEX.submitEndpoint + CDEX.operationPayload.id,
+            type: 'POST',
+            url: CDEX.payerEndpoint.url + CDEX.submitEndpoint,
             data: JSON.stringify(CDEX.operationPayload),
             contentType: "application/fhir+json"
         };
 
-        let configPayer2 = {
-            type: 'PUT',
-            url: CDEX.providerEndpoint.url + CDEX.submitEndpoint + CDEX.operationPayload.id,
-            data: JSON.stringify(CDEX.operationPayload),
-            contentType: "application/fhir+json"
-        };
+        $.ajax(configPayer).then((commReq) => {
+            let url = CDEX.payerEndpoint.url + CDEX.submitEndpoint + "/" + commReq.id;
+            CDEX.taskPayload.basedOn[0].reference = url;
 
-        /*
-        CDEX.displayConfirmScreen();
-        $("#submit-endpoint").html("POST " + CDEX.providerEndpoint.url + CDEX.submitEndpoint + CDEX.operationPayload.id);
-        $("#text-output").html(JSON.stringify(CDEX.operationPayload, null, '  '));
-        $("#submit-endpoint2").html("POST " + CDEX.providerEndpoint.url + CDEX.submitTaskEndpoint + CDEX.taskPayload.id);
-        $("#text-output2").html(JSON.stringify(CDEX.taskPayload, null, '  '));
-        */
+            let configProvider = {
+                type: 'POST',
+                url: CDEX.providerEndpoint.url + CDEX.submitTaskEndpoint,
+                data: JSON.stringify(CDEX.taskPayload),
+                contentType: "application/fhir+json"
+            };
 
-        
-        let promiseProvider2 = $.ajax(configPayer2);
+            $.ajax(configProvider).then((res) => {
 
-        promiseProvider2.then(() => {
-            promiseProvider = $.ajax(configProvider);
-
-            promiseProvider.then(() => {
-                $('#request-id').empty();
-                $('#request-id').append("<p><strong>Task ID:</strong> " + CDEX.taskPayload.id + "</p>");
+                CDEX.taskPayload.id = res.id;
+                $('#request-id').html("<p><strong>Task ID:</strong> " + CDEX.taskPayload.id + "</p>");
+                console.log(CDEX.taskPayload);
+                $("#submit-endpoint").html("POST " + CDEX.providerEndpoint.url + CDEX.submitTaskEndpoint);
+                $("#text-output").html(JSON.stringify(CDEX.taskPayload, null, '  '));
                 CDEX.displayConfirmScreen();
 
-                let promisePayer;
-                promisePayer = $.ajax(configPayer);
+                commReq.about = [
+                    {
+                      "reference": CDEX.providerEndpoint.url + CDEX.submitTaskEndpoint + "/" + CDEX.taskPayload.id
+                    }
+                ];
 
-                console.log(CDEX.taskPayload);
-                $("#submit-endpoint").html("POST " + CDEX.providerEndpoint.url + CDEX.submitEndpoint + CDEX.operationPayload.id);
-                $("#text-output").html(JSON.stringify(CDEX.operationPayload, null, '  '));
-                $("#submit-endpoint2").html("POST " + CDEX.providerEndpoint.url + CDEX.submitTaskEndpoint + CDEX.taskPayload.id);
-                $("#text-output2").html(JSON.stringify(CDEX.taskPayload, null, '  '));
+                let configPayer2 = {
+                    type: 'PUT',
+                    url: CDEX.payerEndpoint.url + CDEX.submitEndpoint + "/" + commReq.id,
+                    data: JSON.stringify(commReq),
+                    contentType: "application/fhir+json"
+                };
 
-                promisePayer.then(() => {}, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the endpoint configuration <br> You can close this window now"));
+                $.ajax(configPayer2).then(() => {}, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the endpoint configuration <br> You can close this window now"));
             }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the submit endpoint configuration <br> You can close this window now"));
         }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the submit endpoint configuration <br> You can close this window now"));
         

@@ -10,8 +10,8 @@ if (!CDEX) {
     "scope"    : "patient/*.* openid profile"
   };
 
-  CDEX.submitEndpoint = "/CommunicationRequest/";
-  CDEX.submitTaskEndpoint = "/Task/";
+  CDEX.submitEndpoint = "/CommunicationRequest";
+  CDEX.submitTaskEndpoint = "/Task";
 
   CDEX.providerEndpoints = [{
       "name": "DaVinci CDex Provider (Open)",
