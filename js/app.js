@@ -387,7 +387,6 @@ if (!CDEX) {
         $('#scenario-intro').html(CDEX.scenarioDescription.description);
         try {
             CDEX.client = client;
-            CDEX.displayIntroScreen();
 
             CDEX.client.patient.read().then((pt) => {
                 CDEX.patient = pt;
@@ -422,6 +421,7 @@ if (!CDEX) {
     };
 
     CDEX.initialize = (client) => {
+        CDEX.displayIntroScreen();
         CDEX.loadConfig();
         CDEX.loadData(client);
     };
@@ -499,6 +499,7 @@ if (!CDEX) {
         CDEX.index = 0;
 
         CDEX.loadData(CDEX.client);
+        CDEX.displayCommReqScreen();
     }
 
     $('#btn-create').click(function() {
