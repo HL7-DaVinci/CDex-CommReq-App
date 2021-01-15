@@ -178,16 +178,16 @@ if (!CDEX) {
     "authoredOn": "TIMESTAMP",
     "lastModified": "TIMESTAMP",
     "requester": {
-      "reference": "Organization/cdex-example-payer"
+      "reference": CDEX.payerEndpoint.url + "/Organization/cdex-example-payer"
     },
     "owner": {
-      "reference": "Organization/cdex-example-payer"
+      "reference": "Organization/cdex-example-provider"
     },
     "reasonCode": {
         "text": "Support prior authorization decision-making"
     },
     "reasonReference": {
-        "reference": "Claim/cdex-example-claim"
+        "reference": CDEX.payerEndpoint.url + "/Claim/cdex-example-claim"
     },
     "input": []
   };
