@@ -152,11 +152,6 @@ if (!CDEX) {
   CDEX.taskPayload = {
     "resourceType": "Task",
     "id": "RESOURCEID",
-    "meta": {
-        "profile": [
-            "http://hl7.org/fhir/us/davinci-hrex/StructureDefinition/hrex-task-data-request"
-        ]
-    },
     "basedOn": [
       {
         "reference": "CommunicationRequest/cdex-example-communication-request"
