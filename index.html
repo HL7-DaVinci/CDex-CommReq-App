@@ -2,10 +2,16 @@
 <html lang="en">
 <head>
     <title>DaVinci CDex (Payer)</title>
+    <link rel="icon" type="image/png" href="images/favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="lib/fhir-client-0.1.8.js"></script>
     <script src="lib/jquery-3.3.1.js"></script>
     <link href="css/bootstrap.css" rel="stylesheet">
+
+    <!--TODO: don't use CDN-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
     <link href="css/custom.css" rel="stylesheet">
     <script src="js/config.js"></script>
 </head>
@@ -44,6 +50,7 @@
             <thead>
             <th>Data Request (Task)</th>
             <th>Created</th>
+            <th>Workflow Type</th>
             <th>Status</th>
             </thead>
             <tbody id='comm-request-list'></tbody>
@@ -54,8 +61,21 @@
 </div>
 <div id="data-request-screen" class="screen">
     <h3>Edit data request (patient: <span id="patient-name"><p>[loading...]</p></span>)</h3>
-
-    <div id="menu-request-list"><p><div class='dvt'>
+    <div id="subscription-selection"><p>
+        Workflow Type
+        <!--<input type="checkbox" id="chk-subscription" checked="checked">-->
+        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <label class="btn btn-primary active">
+              <input type="radio" name="options" id="polling" autocomplete="off" checked> Polling
+            </label>
+            <label class="btn btn-primary">
+              <input type="radio" name="options" id="subscription" autocomplete="off"> Subscription
+            </label>
+          </div>
+    </p></div>
+    <div id="menu-request-list"><p>
+        Request Details
+        <div class='dvt'>
         <div id='selection-query-list'></div>
     </div></p></div>
     <!--<div><a href='#' id="btn-add">add another request</a></div>-->
@@ -65,9 +85,10 @@
 </div>
 <div id="review-screen" class="screen">
     <h3>Review data request (patient: <span id="review-name"><p>[loading...]</p></span>)</h3>
-    <div class="alert-warning" id="review-lists"><p><div class='dvt'>
-        <div id='final-list'></div>
-    </div></p></div>
+    <p class="alert-warning card-text">
+        <strong>Workflow:</strong> <span id="review-workflow" class="card-text"></span><br/>
+        <strong>Request:</strong> <span id='final-list'></span>
+    </p>
     <div>
         <button type="button" class="btn btn-secondary" id="btn-edit">Edit</button>
         <button type="button" class="btn btn-secondary" id="btn-configuration">Configure endpoint</button>
@@ -81,6 +102,8 @@
         <p class="card-text">Data request (Task) successfully sent to Data Source (Provider). </p>
         <p class="card-text" id="submit-endpoint"></p>
         <p class="card-text"><textarea id="text-output"></textarea></p>
+        <p class="card-text" id="submit-endpoint2"></p>
+        <p class="card-text"><textarea id="text-output2"></textarea></p>
         <p class="card-text"><a href="#" class="btn btn-primary" id="btn-restart">OK</a></p>
     </div>
 </div>

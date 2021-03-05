@@ -10,10 +10,6 @@ td {
     vertical-align: middle;
 }
 
-#chk-post-discharge {
-    margin-left: 10px;
-}
-
 #intro-screen, #confirm-screen, #config-screen, .dvt {
     align-self: center;
     width: 700px;
@@ -50,14 +46,14 @@ img {
 }
 
 .request-type {
-    font-weight: bold;
+    /*font-weight: bold;*/
 }
 
-#review-lists {
+#review-lists, #review-workflow {
     width: 700px;
 }
 
-#text-output  {
+#text-output, #text-output2  {
     height: 300px;
     width: 600px;
 }

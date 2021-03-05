@@ -12,6 +12,7 @@ if (!CDEX) {
 
   CDEX.submitEndpoint = "/CommunicationRequest";
   CDEX.submitTaskEndpoint = "/Task";
+  CDEX.submitSubscriptionEndpoint = "/Subscription";
 
   CDEX.providerEndpoints = [{
       "name": "DaVinci CDex Provider (Open)",
@@ -185,6 +186,18 @@ if (!CDEX) {
         "reference": CDEX.payerEndpoint.url + "/Claim/cdex-example-claim"
     },
     "input": []
+  };
+
+  CDEX.subscriptionPayload = {
+    "resourceType": "Subscription",
+    "status": "requested",
+    "reason": "Subscribe to the task",
+    "criteria": "Task?_id=TASKID",
+    "channel": {
+        "type": "rest-hook",
+        "endpoint": CDEX.payerEndpoint.url,
+        "payload": "application/fhir+json"
+    }
   };
 
   CDEX.extensionDocRef = {

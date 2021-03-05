@@ -8,6 +8,7 @@ if (!CDEX) {
     CDEX.client = null;
     CDEX.patient = null;
     CDEX.index = 0;
+    CDEX.subscribe = false;
 
     CDEX.now = () => {
         let date = new Date();
@@ -152,9 +153,12 @@ if (!CDEX) {
         for(let idx = 0; idx < CDEX.index; idx++){
             const primaryTypeSelected = $("#typeId" + idx).find(":selected").text();
             const secondaryTypeSelected = $("#secondaryTypeId" + idx).find(":selected").text();
-            let out = "<span class='request-type'>"+primaryTypeSelected+":</span> <span>"+secondaryTypeSelected+"</span>";
+            let out = primaryTypeSelected + " - " + secondaryTypeSelected;
             $('#final-list').append(out);
         }
+        CDEX.subscribe = $('#subscription').is(':checked');
+        $('#review-workflow').html(CDEX.subscribe?'Subscription':'Polling');
+        
         CDEX.addToPayload();
         CDEX.displayScreen('review-screen');
     }
@@ -308,9 +312,10 @@ if (!CDEX) {
                 const task = result.task;
                 const url = result.url;
                 const base = result.base;
+                const workflow = (result.url.includes(CDEX.payerEndpoint.url))?"subscription":"polling";
                 const reqTagID = 'REQ-' + task.id;
                 if (firstRun) {
-                    const out = "<tr><td><a href='" + url + "' target='_blank'>" + task.id + "</a></td><td>" + CDEX.formatDate(task.authoredOn) + "</td><td id='" + reqTagID + "'></td></tr>";
+                    const out = "<tr><td><a href='" + url + "' target='_blank'>" + task.id + "</a></td><td>" + CDEX.formatDate(task.authoredOn) + "</td><td>" + workflow + "</td><td id='" + reqTagID + "'></td></tr>";
                     $('#comm-request-list').append(out);
                 }
 
@@ -331,6 +336,9 @@ if (!CDEX) {
                                 } else {
                                     // based on https://stackoverflow.com/questions/14780350/convert-relative-path-to-absolute-using-javascript
                                     function absolute(base, relative) {
+                                        if (relative.startsWith("http://") || relative.startsWith("https://")) {
+                                            return relative;
+                                        }
                                         var stack = base.split("/"),
                                             parts = relative.split("/");
                                         for (var i=0; i<parts.length; i++) {
@@ -452,10 +460,13 @@ if (!CDEX) {
         $.ajax(configPayer).then((commReq) => {
             let url = CDEX.payerEndpoint.url + CDEX.submitEndpoint + "/" + commReq.id;
             CDEX.taskPayload.basedOn[0].reference = url;
+            CDEX.taskPayload.id = 's' + commReq.id;
+
+            let subscribe = CDEX.subscribe;
 
             let configProvider = {
-                type: 'POST',
-                url: CDEX.providerEndpoint.url + CDEX.submitTaskEndpoint,
+                type: subscribe?'PUT':'POST',
+                url: CDEX.providerEndpoint.url + CDEX.submitTaskEndpoint + (subscribe?('/'+CDEX.taskPayload.id):''),
                 data: JSON.stringify(CDEX.taskPayload),
                 contentType: "application/fhir+json"
             };
@@ -463,17 +474,20 @@ if (!CDEX) {
             $.ajax(configProvider).then((res) => {
 
                 CDEX.taskPayload.id = res.id;
-                $('#request-id').html("<p><strong>Task ID:</strong> " + CDEX.taskPayload.id + "</p>");
-                console.log(CDEX.taskPayload);
-                $("#submit-endpoint").html("POST " + CDEX.providerEndpoint.url + CDEX.submitTaskEndpoint);
-                $("#text-output").html(JSON.stringify(CDEX.taskPayload, null, '  '));
-                CDEX.displayConfirmScreen();
 
-                commReq.about = [
-                    {
-                      "reference": CDEX.providerEndpoint.url + CDEX.submitTaskEndpoint + "/" + CDEX.taskPayload.id
-                    }
-                ];
+                if (CDEX.subscribe) {
+                    commReq.about = [
+                        {
+                        "reference": CDEX.payerEndpoint.url + CDEX.submitTaskEndpoint + "/" + CDEX.taskPayload.id
+                        }
+                    ];
+                } else {
+                    commReq.about = [
+                        {
+                        "reference": CDEX.providerEndpoint.url + CDEX.submitTaskEndpoint + "/" + CDEX.taskPayload.id
+                        }
+                    ];
+                }
 
                 let configPayer2 = {
                     type: 'PUT',
@@ -482,7 +496,45 @@ if (!CDEX) {
                     contentType: "application/fhir+json"
                 };
 
-                $.ajax(configPayer2).then(() => {}, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the endpoint configuration <br> You can close this window now"));
+                $('#request-id').html("<p><strong>Task ID:</strong> " + CDEX.taskPayload.id + "</p>");
+                console.log(CDEX.taskPayload);
+                $("#submit-endpoint").html(configProvider.type + ' ' + configProvider.url);
+                $("#text-output").html(JSON.stringify(CDEX.taskPayload, null, '  '));
+
+                if (CDEX.subscribe) {
+                    let configPayer3 = {
+                        type: 'PUT',
+                        url: CDEX.payerEndpoint.url + CDEX.submitTaskEndpoint + "/" + res.id,
+                        data: JSON.stringify(res),
+                        contentType: "application/fhir+json"
+                    };
+
+                    CDEX.subscriptionPayload.criteria = "Task?_id=" + res.id;
+                    let configProvider2 = {
+                        type: 'POST',
+                        url: CDEX.providerEndpoint.url + CDEX.submitSubscriptionEndpoint,
+                        data: JSON.stringify(CDEX.subscriptionPayload),
+                        contentType: "application/fhir+json"
+                    };
+
+                    $.when($.ajax(configPayer3),$.ajax(configProvider2)).then(() => {
+                        $.ajax(configPayer2).then(() => {
+                            $('#submit-endpoint2').show();
+                            $("#text-output2").show();
+                            console.log(CDEX.subscriptionPayload);
+                            $("#submit-endpoint2").html(configProvider2.type + ' ' + configProvider2.url);
+                            $("#text-output2").html(JSON.stringify(CDEX.subscriptionPayload, null, '  '));
+
+                            CDEX.displayConfirmScreen();
+                        }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the endpoint configuration <br> You can close this window now"));
+                    }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the endpoint configuration <br> You can close this window now"));
+                } else {
+                    $.ajax(configPayer2).then(() => {
+                        $('#submit-endpoint2').hide();
+                        $("#text-output2").hide();
+                        CDEX.displayConfirmScreen();
+                    }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the endpoint configuration <br> You can close this window now"));
+                }
             }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the submit endpoint configuration <br> You can close this window now"));
         }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the submit endpoint configuration <br> You can close this window now"));
         
