@@ -408,8 +408,9 @@ if (!CDEX) {
                         }
                     }
                 ).then((commRequests) => {
-                    CDEX.processRequests(commRequests).then(() => {
-                        setInterval(() => CDEX.processRequests(commRequests, false), 3000);
+                    let commReqs = commRequests.filter(c => c.about && c.about.length > 0 && c.contained && c.contained.length > 0);
+                    CDEX.processRequests(commReqs).then(() => {
+                        setInterval(() => CDEX.processRequests(commReqs, false), 3000);
                     });
                     
                 });
