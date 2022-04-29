@@ -21,11 +21,27 @@
     <div class="wine-text-container"><h1>CDex Data Consumer (Payer)</h1></div>
 </div>
 
-<div id="intro-screen" class="card alert-info screen">
+<div id="task-intro-screen" class="card alert-info screen">
     <div class="card-body">
-        <h5 class="card-title">Scenario Description</h5>
-        <p class='card-text' id='scenario-intro'></p>
-        <a href="#" class="btn btn-primary" id="btn-start">Proceed</a>
+        <h5 class="card-title">Task Based Scenario Description</h5>
+        <p class='card-text' id='task-intro'></p>
+        <a href="#" class="btn btn-primary" id="btn-task">Task Based Approach</a>
+        <a href="#" class="btn btn-primary" id="btn-query">Direct Query</a>
+    </div>
+</div>
+<div></div>
+
+<div id="query-request-screen" class="card alert-info screen">
+    <div class="card-body">
+        <h5 class="card-title">Direct Query Type</h5>
+        <label for="basic-url">Query URI</label>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon3">&clinical-status=active,recurrance,remission</span>
+            </div>
+            <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3">
+        </div>
+        <a href="#" class="btn btn-primary" id="btn-execute-query">Proceed</a>
     </div>
 </div>
 <div id="preview-communication-screen" class="screen">
@@ -57,7 +73,17 @@
         </table>
     </div></p></div>
     <div id='communication-request-screen-loader'><p>[loading...]</p></div>
-    <p><button type="button" class="btn btn-primary" id="btn-create">Create Data Request</button></p>
+    <p><button type="button" class="btn btn-primary" id="btn-task-request">Create Data Request</button></p>
+</div>
+<div id="direct-query-request-screen" class="card alert-info screen">
+    <div class="card-body">
+        <h3>Patient: <span id="commRes-patient-name">[loading...]</span></h3>
+        <select class='form-control' id='search-criteria'>
+            <option>-- Select search criteria --</option>
+        </select>
+        <div id="subsearch" class="subsearch"></div>
+        <p><button type="button" class="btn btn-primary" id="btn-query-request">Direct Query Request</button></p>
+    </div>
 </div>
 <div id="data-request-screen" class="screen">
     <h3>Edit data request (patient: <span id="patient-name"><p>[loading...]</p></span>)</h3>
@@ -105,6 +131,15 @@
         <p class="card-text" id="submit-endpoint2"></p>
         <p class="card-text"><textarea id="text-output2"></textarea></p>
         <p class="card-text"><a href="#" class="btn btn-primary" id="btn-restart">OK</a></p>
+    </div>
+</div>
+<div id="dq-confirm-screen" class="card alert-info screen">
+    <div class="card-body">
+        <h5 class="card-title">Confirmation</h5>
+        <p class="card-text">Direct Query request successfully sent to url: </p>
+        <p class="card-text" id="dq-submit-endpoint"></p>
+        <p class="card-text"><textarea id="dq-text-output"></textarea></p>
+        <p class="card-text"><a href="#" class="btn btn-primary" id="dq-btn-restart">OK</a></p>
     </div>
 </div>
 <div id="config-screen" class="card alert-info screen">

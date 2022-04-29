@@ -29,15 +29,22 @@ if (!CDEX) {
     };
 
     CDEX.displayScreen = (screenID) => {
-        $('#intro-screen').hide();
+        $('#task-intro-screen').hide();
         $('#preview-communication-screen').hide();
         $('#preview-screen').hide();
         $('#data-request-screen').hide();
         $('#review-screen').hide();
         $('#confirm-screen').hide();
+        $('#dq-confirm-screen').hide();
         $('#config-screen').hide();
         $('#communication-request-screen').hide();
-        $('#'+screenID).show();
+        $('#direct-query-request-screen').hide();
+        $('#query-request-screen').hide();
+        if(screenID === 'intro-screen') {
+            $('#task-intro-screen').show();
+        } else {
+            $('#'+screenID).show();
+        }
     };
 
     CDEX.displayIntroScreen = () => {
@@ -130,6 +137,95 @@ if (!CDEX) {
         CDEX.displayScreen('communication-request-screen');
     };
 
+    CDEX.showTimePicker = () => {
+        if ($('#subobs1').is(':checked')){
+            $('#obs-time').show();
+        } else {
+            $('#obs-time').hide();
+        }
+    };
+
+    CDEX.showCodeInput = () => {
+        if ($('#subobs0').is(':checked')){
+            $('#obs-code').show();
+        } else {
+            $('#obs-code').hide();
+        }
+    };
+
+    CDEX.observationSubsearch = () => {
+        let subsearchParam = 0;
+        CDEX.observationParameters.criteria.forEach((value) => {
+            $('#subsearch').append(
+                "<div><input type='checkbox' id='subobs" + subsearchParam +
+                "' value='" + value.value + "'>" +
+                "<label for='signature'>" + value.name +
+                "</label></div></div>"
+            ); 
+            if (value.value === "date") {
+                $('#subobs1').change(function() {
+                    CDEX.showTimePicker();
+                });
+                let today = new Date();
+                let todayFormatted = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
+                $('#subsearch').append(
+                    "<div><input type='date' id='obs-time'" +
+                    "name='obs-time' value='" + todayFormatted + "'></div>"
+                ); 
+                $('#obs-time').hide();          
+            } else {
+                $('#subobs0').change(function() {
+                    CDEX.showCodeInput();
+                });
+                $('#subsearch').append(
+                    "<div><input id='obs-code'" +
+                    "name='obs-code'></div>"
+                );
+                $('#obs-code').hide();
+            }
+            subsearchParam++;   
+        });
+        
+    };
+
+    CDEX.conditionSubsearch = () => {
+        let subsearchParam = 0;
+        CDEX.conditionParameters.criteria.forEach((value) => {
+            $('#subsearch').append(
+                "<div><input type='checkbox' id='condition" + subsearchParam +
+                "' value='" + value.value + "'>" +
+                "<label for='condition" + subsearchParam +
+                "'>" + value.name +
+                "</label></div></div>"
+            );
+            subsearchParam++;     
+        });
+        
+    };
+    
+    CDEX.selectSearchType = (subsearch) => {
+        $('#subsearch').html("");
+        switch (subsearch) {
+            case "Observation":
+                CDEX.observationSubsearch();
+                break;
+            case "Condition":
+                CDEX.conditionSubsearch();
+                break;
+            default:
+                break;
+        }
+    }
+
+    CDEX.displayDirectQueryScreen = () => {
+        CDEX.searchCriteria.criteria.forEach((value) => {
+            $('#search-criteria').append("<option value='" + value.value +
+            "'>" + value.name + "</option>");
+        });
+        $('#search-criteria').change(() => {CDEX.selectSearchType($('#search-criteria').find(":selected").text())});
+        CDEX.displayScreen('direct-query-request-screen');
+    };
+
     CDEX.displayDataRequestScreen = () => {
        CDEX.displayScreen('data-request-screen');
     };
@@ -190,6 +286,7 @@ if (!CDEX) {
         const typeId = "typeId" + CDEX.index;
         const divId = "divId" + CDEX.index;
         const secondaryTypeId = "secondaryTypeId" + CDEX.index;
+        const pouId = "pouId" + CDEX.index;
         const id = CDEX.index;
 
         let out =   "<div class='card alert-info'>" +
@@ -197,7 +294,11 @@ if (!CDEX) {
                     "<div class='form-group'><label for='"+ typeId + "'>Type</label>" +
                     "<select class='form-control' id='"+ typeId + "'></select></div>" +
                     "<div class='secondary form-group'><label for='"+ secondaryTypeId + "'>Request</label>" +
-                    "<select class='form-control' id='" + secondaryTypeId + "'></select></div></div></div>";
+                    "<select class='form-control' id='" + secondaryTypeId + "'></select></div>" +
+                    "<div class='form-group'><label for='"+ pouId + "'>Purpose of use</label>" +
+                    "<select class='form-control' id='"+ pouId + "'></select></div>" +
+                    "<div><input type='checkbox' id='signature' name='signature' value='signed'>" +
+                    "<label for='signature'> Signature required </label></div></div>";
 
         $('#selection-query-list').append(out);
         $('#' + typeId).change(() => {CDEX.selectType(id)});
@@ -208,6 +309,10 @@ if (!CDEX) {
 
         CDEX.menu.DocRef.values.forEach((secondaryType) => {
             $('#' + secondaryTypeId).append("<option>" + secondaryType.name + "</option>");
+        });
+
+        CDEX.purposeOfUse.Purpose.values.forEach((value) => {
+            $('#' + pouId).append("<option>" + value.name + "</option>");
         });
         CDEX.index++;
     }
@@ -239,6 +344,7 @@ if (!CDEX) {
         let communicationRequest = CDEX.operationPayload;
         let task = CDEX.taskPayload;
         let payload = [];
+        let pou = {};
 
         communicationRequest.id = CDEX.getGUID();
         communicationRequest.contained[0].id = CDEX.getGUID();
@@ -274,11 +380,24 @@ if (!CDEX) {
             }
         }
 
+        const pouTypeSelected = $("#pouId0").find(":selected").text();
+        CDEX.purposeOfUse.Purpose.values.forEach((value) => {
+            if(value.name === pouTypeSelected) {
+                Object.assign(pou, CDEX.pouRef);
+                pou.valueCodeableConcept.coding[0].system += value.codeSystem;
+                pou.valueCodeableConcept.coding[0].code = value.generalCode;
+            }
+        });
+
         task.id = communicationRequest.id;
         task.basedOn[0].reference = "CommunicationRequest/" + CDEX.operationPayload.id;
         task.authoredOn = timestamp;
         task.lastModified = timestamp;
         task.input = payload;
+        task.input.push(pou);
+        if($("#signature").is(":checked")) {
+            task.input.push( CDEX.docSignRef );
+        }
         CDEX.taskPayload = task;
     }
 
@@ -392,7 +511,8 @@ if (!CDEX) {
     }
 
     CDEX.loadData = (client) => {
-        $('#scenario-intro').html(CDEX.scenarioDescription.description);
+        $('#task-intro').html(CDEX.taskScenarioDescription.description);
+        $('#query-intro').html(CDEX.directQueryScenarioDescription.description);
         try {
             CDEX.client = client;
 
@@ -542,7 +662,7 @@ if (!CDEX) {
     };
 
     CDEX.restart = () => {        
-        $('#discharge-selection').show();
+        /*$('#discharge-selection').show();
         $('#comm-request-list').html('');
         CDEX.enable('btn-submit');
         CDEX.enable('btn-edit');
@@ -551,23 +671,45 @@ if (!CDEX) {
         $('#communication-request-screen-loader').show();
         CDEX.index = 0;
 
-        CDEX.loadData(CDEX.client);
-        CDEX.displayCommReqScreen();
+        CDEX.loadData(CDEX.client); 
+        CDEX.displayCommReqScreen(); */
+        CDEX.displayScreen('task-intro-screen');
     }
 
-    $('#btn-create').click(function() {
+    $('#btn-task-request').click(function() {
         CDEX.displayDataRequestScreen();
         CDEX.addTypeSelection();
     });
-    /*
-    $('#btn-add').click(() => {
+
+    $('#btn-query-request').click(function() {
+        //CDEX.displayScreen('query-request-screen');
+        
+        if ($('#search-criteria')[0].selectedIndex != 0 ) {
+            if ($('#subobs0').is(":checked") && $('#obs-code').val() === "") {
+                alert("Please specify a code");
+            } else {
+                CDEX.directQueryRequest();
+            }
+        } else {
+            alert("Please select a search criteria");
+        }
+        
+    });
+    
+    /*$('#btn-query-request').click(() => {
         CDEX.addTypeSelection();
         return false;
+    });*/
+
+    $('#btn-execute-query').click(function() {
+        CDEX.directQueryRequest();
     });
-    */
+    
     $('#btn-review').click(CDEX.displayReviewScreen);
-    $('#btn-start').click(CDEX.displayCommReqScreen);
+    $('#btn-task').click(CDEX.displayCommReqScreen);
+    $('#btn-query').click(CDEX.displayDirectQueryScreen);
     $('#btn-restart').click(CDEX.restart);
+    $('#dq-btn-restart').click(CDEX.restart);
     $('#btn-back').click(CDEX.displayCommReqScreen);
     $('#btn-edit').click(CDEX.displayDataRequestScreen);
     $('#btn-submit').click(CDEX.reconcile);
@@ -607,4 +749,52 @@ if (!CDEX) {
     });
 
     FHIR.oauth2.ready(CDEX.initialize);
+
+    CDEX.directQueryRequest = () => {
+        let queryType = $('#search-criteria').val();
+        let condition = {};
+        let observation = {};
+        Object.assign(condition, CDEX.conditionPayload);
+        Object.assign(observation, CDEX.observationPayload);
+        let configPayer = {
+            type: 'GET',
+            url: CDEX.payerEndpoint.url + CDEX.submitEndpoint,
+            contentType: "application/fhir+json"
+        };
+
+        $.ajax(configPayer).then((req) => {
+            let url = CDEX.payerEndpoint.url  + "/" + queryType + "?patient=" + CDEX.patient.id;
+            switch (queryType) {
+                case "Observation":
+                    if ($('#subobs0').is(":checked")) {
+                        url += "&code=" + $('#obs-code').val();
+                    }
+                    if ($('#subobs1').is(":checked")) {
+                        url += "&date=gt" + $('#obs-time').val();
+                    }
+                    break;
+                case "Condition":
+                    if ($('#condition0').is(":checked")) {
+                        url += "&clinical-status=active,recurrance,remission";
+                    }
+                    if ($('#condition1').is(":checked")) {
+                        url += "&_revinclude=Provenance:target";
+                    }
+                    break;
+                default:
+                    url += "&type=34117-2&_sort=-period&_count=1";
+                    break;
+            }
+            $('#search-criteria').html("<option>-- Select search criteria --</option>");
+            $('#subsearch').html("");
+            $.ajax(url).then((res) => {
+
+                $("#dq-text-output").html(JSON.stringify(res, null, '  '));
+                $('#dq-submit-endpoint').html("<b>" + res.link[0].url + "</b>");
+                //$('#dq-submit-endpoint').append("<b>" + res.link[0].url + "</b>");
+                CDEX.displayScreen('dq-confirm-screen');
+            }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the submit endpoint configuration <br> You can close this window now"));
+        }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the submit endpoint configuration <br> You can close this window now"));
+
+    };
 }());
