@@ -10,9 +10,10 @@ td {
     vertical-align: middle;
 }
 
-#intro-screen, #confirm-screen, #config-screen, .dvt {
+#task-intro-screen, #query-intro-screen, #confirm-screen, #dq-confirm-screen, #config-screen, #query-request-screen, #direct-query-request-screen, .dvt {
     align-self: center;
     width: 700px;
+    margin-bottom: 1rem;
 }
 
 .screen, #medrec-meds {
@@ -41,7 +42,7 @@ img {
     justify-content: center;
 }
 
-#selection-query-list div.card{
+#selection-query-list div.card, #search-criteria, #subsearch{
     margin-bottom: 5px;
 }
 
@@ -53,7 +54,7 @@ img {
     width: 700px;
 }
 
-#text-output, #text-output2  {
+#text-output, #text-output2, #dq-text-output  {
     height: 300px;
     width: 600px;
 }
