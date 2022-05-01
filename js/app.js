@@ -174,13 +174,10 @@ if (!CDEX) {
                     "<div class='sub-inline'>" +
                     "<div><select class='form-control' id='select-range'>" +
                         "<option value='eq'>On date</option>" +
-                        "<option value='ne'>Not on date</option>" +
                         "<option value='lt'>Before</option>" +
                         "<option value='gt'>After</option>" +
                         "<option value='ge'>On or after</option>" +
                         "<option value='le'>On or before</option>" +
-                        "<option value='sa'>Starts after</option>" +
-                        "<option value='eb'>Ends before</option>" +
                     "</select></div>" +
                     "<input type='datetime-local' id='obs-time'" +
                     "name='obs-time' value='" + todayFormatted + "'>" +
