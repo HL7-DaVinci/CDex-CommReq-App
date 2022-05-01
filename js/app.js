@@ -40,10 +40,10 @@ if (!CDEX) {
         $('#communication-request-screen').hide();
         $('#direct-query-request-screen').hide();
         $('#query-request-screen').hide();
-        if(screenID === 'intro-screen') {
+        if (screenID === 'intro-screen') {
             $('#task-intro-screen').show();
         } else {
-            $('#'+screenID).show();
+            $('#' + screenID).show();
         }
     };
 
@@ -55,27 +55,27 @@ if (!CDEX) {
         CDEX.displayScreen('preview-communication-screen');
 
         let resources = {
-            "docRefs" : [],
-            "queries" : []
+            "docRefs": [],
+            "queries": []
         }
 
         let table = "";
 
         comm.forEach(function (content, index) {
-            if(content.resourceType === "DocumentReference") {
+            if (content.resourceType === "DocumentReference") {
                 resources.docRefs.push(content);
             } else {
                 resources.queries.push(content);
             }
         });
-        
-        resources.docRefs.forEach ((resource) => {
-                table += "<table class='table'><thead><th>Document</th></thead><tbody>";
-                table += "<tr><td>" + CDEX.openPreview(resource) + "</td></tr>";
-                table += "</tbody></table>";
+
+        resources.docRefs.forEach((resource) => {
+            table += "<table class='table'><thead><th>Document</th></thead><tbody>";
+            table += "<tr><td>" + CDEX.openPreview(resource) + "</td></tr>";
+            table += "</tbody></table>";
         });
 
-        resources.queries.forEach ((resource) => {
+        resources.queries.forEach((resource) => {
             table += "<table class='table'><tbody><tr><td><h5>Resource</h5></td></tr>";
             table += "<tr><td><pre>" + JSON.stringify(resource, null, "  ") + "</pre></td></tr></tbody></table>";
         });
@@ -94,7 +94,7 @@ if (!CDEX) {
         }
 
         // based on https://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript
-        const b64toBlob = (b64Data, contentType='', sliceSize=512) => {
+        const b64toBlob = (b64Data, contentType = '', sliceSize = 512) => {
             const byteCharacters = atob(b64Data);
             const byteArrays = [];
 
@@ -110,20 +110,20 @@ if (!CDEX) {
                 byteArrays.push(byteArray);
             }
 
-            const blob = new Blob(byteArrays, {type: contentType});
+            const blob = new Blob(byteArrays, { type: contentType });
             return blob;
         }
 
         if (attachment.contentType === "application/pdf") {
             const blob = b64toBlob(attachment.data, "application/pdf");
             return displayBlob(blob);
-        }else if(attachment.contentType === "application/hl7-v3+xml"){
+        } else if (attachment.contentType === "application/hl7-v3+xml") {
             return "<textarea rows='20' cols='40' style='border:none;'>" + atob(attachment.data) + "</textarea>";
-        }else if(attachment.contentType === "application/fhir+xml"){
+        } else if (attachment.contentType === "application/fhir+xml") {
             let bundle = JSON.parse(atob(attachment.data));
             let result = "";
             bundle.entry.forEach(function (content) {
-                if (content.resource.text) {result += content.resource.text.div ;}
+                if (content.resource.text) { result += content.resource.text.div; }
             });
             return result;
         }
@@ -138,15 +138,17 @@ if (!CDEX) {
     };
 
     CDEX.showTimePicker = () => {
-        if ($('#subobs1').is(':checked')){
+        if ($('#subobs1').is(':checked')) {
             $('#obs-time').show();
+            $('#select-range').show();
         } else {
             $('#obs-time').hide();
+            $('#select-range').hide();
         }
     };
 
     CDEX.showCodeInput = () => {
-        if ($('#subobs0').is(':checked')){
+        if ($('#subobs0').is(':checked')) {
             $('#obs-code').show();
         } else {
             $('#obs-code').hide();
@@ -161,20 +163,34 @@ if (!CDEX) {
                 "' value='" + value.value + "'>" +
                 "<label for='signature'>" + value.name +
                 "</label></div></div>"
-            ); 
+            );
             if (value.value === "date") {
-                $('#subobs1').change(function() {
+                $('#subobs1').change(function () {
                     CDEX.showTimePicker();
                 });
                 let today = new Date();
-                let todayFormatted = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
+                let todayFormatted = today.getFullYear() + '/' + ('0' + (today.getMonth() + 1)).slice(-2) + '/' + ('0' + today.getDate()).slice(-2);
                 $('#subsearch').append(
-                    "<div><input type='date' id='obs-time'" +
-                    "name='obs-time' value='" + todayFormatted + "'></div>"
-                ); 
-                $('#obs-time').hide();          
+                    "<div class='sub-inline'>" +
+                    "<div><select class='form-control' id='select-range'>" +
+                        "<option value='eq'>On date</option>" +
+                        "<option value='ne'>Not on date</option>" +
+                        "<option value='lt'>Before</option>" +
+                        "<option value='gt'>After</option>" +
+                        "<option value='ge'>On or after</option>" +
+                        "<option value='le'>On or before</option>" +
+                        "<option value='sa'>Starts after</option>" +
+                        "<option value='eb'>Ends before</option>" +
+                    "</select></div>" +
+                    "<input type='datetime-local' id='obs-time'" +
+                    "name='obs-time' value='" + todayFormatted + "'>" +
+                    "</div>"
+                );
+                $('#obs-time').val(new Date().toJSON().slice(0,19));
+                $('#obs-time').hide();
+                $('#select-range').hide();
             } else {
-                $('#subobs0').change(function() {
+                $('#subobs0').change(function () {
                     CDEX.showCodeInput();
                 });
                 $('#subsearch').append(
@@ -183,26 +199,93 @@ if (!CDEX) {
                 );
                 $('#obs-code').hide();
             }
-            subsearchParam++;   
+            subsearchParam++;
         });
-        
+
+    };
+
+    CDEX.showClinicalStatus = () => {
+        if ($('#condition0').is(':checked')) {
+            $('#active').show();
+            $('#recurrance').show();
+            $('#remission').show();
+            $('#foractive').show();
+            $('#forrecurrance').show();
+            $('#forremission').show();
+        } else {
+            $('#active').hide();
+            $('#recurrance').hide();
+            $('#remission').hide();
+            $('#foractive').hide();
+            $('#forrecurrance').hide();
+            $('#forremission').hide();
+        }
+    };
+
+    CDEX.showProvenance = () => {
+        if ($('#provenance1').is(':checked')) {
+            $('#sub-provenance').show();
+            $('#forsub-provenance').show();
+        } else {
+            $('#sub-provenance').hide();
+            $('#forsub-provenance').hide();
+        }
     };
 
     CDEX.conditionSubsearch = () => {
         let subsearchParam = 0;
         CDEX.conditionParameters.criteria.forEach((value) => {
-            $('#subsearch').append(
-                "<div><input type='checkbox' id='condition" + subsearchParam +
-                "' value='" + value.value + "'>" +
-                "<label for='condition" + subsearchParam +
-                "'>" + value.name +
-                "</label></div></div>"
-            );
-            subsearchParam++;     
+            if (value.value === "clinical-status") {
+                $('#subsearch').append(
+                    "<div class='sub.inline'" + subsearchParam +
+                    "><input type='checkbox' id='condition" + subsearchParam +
+                    "' value='" + value.value + "' class='inline-elem'>" +
+                    "<label for='condition" + subsearchParam +
+                    "'>" + value.name + "</label>" +
+                    "<input type='checkbox' id='active' value='active' class='inline-elem'>" +
+                    "<label id='foractive' for='active'>Active</label>" +
+                    "<input type='checkbox' id='recurrance' value='recurrance' class='inline-elem'>" +
+                    "<label id='forrecurrance' for='recurrance'>Recurrance</label>" +
+                    "<input type='checkbox' id='remission' value='remission' class='inline-elem'>" +
+                    "<label id='forremission' for='remission'>Remission</label>"+
+                    "</div>"
+                );
+
+                $('#active').hide();
+                $('#foractive').hide();
+                $('#recurrance').hide();
+                $('#forrecurrance').hide();
+                $('#remission').hide();
+                $('#forremission').hide();
+                $('#condition0').change(function () {
+                    CDEX.showClinicalStatus();
+                });
+                
+            }
+            if (value.value === "_revinclude") {
+                $('#subsearch').append(
+                    "<div class='sub.inline'" + subsearchParam +
+                    "><input type='checkbox' id='provenance" + subsearchParam +
+                    "' value='" + value.value + "' class='inline-elem'>" +
+                    "<label for='provenance" + subsearchParam +
+                    "'>" + value.name + "</label>" +
+                    "<input type='checkbox' id='sub-provenance' value='_revinclude' class='inline-elem'>" +
+                    "<label id='forsub-provenance' for='sub-provenance'>Provenance:target</label>" +
+                    "</div>"
+                );
+                $('#sub-provenance').prop('checked', true);
+                $('#sub-provenance').hide();
+                $('#forsub-provenance').hide();
+
+                $('#provenance1').change(function () {
+                    CDEX.showProvenance();
+                });
+            }
+            subsearchParam++;
         });
-        
+
     };
-    
+
     CDEX.selectSearchType = (subsearch) => {
         $('#subsearch').html("");
         switch (subsearch) {
@@ -220,14 +303,14 @@ if (!CDEX) {
     CDEX.displayDirectQueryScreen = () => {
         CDEX.searchCriteria.criteria.forEach((value) => {
             $('#search-criteria').append("<option value='" + value.value +
-            "'>" + value.name + "</option>");
+                "'>" + value.name + "</option>");
         });
-        $('#search-criteria').change(() => {CDEX.selectSearchType($('#search-criteria').find(":selected").text())});
+        $('#search-criteria').change(() => { CDEX.selectSearchType($('#search-criteria').find(":selected").text()) });
         CDEX.displayScreen('direct-query-request-screen');
     };
 
     CDEX.displayDataRequestScreen = () => {
-       CDEX.displayScreen('data-request-screen');
+        CDEX.displayScreen('data-request-screen');
     };
 
     CDEX.displayConfirmScreen = () => {
@@ -246,15 +329,15 @@ if (!CDEX) {
 
     CDEX.displayReviewScreen = () => {
         $('#final-list').html('');
-        for(let idx = 0; idx < CDEX.index; idx++){
+        for (let idx = 0; idx < CDEX.index; idx++) {
             const primaryTypeSelected = $("#typeId" + idx).find(":selected").text();
             const secondaryTypeSelected = $("#secondaryTypeId" + idx).find(":selected").text();
             let out = primaryTypeSelected + " - " + secondaryTypeSelected;
             $('#final-list').append(out);
         }
         CDEX.subscribe = $('#subscription').is(':checked');
-        $('#review-workflow').html(CDEX.subscribe?'Subscription':'Polling');
-        
+        $('#review-workflow').html(CDEX.subscribe ? 'Subscription' : 'Polling');
+
         CDEX.addToPayload();
         CDEX.displayScreen('review-screen');
     }
@@ -266,11 +349,11 @@ if (!CDEX) {
     }
 
     CDEX.enable = (id) => {
-        $("#"+id).prop("disabled",false);
+        $("#" + id).prop("disabled", false);
     }
 
     CDEX.disable = (id) => {
-        $("#"+id).prop("disabled",true);
+        $("#" + id).prop("disabled", true);
     };
 
     CDEX.getPatientName = (pt) => {
@@ -289,19 +372,19 @@ if (!CDEX) {
         const pouId = "pouId" + CDEX.index;
         const id = CDEX.index;
 
-        let out =   "<div class='card alert-info'>" +
-                    "<div class='card-body' id='" + divId + "'>" +
-                    "<div class='form-group'><label for='"+ typeId + "'>Type</label>" +
-                    "<select class='form-control' id='"+ typeId + "'></select></div>" +
-                    "<div class='secondary form-group'><label for='"+ secondaryTypeId + "'>Request</label>" +
-                    "<select class='form-control' id='" + secondaryTypeId + "'></select></div>" +
-                    "<div class='form-group'><label for='"+ pouId + "'>Purpose of use</label>" +
-                    "<select class='form-control' id='"+ pouId + "'></select></div>" +
-                    "<div><input type='checkbox' id='signature' name='signature' value='signed'>" +
-                    "<label for='signature'> Signature required </label></div></div>";
+        let out = "<div class='card alert-info'>" +
+            "<div class='card-body' id='" + divId + "'>" +
+            "<div class='form-group'><label for='" + typeId + "'>Type</label>" +
+            "<select class='form-control' id='" + typeId + "'></select></div>" +
+            "<div class='secondary form-group'><label for='" + secondaryTypeId + "'>Request</label>" +
+            "<select class='form-control' id='" + secondaryTypeId + "'></select></div>" +
+            "<div class='form-group'><label for='" + pouId + "'>Purpose of use</label>" +
+            "<select class='form-control' id='" + pouId + "'></select></div>" +
+            "<div><input type='checkbox' id='signature' name='signature' value='signed'>" +
+            "<label for='signature'> Signature required </label></div></div>";
 
         $('#selection-query-list').append(out);
-        $('#' + typeId).change(() => {CDEX.selectType(id)});
+        $('#' + typeId).change(() => { CDEX.selectType(id) });
 
         for (let key in CDEX.menu) {
             $('#' + typeId).append("<option>" + CDEX.menu[key].name + "</option>");
@@ -322,16 +405,16 @@ if (!CDEX) {
         const type = $("#typeId" + typeId).find(":selected").text();
         $('#divId' + typeId + ' div.secondary').empty();
 
-        if(type === CDEX.menu.DocRef.name) {
-            $('#divId' + typeId + ' div.secondary').append("<label for='"+ secondaryTypeId +
-            "'>Request</label><select class='form-control' id='" + secondaryTypeId +"'></select>");
+        if (type === CDEX.menu.DocRef.name) {
+            $('#divId' + typeId + ' div.secondary').append("<label for='" + secondaryTypeId +
+                "'>Request</label><select class='form-control' id='" + secondaryTypeId + "'></select>");
 
             CDEX.menu.DocRef.values.forEach((secondary) => {
                 $('#' + secondaryTypeId).append("<option>" + secondary.name + "</option>");
             });
-        }else if(type === CDEX.menu.FHIRQuery.name){
-            $('#divId' + typeId + ' div.secondary').append("<label for='"+ secondaryTypeId +
-            "'>Request</label><select class='form-control' id='" + secondaryTypeId +"'></select>");
+        } else if (type === CDEX.menu.FHIRQuery.name) {
+            $('#divId' + typeId + ' div.secondary').append("<label for='" + secondaryTypeId +
+                "'>Request</label><select class='form-control' id='" + secondaryTypeId + "'></select>");
 
             CDEX.menu.FHIRQuery.values.forEach((secondary) => {
                 $('#' + secondaryTypeId).append("<option>" + secondary.name + "</option>");
@@ -354,22 +437,22 @@ if (!CDEX) {
         communicationRequest.authoredOn = timestamp;
         CDEX.operationPayload = communicationRequest;
 
-        for(let idx = 0; idx < CDEX.index; idx++){
+        for (let idx = 0; idx < CDEX.index; idx++) {
             const primaryTypeSelected = $("#typeId" + idx).find(":selected").text();
             const secondaryTypeSelected = $("#secondaryTypeId" + idx).find(":selected").text();
 
-            if(primaryTypeSelected === CDEX.menu.DocRef.name) {
+            if (primaryTypeSelected === CDEX.menu.DocRef.name) {
                 CDEX.menu.DocRef.values.forEach((secondaryType) => {
-                    if(secondaryType.name === secondaryTypeSelected) {
+                    if (secondaryType.name === secondaryTypeSelected) {
                         payload[idx] = {};
                         Object.assign(payload[idx], CDEX.extensionDocRef);
                         payload[idx].valueCodeableConcept.coding[0].code = secondaryType.generalCode;
                         payload[idx].valueCodeableConcept.text = secondaryType.name;
                     }
                 });
-            }else if(primaryTypeSelected === CDEX.menu.FHIRQuery.name){
+            } else if (primaryTypeSelected === CDEX.menu.FHIRQuery.name) {
                 CDEX.menu.FHIRQuery.values.forEach((secondaryType) => {
-                    if(secondaryType.name === secondaryTypeSelected) {
+                    if (secondaryType.name === secondaryTypeSelected) {
                         let queryString = secondaryType.FHIRQueryString.replace("[this patient's id]", CDEX.patient.id);
                         payload[idx] = {};
                         Object.assign(payload[idx], CDEX.extensionQuery);
@@ -382,7 +465,7 @@ if (!CDEX) {
 
         const pouTypeSelected = $("#pouId0").find(":selected").text();
         CDEX.purposeOfUse.Purpose.values.forEach((value) => {
-            if(value.name === pouTypeSelected) {
+            if (value.name === pouTypeSelected) {
                 Object.assign(pou, CDEX.pouRef);
                 pou.valueCodeableConcept.coding[0].system += value.codeSystem;
                 pou.valueCodeableConcept.coding[0].code = value.generalCode;
@@ -395,8 +478,8 @@ if (!CDEX) {
         task.lastModified = timestamp;
         task.input = payload;
         task.input.push(pou);
-        if($("#signature").is(":checked")) {
-            task.input.push( CDEX.docSignRef );
+        if ($("#signature").is(":checked")) {
+            task.input.push(CDEX.docSignRef);
         }
         CDEX.taskPayload = task;
     }
@@ -404,7 +487,7 @@ if (!CDEX) {
     CDEX.formatDate = (date) => {
         // TODO: implement a more sensible screen date formatter that uses an ISO date parser and translates to local time
         const d = date.split('T');
-        return d[0] + ' ' + d[1].substring(0,5);
+        return d[0] + ' ' + d[1].substring(0, 5);
     }
 
     CDEX.processRequests = function (commRequests, firstRun = true) {
@@ -418,20 +501,20 @@ if (!CDEX) {
                     contentType: "application/fhir+json"
                 };
                 let task = await $.ajax(conf);
-                return {url: url, base: commReq.contained[0].identifier[0].system, task: task};
+                return { url: url, base: commReq.contained[0].identifier[0].system, task: task };
             })();
             promises.push(promise);
         }
         let promise = $.Deferred();
-        Promise.all(promises).then((results)=>{
+        Promise.all(promises).then((results) => {
             if (firstRun) {
                 $('#comm-request-list').html('');
             }
-            results.sort((a,b) => (a.task.authoredOn > b.task.authoredOn) ? 1 : ((b.task.authoredOn > a.task.authoredOn) ? -1 : 0)).forEach((result) => {
+            results.sort((a, b) => (a.task.authoredOn > b.task.authoredOn) ? 1 : ((b.task.authoredOn > a.task.authoredOn) ? -1 : 0)).forEach((result) => {
                 const task = result.task;
                 const url = result.url;
                 const base = result.base;
-                const workflow = (result.url.includes(CDEX.payerEndpoint.url))?"subscription":"polling";
+                const workflow = (result.url.includes(CDEX.payerEndpoint.url)) ? "subscription" : "polling";
                 const reqTagID = 'REQ-' + task.id;
                 if (firstRun) {
                     const out = "<tr><td><a href='" + url + "' target='_blank'>" + task.id + "</a></td><td>" + CDEX.formatDate(task.authoredOn) + "</td><td>" + workflow + "</td><td id='" + reqTagID + "'></td></tr>";
@@ -440,13 +523,13 @@ if (!CDEX) {
 
                 if (task.status === "completed") {
                     const idButton = "COMM-" + task.id;
-                    $('#'+reqTagID).html("<div><a href='#' id='" + idButton + "'>" + task.status + "</a></div>");
+                    $('#' + reqTagID).html("<div><a href='#' id='" + idButton + "'>" + task.status + "</a></div>");
                     $('#' + idButton).click(() => {
                         let resources = [];
                         let promises = [];
 
                         task.output.map((e) => e.valueReference.reference).forEach((resourceURI) => {
-                            promises.push ((async (resourceURI) => {
+                            promises.push((async (resourceURI) => {
                                 let result = null;
                                 if (resourceURI.startsWith("#")) {
                                     result = task.contained.find((e) => {
@@ -460,7 +543,7 @@ if (!CDEX) {
                                         }
                                         var stack = base.split("/"),
                                             parts = relative.split("/");
-                                        for (var i=0; i<parts.length; i++) {
+                                        for (var i = 0; i < parts.length; i++) {
                                             if (parts[i] == ".")
                                                 continue;
                                             if (parts[i] == "..")
@@ -471,13 +554,13 @@ if (!CDEX) {
                                         return stack.join("/");
                                     }
 
-                                    let url = absolute (base, resourceURI);
+                                    let url = absolute(base, resourceURI);
                                     let conf = {
                                         type: 'GET',
                                         url: url,
                                         contentType: "application/fhir+json"
                                     };
-                                    
+
                                     result = await $.ajax(conf);
                                 }
 
@@ -501,7 +584,7 @@ if (!CDEX) {
                     if (task.businessStatus && task.businessStatus.text) {
                         message += " (" + task.businessStatus.text + ")";
                     }
-                    $('#'+reqTagID).html("<div>" + message + "</div>");
+                    $('#' + reqTagID).html("<div>" + message + "</div>");
                 }
             });
             $('#communication-request-screen-loader').hide();
@@ -518,7 +601,7 @@ if (!CDEX) {
 
             CDEX.client.patient.read().then((pt) => {
                 CDEX.patient = pt;
-                CDEX.displayPatient (pt);
+                CDEX.displayPatient(pt);
             }).then(() => {
                 CDEX.client.api.fetchAll(
                     {
@@ -532,7 +615,7 @@ if (!CDEX) {
                     CDEX.processRequests(commReqs).then(() => {
                         setInterval(() => CDEX.processRequests(commReqs, false), 3000);
                     });
-                    
+
                 });
             });
         } catch (err) {
@@ -558,7 +641,7 @@ if (!CDEX) {
     CDEX.loadConfig = () => {
         let configText = window.localStorage.getItem("cdex-app-config");
         if (configText) {
-            let conf = JSON.parse (configText);
+            let conf = JSON.parse(configText);
             if (conf['custom']) {
                 CDEX.providerEndpoint = conf['custom'];
                 CDEX.configSetting = "custom";
@@ -586,8 +669,8 @@ if (!CDEX) {
             let subscribe = CDEX.subscribe;
 
             let configProvider = {
-                type: subscribe?'PUT':'POST',
-                url: CDEX.providerEndpoint.url + CDEX.submitTaskEndpoint + (subscribe?('/'+CDEX.taskPayload.id):''),
+                type: subscribe ? 'PUT' : 'POST',
+                url: CDEX.providerEndpoint.url + CDEX.submitTaskEndpoint + (subscribe ? ('/' + CDEX.taskPayload.id) : ''),
                 data: JSON.stringify(CDEX.taskPayload),
                 contentType: "application/fhir+json"
             };
@@ -599,13 +682,13 @@ if (!CDEX) {
                 if (CDEX.subscribe) {
                     commReq.about = [
                         {
-                        "reference": CDEX.payerEndpoint.url + CDEX.submitTaskEndpoint + "/" + CDEX.taskPayload.id
+                            "reference": CDEX.payerEndpoint.url + CDEX.submitTaskEndpoint + "/" + CDEX.taskPayload.id
                         }
                     ];
                 } else {
                     commReq.about = [
                         {
-                        "reference": CDEX.providerEndpoint.url + CDEX.submitTaskEndpoint + "/" + CDEX.taskPayload.id
+                            "reference": CDEX.providerEndpoint.url + CDEX.submitTaskEndpoint + "/" + CDEX.taskPayload.id
                         }
                     ];
                 }
@@ -638,7 +721,7 @@ if (!CDEX) {
                         contentType: "application/fhir+json"
                     };
 
-                    $.when($.ajax(configPayer3),$.ajax(configProvider2)).then(() => {
+                    $.when($.ajax(configPayer3), $.ajax(configProvider2)).then(() => {
                         $.ajax(configPayer2).then(() => {
                             $('#submit-endpoint2').show();
                             $("#text-output2").show();
@@ -658,10 +741,10 @@ if (!CDEX) {
                 }
             }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the submit endpoint configuration <br> You can close this window now"));
         }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the submit endpoint configuration <br> You can close this window now"));
-        
+
     };
 
-    CDEX.restart = () => {        
+    CDEX.restart = () => {
         /*$('#discharge-selection').show();
         $('#comm-request-list').html('');
         CDEX.enable('btn-submit');
@@ -676,35 +759,46 @@ if (!CDEX) {
         CDEX.displayScreen('task-intro-screen');
     }
 
-    $('#btn-task-request').click(function() {
+    $('#btn-task-request').click(function () {
         CDEX.displayDataRequestScreen();
         CDEX.addTypeSelection();
     });
 
-    $('#btn-query-request').click(function() {
+    $('#btn-query-request').click(function () {
         //CDEX.displayScreen('query-request-screen');
-        
-        if ($('#search-criteria')[0].selectedIndex != 0 ) {
+
+        if ($('#search-criteria')[0].selectedIndex == 1) {
             if ($('#subobs0').is(":checked") && $('#obs-code').val() === "") {
                 alert("Please specify a code");
             } else {
                 CDEX.directQueryRequest();
             }
-        } else {
+        } else if ($('#search-criteria')[0].selectedIndex == 2) {
+            if ($('#condition0').is(":checked") && $('#active').is(":not(:checked)")  &&
+            $('#recurrance').is(":not(:checked)") && $('#remission').is(":not(:checked)")) {
+                alert("Please specify a clinical status search criteria");
+            } else if ($('#provenance1').is(":checked") && $('#sub-provenance').is(":not(:checked)")) {
+                alert("Please specify a provenance search criteria");
+            } else {
+                CDEX.directQueryRequest();
+            }
+        } else if ($('#search-criteria')[0].selectedIndex == 3) {
+
+        }else {
             alert("Please select a search criteria");
         }
-        
+
     });
-    
+
     /*$('#btn-query-request').click(() => {
         CDEX.addTypeSelection();
         return false;
     });*/
 
-    $('#btn-execute-query').click(function() {
+    $('#btn-execute-query').click(function () {
         CDEX.directQueryRequest();
     });
-    
+
     $('#btn-review').click(CDEX.displayReviewScreen);
     $('#btn-task').click(CDEX.displayCommReqScreen);
     $('#btn-query').click(CDEX.displayDirectQueryScreen);
@@ -717,15 +811,15 @@ if (!CDEX) {
     $('#btn-config').click(function () {
         let selection = $('#config-select').val();
         if (selection !== 'custom') {
-            window.localStorage.setItem("cdex-app-config", JSON.stringify({'selection': parseInt(selection)}));
+            window.localStorage.setItem("cdex-app-config", JSON.stringify({ 'selection': parseInt(selection) }));
         } else {
             let configtext = $('#config-text').val();
             let myconf;
             try {
                 myconf = JSON.parse(configtext);
-                window.localStorage.setItem("cdex-app-config", JSON.stringify({'custom': myconf}));
+                window.localStorage.setItem("cdex-app-config", JSON.stringify({ 'custom': myconf }));
             } catch (err) {
-                alert ("Unable to parse configuration. Please try again.");
+                alert("Unable to parse configuration. Please try again.");
             }
         }
         CDEX.loadConfig();
@@ -736,11 +830,11 @@ if (!CDEX) {
         $('#config-select').append("<option value='" + id + "'>" + e.name + "</option>");
     });
     $('#config-select').append("<option value='custom'>Custom</option>");
-    $('#config-text').val(JSON.stringify(CDEX.providerEndpoints[0],null,"   "));
+    $('#config-text').val(JSON.stringify(CDEX.providerEndpoints[0], null, "   "));
 
-    $('#config-select').on('change', function() {
+    $('#config-select').on('change', function () {
         if (this.value !== "custom") {
-            $('#config-text').val(JSON.stringify(CDEX.providerEndpoints[parseInt(this.value)],null,2));
+            $('#config-text').val(JSON.stringify(CDEX.providerEndpoints[parseInt(this.value)], null, 2));
         }
     });
 
@@ -763,22 +857,46 @@ if (!CDEX) {
         };
 
         $.ajax(configPayer).then((req) => {
-            let url = CDEX.payerEndpoint.url  + "/" + queryType + "?patient=" + CDEX.patient.id;
+            let url = CDEX.payerEndpoint.url + "/" + queryType + "?patient=" + CDEX.patient.id;
+            let commaneeded = false;
             switch (queryType) {
                 case "Observation":
                     if ($('#subobs0').is(":checked")) {
                         url += "&code=" + $('#obs-code').val();
                     }
                     if ($('#subobs1').is(":checked")) {
-                        url += "&date=gt" + $('#obs-time').val();
+                        url += "&date=" + $('#select-range').find(':selected').val() + $('#obs-time').val();
                     }
                     break;
                 case "Condition":
                     if ($('#condition0').is(":checked")) {
-                        url += "&clinical-status=active,recurrance,remission";
+                        url += "&clinical-status=";
+                        if ($('#active').is(":checked")) {
+                            url += "active";
+                            commaneeded = true;
+                        }
+                        if ($('#recurrance').is(":checked")) {
+                            if (commaneeded) {
+                                url += ",recurrance";
+                            } else {
+                                url += "recurrance";
+                            }
+                            commaneeded = true;
+                        }
+                        if ($('#remission').is(":checked")) {
+                            if (commaneeded) {
+                                url += ",remission";
+                            } else {
+                                url += "remission";
+                            }
+                            commaneeded = true;
+                        }
                     }
-                    if ($('#condition1').is(":checked")) {
-                        url += "&_revinclude=Provenance:target";
+                    if ($('#provenance1').is(":checked")) {
+                        url += "&_revinclude=";
+                        if ($('#sub-provenance').is(":checked")) {
+                            url += "Provenance:target";
+                        }
                     }
                     break;
                 default:
