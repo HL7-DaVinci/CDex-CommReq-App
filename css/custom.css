@@ -46,10 +46,6 @@ img {
     margin-bottom: 5px;
 }
 
-.request-type {
-    /*font-weight: bold;*/
-}
-
 #review-lists, #review-workflow {
     width: 700px;
 }
@@ -57,4 +53,12 @@ img {
 #text-output, #text-output2, #dq-text-output  {
     height: 300px;
     width: 600px;
+}
+
+.sub-inline {
+    display: inline-block;
+}
+
+.inline-elem {
+    margin-inline: 5px;
 }
