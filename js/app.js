@@ -780,7 +780,7 @@ if (!CDEX) {
                 CDEX.directQueryRequest();
             }
         } else if ($('#search-criteria')[0].selectedIndex == 3) {
-
+            CDEX.directQueryRequest();
         }else {
             alert("Please select a search criteria");
         }
