@@ -897,7 +897,7 @@ if (!CDEX) {
                     }
                     break;
                 default:
-                    url += "&type=34117-2&_sort=-period&_count=1";
+                    // url += "&type=34117-2&_sort=-period&_count=1";
                     break;
             }
             $('#search-criteria').html("<option>-- Select search criteria --</option>");
