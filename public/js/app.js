@@ -3,6 +3,16 @@ if (!CDEX) {
     CDEX = {};
 }
 
+var PATIENT;
+if (!PATIENT) {
+    PATIENT = {};
+}
+
+var CLAIM;
+if (!CLAIM) {
+    CLAIM = {};
+}
+
 (function () {
 
     CDEX.client = null;
@@ -39,7 +49,10 @@ if (!CDEX) {
         $('#config-screen').hide();
         $('#communication-request-screen').hide();
         $('#direct-query-request-screen').hide();
+        $('#attachment-submit-screen').hide;
         $('#query-request-screen').hide();
+        $('#attachment-confirm-screen').hide();
+        $('#attachment-submit-screen').hide;
         if (screenID === 'intro-screen') {
             $('#task-intro-screen').show();
         } else {
@@ -147,6 +160,53 @@ if (!CDEX) {
         }
     };
 
+    CDEX.showClaimTimePicker = () => {
+        if ($('#subclaim0').is(':checked')) {
+            $('#claim-time').show();
+            $('#select-range-claim').show();
+        } else {
+            $('#claim-time').hide();
+            $('#select-range-claim').hide();
+        }
+    };
+
+    CDEX.claimSubsearch = () => {
+        let subsearchParam = 0;
+        CDEX.claimParameters.criteria.forEach((value) => {
+            $('#subsearch').append(
+                "<div><input type='checkbox' id='subclaim" + subsearchParam +
+                "' value='" + value.value + "'>" +
+                "<label for='subclaim" + subsearchParam + "'>" + value.name +
+                "</label></div></div>"
+            );
+            if (value.value === "date") {
+                $('#subclaim0').change(function () {
+                    CDEX.showClaimTimePicker();
+                });
+                let today = new Date();
+                let todayFormatted = today.getFullYear() + '/' + ('0' + (today.getMonth() + 1)).slice(-2) + '/' + ('0' + today.getDate()).slice(-2);
+                $('#subsearch').append(
+                    "<div class='sub-inline'>" +
+                    "<div><select class='form-control' id='select-range-claim'>" +
+                    "<option value='eq'>On date</option>" +
+                    "<option value='lt'>Before</option>" +
+                    "<option value='gt'>After</option>" +
+                    "<option value='ge'>On or after</option>" +
+                    "<option value='le'>On or before</option>" +
+                    "</select></div>" +
+                    "<input type='datetime-local' id='claim-time'" +
+                    "name='claim-time' value='" + todayFormatted + "'>" +
+                    "</div>"
+                );
+                $('#claim-time').val(new Date().toJSON().slice(0, 19));
+                $('#claim-time').hide();
+                $('#select-range-claim').hide();
+            }
+            subsearchParam++;
+        });
+
+    };
+
     CDEX.showCodeInput = () => {
         if ($('#subobs0').is(':checked')) {
             $('#obs-code').show();
@@ -173,17 +233,17 @@ if (!CDEX) {
                 $('#subsearch').append(
                     "<div class='sub-inline'>" +
                     "<div><select class='form-control' id='select-range'>" +
-                        "<option value='eq'>On date</option>" +
-                        "<option value='lt'>Before</option>" +
-                        "<option value='gt'>After</option>" +
-                        "<option value='ge'>On or after</option>" +
-                        "<option value='le'>On or before</option>" +
+                    "<option value='eq'>On date</option>" +
+                    "<option value='lt'>Before</option>" +
+                    "<option value='gt'>After</option>" +
+                    "<option value='ge'>On or after</option>" +
+                    "<option value='le'>On or before</option>" +
                     "</select></div>" +
                     "<input type='datetime-local' id='obs-time'" +
                     "name='obs-time' value='" + todayFormatted + "'>" +
                     "</div>"
                 );
-                $('#obs-time').val(new Date().toJSON().slice(0,19));
+                $('#obs-time').val(new Date().toJSON().slice(0, 19));
                 $('#obs-time').hide();
                 $('#select-range').hide();
             } else {
@@ -244,7 +304,7 @@ if (!CDEX) {
                     "<input type='checkbox' id='recurrance' value='recurrance' class='inline-elem'>" +
                     "<label id='forrecurrance' for='recurrance'>Recurrance</label>" +
                     "<input type='checkbox' id='remission' value='remission' class='inline-elem'>" +
-                    "<label id='forremission' for='remission'>Remission</label>"+
+                    "<label id='forremission' for='remission'>Remission</label>" +
                     "</div>"
                 );
 
@@ -257,7 +317,7 @@ if (!CDEX) {
                 $('#condition0').change(function () {
                     CDEX.showClinicalStatus();
                 });
-                
+
             }
             if (value.value === "_revinclude") {
                 $('#subsearch').append(
@@ -283,6 +343,111 @@ if (!CDEX) {
 
     };
 
+    CDEX.showDocInput = () => {
+        if ($('#subdoc0').is(':checked')) {
+            $('#codes').show();
+        } else {
+            $('#codes').hide();
+        }
+    };
+
+    CDEX.showCatInput = () => {
+        if ($('#subdoc1').is(':checked')) {
+            $('#categories').show();
+        } else {
+            $('#categories').hide();
+        }
+    };
+
+    CDEX.documentSubsearch = () => {
+        let subsearchParam = 0;
+        CDEX.documentReferenceParameters.criteria.forEach((value) => {
+            $('#subsearch').append(
+                "<div id='doc" + subsearchParam + "'><input type='checkbox' id='subdoc" + subsearchParam +
+                "' value='" + value.value + "'>" +
+                "<label for='" + value.name + "'>" + value.name +
+                "</label></div></div>"
+            );
+
+            if (value.value === "type") {
+                $('#subdoc0').change(function () {
+                    CDEX.showDocInput();
+                });
+                $('#doc0').append(
+                    "<div id='codes'><input id='codeInput' list='codesList'>" +
+                    "<datalist id='codesList'>" +
+                    "</datalist></div>"
+                );
+                CDEX.loincTypes.loinc.forEach((code) => {
+                    $('#codesList').append(
+                        "<option value='" + code.code + "'>" +
+                        code.display + "</option>"
+                    );
+                });
+                $('#codes').hide();
+            }
+            if (value.value === "category") {
+                $('#subdoc1').change(function () {
+                    CDEX.showCatInput();
+                });
+                $('#doc1').append(
+                    "<div id='categories'><input id='catInput' list='catList'>" +
+                    "<datalist id='catList'>" +
+                    "</datalist></div>"
+                );
+                CDEX.docRefCodes.docRefCodeList.forEach((code) => {
+                    $('#catList').append(
+                        "<option value='" + code.Code + "'>" +
+                        code.Display + "</option>"
+                    );
+                });
+                $('#categories').hide();
+            }
+            subsearchParam++;
+        });
+
+    };
+
+    CDEX.showMedInput = () => {
+        if ($('#submed0').is(':checked')) {
+            $('#medcodes').show();
+        } else {
+            $('#medcodes').hide();
+        }
+    };
+
+    CDEX.medicationSubsearch = () => {
+        let subsearchParam = 0;
+        CDEX.medicationParameters.criteria.forEach((value) => {
+            $('#subsearch').append(
+                "<div id='med" + subsearchParam + "'><input type='checkbox' id='submed" + subsearchParam +
+                "' value='" + value.value + "'>" +
+                "<label for='" + value.name + "'>" + value.name +
+                "</label></div></div>"
+            );
+
+            if (value.value === "code") {
+                $('#submed0').change(function () {
+                    CDEX.showMedInput();
+                });
+                $('#med0').append(
+                    "<div id='medcodes'><input id='medcodeInput' list='medcodesList'>" +
+                    "<datalist id='medcodesList'>" +
+                    "</datalist></div>"
+                );
+                CDEX.medCodes.snomedct.forEach((code) => {
+                    $('#medcodesList').append(
+                        "<option value='" + code.Code + "'>" +
+                        code.Display + "</option>"
+                    );
+                });
+                $('#medcodes').hide();
+            }
+            subsearchParam++;
+        });
+
+    };
+
     CDEX.selectSearchType = (subsearch) => {
         $('#subsearch').html("");
         switch (subsearch) {
@@ -292,10 +457,60 @@ if (!CDEX) {
             case "Condition":
                 CDEX.conditionSubsearch();
                 break;
+            case "Document reference":
+                CDEX.documentSubsearch();
+                break;
+            case "Claim":
+                CDEX.claimSubsearch();
+                break;
+            case "Medication statement":
+                CDEX.medicationSubsearch();
+                break;
             default:
                 break;
         }
     }
+
+    CDEX.searchClaims = async () => {
+        CLAIM.claimLookupByPatient(CDEX.patient.id).then(res => {
+            if (res.total > 0) {
+                res.entry.forEach((value) => {
+                    $('#search-claim').append("<option value='" + value.resource.id +
+                        "'>" + value.resource.id + "</option>");
+                });
+            } else {
+                alert(`Not available claims for selected patient`);
+                $("#type-claim").checked = true;
+            }
+        });
+    }
+
+    CDEX.displayAttachmentScreen = () => {
+        CDEX.searchClaims().then(() => {
+            $('#loincCodes').append(
+                "<div id='codes'><input id='codeInput' list='codesList'>" +
+                "<datalist id='codesList'>" +
+                "</datalist></div>"
+            );
+            CDEX.loincTypes.loinc.forEach((code) => {
+                $('#codesList').append(
+                    "<option value='" + code.code + "' id='" + code.code + "'>" +
+                    code.display + "</option>"
+                );
+            });
+            CDEX.displayScreen('attachment-submit-screen');
+            $("#type-claim").click(function () {
+                if ($(this).is(":checked")) {
+                    $("#claimid").removeAttr("disabled");
+                    $("#claimid").focus();
+                    $("#search-claim").attr("disabled", "disabled");
+                } else {
+                    $("#claimid").attr("disabled", "disabled");
+                    $("#search-claim").removeAttr("disabled");
+                }
+            });
+        });
+    };
 
     CDEX.displayDirectQueryScreen = () => {
         CDEX.searchCriteria.criteria.forEach((value) => {
@@ -756,6 +971,15 @@ if (!CDEX) {
         CDEX.displayScreen('task-intro-screen');
     }
 
+    $('#select-attch').change(function () {
+        let fname = $('#select-attch').get(0).files[0].name;
+        var fsize = $('#select-attch').get(0).files[0].size;
+
+        $('#selected-attch').html(
+            fname + " (<b>" + fsize + "</b> bytes)<br />"
+        );
+    });
+
     $('#btn-task-request').click(function () {
         CDEX.displayDataRequestScreen();
         CDEX.addTypeSelection();
@@ -764,15 +988,15 @@ if (!CDEX) {
     $('#btn-query-request').click(function () {
         //CDEX.displayScreen('query-request-screen');
 
-        if ($('#search-criteria')[0].selectedIndex == 1) {
+        if ($('#search-criteria')[0].selectedIndex == 5) {
             if ($('#subobs0').is(":checked") && $('#obs-code').val() === "") {
                 alert("Please specify a code");
             } else {
                 CDEX.directQueryRequest();
             }
         } else if ($('#search-criteria')[0].selectedIndex == 2) {
-            if ($('#condition0').is(":checked") && $('#active').is(":not(:checked)")  &&
-            $('#recurrance').is(":not(:checked)") && $('#remission').is(":not(:checked)")) {
+            if ($('#condition0').is(":checked") && $('#active').is(":not(:checked)") &&
+                $('#recurrance').is(":not(:checked)") && $('#remission').is(":not(:checked)")) {
                 alert("Please specify a clinical status search criteria");
             } else if ($('#provenance1').is(":checked") && $('#sub-provenance').is(":not(:checked)")) {
                 alert("Please specify a provenance search criteria");
@@ -780,17 +1004,47 @@ if (!CDEX) {
                 CDEX.directQueryRequest();
             }
         } else if ($('#search-criteria')[0].selectedIndex == 3) {
+            if ($('#subdoc0').is(":checked") && $('#codeInput').val() === "") {
+                alert("Please specify a type or uncheck it");
+            } else if ($('#subdoc1').is(":checked") && $('#catInput').val() === "") {
+                alert("Please specify a category or uncheck it");
+            } else {
+                CDEX.directQueryRequest();
+            }
+        } else if ($('#search-criteria')[0].selectedIndex == 1) {
             CDEX.directQueryRequest();
-        }else {
+        } else if ($('#search-criteria')[0].selectedIndex == 4) {
+            if ($('#submed0').is(":checked") && $('#medcodeInput').val() === "") {
+                alert("Please specify a code or uncheck it");
+            } else {
+                CDEX.directQueryRequest();
+            }
+        } else {
             alert("Please select a search criteria");
         }
 
     });
 
-    /*$('#btn-query-request').click(() => {
-        CDEX.addTypeSelection();
-        return false;
-    });*/
+    $('#btn-attch-submit').click(() => {
+        let claimID = "";
+        if ($("#type-claim").is(':checked')) {
+            claimID = $("#claimid").val()
+        } else {
+            claimID = $("#search-claim").find(':selected').val();
+        }
+        if ($('#select-attch').get(0).files.length == 0) {
+            alert("No file(s) selected. Please select at least one file to submit");
+        } else if (claimID === '-- Select tracking control number --' || claimID === "") {
+            alert('Please select or specify a tracking id ');
+        } else if ($('#codeInput').val() === "") {
+            alert('Please select or specify a code');
+        } else if ($('#serviceDate').val() === "") {
+            alert('Please select or specify a service date');
+        } else {
+            CDEX.submitAttachments(claimID);
+            $('#attachment-submit-screen').hide();
+        }
+    });
 
     $('#btn-execute-query').click(function () {
         CDEX.directQueryRequest();
@@ -799,6 +1053,7 @@ if (!CDEX) {
     $('#btn-review').click(CDEX.displayReviewScreen);
     $('#btn-task').click(CDEX.displayCommReqScreen);
     $('#btn-query').click(CDEX.displayDirectQueryScreen);
+    $('#btn-attach').click(CDEX.displayAttachmentScreen);
     $('#btn-restart').click(CDEX.restart);
     $('#dq-btn-restart').click(CDEX.restart);
     $('#btn-back').click(CDEX.displayCommReqScreen);
@@ -841,6 +1096,127 @@ if (!CDEX) {
 
     FHIR.oauth2.ready(CDEX.initialize);
 
+    CDEX.submitAttachments = (claimId) => {
+        let operationOutcome = '';
+        let claimPayload
+        let claimExists = true;
+        const reader = new FileReader();
+
+        reader.readAsDataURL($('#select-attch').get(0).files.item(0));
+        reader.onloadend = (evt) => {
+            if (evt.target.readyState === FileReader.DONE) {
+                CDEX.attachmentPayload.parameter[0].valueCode = 'claim';//To check: $('#radio-claim').is(':checked')?'claim':'prior-auth';
+                CDEX.attachmentPayload.parameter[1].valueString = `${claimId}`;
+                CDEX.attachmentPayload.parameter[5].valueIdentifier.value = `${CDEX.patient.id}`;
+                CDEX.attachmentPayload.parameter[6].resource.id = `CDex-parameter-attachment-${Date.now()}`;
+                CDEX.attachmentPayload.parameter[6].resource.content[0].attachment.data = `${reader.result.split(';base64,')[1]}`;
+                CDEX.attachmentPayload.parameter[6].resource.content[0].title = `${$('#select-attch').get(0).files.item(0).name}`;
+                CDEX.attachmentPayload.parameter[6].resource.type.coding[0].code = `${$('#codeInput').val()}`;
+                let displayValue = $(`#${CDEX.attachmentPayload.parameter[6].resource.type.coding[0].code}`).text();
+                CDEX.attachmentPayload.parameter[6].resource.type.coding[0].display = `${displayValue}`;
+
+                const binaryResource = {
+                    "attachment": {
+                        "contentType": "application/pdf",
+                        "data": CDEX.attachmentPayload.parameter[6].resource.content[0].attachment.data,
+                        "title": CDEX.attachmentPayload.parameter[6].resource.content[0].title
+                    }
+                }
+                let configProvider = {
+                    type: 'PUT',
+                    url: `${CDEX.payerEndpoint.url}/Binary/CDex-Binary-for-${claimId}?upsert=true`,
+                    data: JSON.stringify(binaryResource),
+                    contentType: "application/json"
+                };
+                $.ajax(configProvider).then(response => {
+                    $('#binary-output').html(JSON.stringify(response));
+                    // CLaim lookup
+                    CLAIM.claimLookupById(claimId).then((results) => {
+                        if (Object.keys(results).length === 0) {
+                            //New Claim creation
+                            claimExists = false;
+                            operationOutcome = {
+                                "resourceType": "OperationOutcome",
+                                "id": "outcome_noclaim",
+                                "issue": [
+                                    {
+                                        "severity": "warning",
+                                        "code": "informational",
+                                        "details": {
+                                            "text": "Claim not found - will create base claim."
+                                        }
+                                    }
+                                ]
+                            };
+                            $('#claimCreateUpdate').html('Claim successfully created.');
+                            CDEX.claimPayloadAttachment.id = claimId;
+                            CDEX.claimPayloadAttachment.supportingInfo.valueReference.reference = `CDex-Binary-for-${claimId}`;
+                            CDEX.claimPayloadAttachment.created = $("#serviceDate").val();
+                            CLAIM.claimUpsert(CDEX.claimPayloadAttachment).then((results) => {
+                                $('#claim-output').html(JSON.stringify(results));
+                            });
+                        } else {
+                            //Existing claim update
+                            $('#claimCreateUpdate').html('Claim successfully updated.');
+                            operationOutcome = {
+                                "resourceType": "OperationOutcome",
+                                "id": "outcome_ok",
+                                "issue": [
+                                    {
+                                        "severity": "informational",
+                                        "code": "informational",
+                                        "details": {
+                                            "text": "Claim found and attachment saved."
+                                        }
+                                    }
+                                ]
+                            };
+                            results.supportingInfo = {
+                                "sequence": 1,
+                                "category": {
+                                    "text": "sample text"
+                                },
+                                "valueReference": {
+                                    "reference": `Binary/CDex-Binary-for-${claimId}`
+                                }
+                            }
+                            CLAIM.claimUpsert(results).then((results) => {
+                                $('#claim-output').html(JSON.stringify(results));
+                            });
+                        }
+                        //Parameter creation
+                        configProvider = {
+                            type: 'POST',
+                            url: `${CDEX.payerEndpoint.url}/Parameters`,
+                            data: JSON.stringify(CDEX.attachmentPayload),
+                            contentType: "application/json"
+                        };
+                        console.log(configProvider.data);
+                        $.ajax(configProvider).then(response => {
+                            $('#parameter-output').html(JSON.stringify(response));
+                            $('#operation-output').html(JSON.stringify(operationOutcome));
+                            CDEX.displayScreen('attachment-confirm-screen');
+                        });
+                    });
+                });
+            }
+        };
+    }
+
+    CDEX.signAttachment = (bundle) => {
+        $.ajax({
+            url: 'http://127.0.0.1:9090/api/sign',
+            type: 'POST',
+            data: bundle,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            success: (result) => {
+                return result
+            }
+        })
+    }
+
     CDEX.directQueryRequest = () => {
         let queryType = $('#search-criteria').val();
         let condition = {};
@@ -857,9 +1233,27 @@ if (!CDEX) {
             let url = CDEX.payerEndpoint.url + "/" + queryType + "?patient=" + CDEX.patient.id;
             let commaneeded = false;
             switch (queryType) {
+                case "MedicationStatement":
+                    if ($('#submed0').is(":checked")) {
+                        url += "&code=" + $('#medcodeInput').val();
+                    }
+                    break;
+                case "Claim":
+                    if ($('#subclaim0').is(":checked")) {
+                        url += "&created=" + $('#select-range-claim').find(':selected').val() + $('#claim-time').val();
+                    }
+                    break;
+                case "DocumentReference":
+                    if ($('#subdoc0').is(":checked")) {
+                        url += "&type=" + $('#codeInput').val();
+                    }
+                    if ($('#subdoc1').is(":checked")) {
+                        url += "&category=" + $('#catInput').val();
+                    }
+                    break;
                 case "Observation":
                     if ($('#subobs0').is(":checked")) {
-                        url += "&code=" + $('#obs-code').val();
+                        url += "&combo-code=" + $('#obs-code').val();
                     }
                     if ($('#subobs1').is(":checked")) {
                         url += "&date=" + $('#select-range').find(':selected').val() + $('#obs-time').val();
@@ -897,7 +1291,6 @@ if (!CDEX) {
                     }
                     break;
                 default:
-                    // url += "&type=34117-2&_sort=-period&_count=1";
                     break;
             }
             $('#search-criteria').html("<option>-- Select search criteria --</option>");

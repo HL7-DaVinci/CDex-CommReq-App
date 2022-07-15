@@ -27,6 +27,7 @@
         <p class='card-text' id='task-intro'></p>
         <a href="#" class="btn btn-primary" id="btn-task">Task Based Approach</a>
         <a href="#" class="btn btn-primary" id="btn-query">Direct Query</a>
+        <a href="#" class="btn btn-primary" id="btn-attach">Submit Attachment(s)</a>
     </div>
 </div>
 <div></div>
@@ -85,6 +86,59 @@
         <p><button type="button" class="btn btn-primary" id="btn-query-request">Direct Query Request</button></p>
     </div>
 </div>
+<div id="attachment-submit-screen" class="card alert-info screen">
+    <div class="card-body">
+        <h3>Patient: <span id="commRes-patient-name">[loading...]</span></h3>
+        <div>
+            <select class='form-control' id='search-claim'>
+                <option>-- Select tracking control number --</option>
+            </select>
+            <div>
+                <input type='checkbox' id='type-claim' name='type-claim' value='typed'>
+                <label for='type-claim'> Type tracking control number </label>
+            </div>
+            <input type='text' id='claimid' name='claimid' placeholder='Custom track #' disabled="disabled" value="">
+        </div><br>
+        <div>
+            <label for="serviceDate">Service date</label><br>
+            <input type="date" id="serviceDate" name="serviceDate">
+        </div><br>
+        <div id="loincCodes"><label>Code</label></div><br>
+        <input type="file" name="attachments" id="select-attch">
+        <div id="selected-attch" class="subsearch"></div>
+        <div class="form-check form-check-inline">
+            <label for="radio-claim">
+                <input type="radio" id="radio-claim" name="code" value="claim" checked="checked"> Claim
+            </label><br>
+        </div>
+        <div class="form-check form-check-inline">
+            <label for="radio-auth">
+                <input type="radio" id="radio-auth" name="code" value="prior-authorization">Prior Authorization
+            </label><br> 
+        </div>
+        <div>
+            <input type='checkbox' id='signature' name='signature' value='signed'>
+            <label for='signature'> Signature required </label>
+        </div>
+        <p><button type="button" class="btn btn-primary" id="btn-attch-submit">Submit Attachment(s)</button></p>
+    </div>
+</div>
+
+<div id="attachment-confirm-screen" class="card alert-info screen">
+    <div class="card-body">
+        <h5 class="card-title">Created/Updated resources</h5>
+        <p class="card-text">Binary successfully created. </p>
+        <p class="card-text"><textarea id="binary-output"></textarea></p>
+        <p class="card-text" id="claimCreateUpdate"></p>
+        <p class="card-text"><textarea id="claim-output"></textarea></p>
+        <p class="card-text">Parameter successfully created</p>
+        <p class="card-text"><textarea id="parameter-output"></textarea></p>
+        <p class="card-text">Operation outcome</p>
+        <p class="card-text"><textarea id="operation-output"></textarea></p>
+        <p class="card-text"><a href="#" class="btn btn-primary" id="btn-restart">OK</a></p>
+    </div>
+</div>
+
 <div id="data-request-screen" class="screen">
     <h3>Edit data request (patient: <span id="patient-name"><p>[loading...]</p></span>)</h3>
     <div id="subscription-selection"><p>
@@ -162,6 +216,8 @@
         <p class='card-text' id='error-message'></p>
     </div>
 </div>
+<script src="js/patient.js"></script>
+<script src="js/claim.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>
