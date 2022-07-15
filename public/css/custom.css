@@ -10,13 +10,23 @@ td {
     vertical-align: middle;
 }
 
-#task-intro-screen, #query-intro-screen, #confirm-screen, #dq-confirm-screen, #config-screen, #query-request-screen, #direct-query-request-screen, .dvt {
+#task-intro-screen,
+#query-intro-screen,
+#confirm-screen,
+#dq-confirm-screen,
+#config-screen,
+#query-request-screen,
+#direct-query-request-screen,
+#attachment-submit-screen,
+#attachment-confirm-screen,
+.dvt {
     align-self: center;
     width: 700px;
     margin-bottom: 1rem;
 }
 
-.screen, #medrec-meds {
+.screen,
+#medrec-meds {
     display: none;
 }
 
@@ -26,7 +36,7 @@ td {
 }
 
 img {
-    margin-right:10px;
+    margin-right: 10px;
     width: 66px;
 }
 
@@ -42,15 +52,24 @@ img {
     justify-content: center;
 }
 
-#selection-query-list div.card, #search-criteria, #subsearch{
+#selection-query-list div.card,
+#search-criteria,
+#subsearch {
     margin-bottom: 5px;
 }
 
-#review-lists, #review-workflow {
+#review-lists,
+#review-workflow {
     width: 700px;
 }
 
-#text-output, #text-output2, #dq-text-output  {
+#text-output,
+#text-output2,
+#dq-text-output,
+#claim-output,
+#binary-output,
+#parameter-output,
+#operation-output {
     height: 300px;
     width: 600px;
 }
