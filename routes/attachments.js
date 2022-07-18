@@ -7,6 +7,8 @@ const data = require('../attachments.json');
 
 const axios = require('axios');
 
+const baseurl = "https://api.logicahealth.org/DaVinciCDexProvider/open";
+
 //Movies
 router.get('/', (req, res) => {
     res.json(data);
@@ -34,10 +36,12 @@ router.post('/', (req, res) => {
     let attch;
     let attchId = '';
     let attchType = '';
+    let resource = '';
+    let existingClaim = '';
+    const attachmentResource = Date.now();
+    console.log(`Created resource ID ------------------------- CDex-${attachmentResource}`);
 
     if (resourceType && parameter && resourceType === 'Parameters') {
-        const baseurl = "https://api.logicahealth.org/DaVinciCDexProvider/open";
-
         parameter.forEach(element => {
             if (element.name === 'MemberId') {
                 memberId = element.valueIdentifier.value;
@@ -45,26 +49,18 @@ router.post('/', (req, res) => {
                 claimId = element.valueString;
             } else if (element.name === 'Attachment') {
                 attchId = element.resource.id;
-                attch = element.resource.content[0];
-                attchType = element.resource.content[0].attachment.contentType;
+                attch = element.resource;
+                resource = element.resource;
+                attchType = element.resource.resourceType;
             }
         });
-        return new Promise(resolve => {
-            request(`${baseurl}/Patient/${memberId}`, { json: true }, (err, resp, body) => {
-                if (!err)
-                    resolve(body);
-            })
-        }).then(value => {
+        return patientLookup(memberId).then(value => {
             if (value.resourceType != "Patient") {
                 res.send(operationOutcome);
             } else {
-                return new Promise((resolve, reject) => {
-                    request(`${baseurl}/Claim?_id=${claimId}`, { json: true }, function (claimerror, claimresp, claimbody) {
-                        if (!claimerror)
-                            resolve(claimbody);
-                    })
-                }).then(value => {
-                    if (value.total == 0) {
+                return claimLookup(claimId).then(value => {
+                    if (value.resourceType !== 'Claim') {
+                        existingClaim = '';
                         claimExists = false;
                         operationOutcome = {
                             "resourceType": "OperationOutcome",
@@ -79,75 +75,45 @@ router.post('/', (req, res) => {
                                 }
                             ]
                         }
+                    } else {
+                        existingClaim = value;
+                        claimExists = true;
                     }
-                    if (attchType == 'application/pdf') {
-                        return new Promise((resolve) => {
-                            request.post(`${baseurl}/Binary`, attch.attachment, function (binerr, binresp, binbody) {
-                                if (!binerr)
-                                    resolve(binbody);
-                            })
-                        }).then(value => {
-                            return new Promise((resolve) => {
-                                request.post(`${baseurl}/Parameters`, req.body, function (parerr, parresp, parbody) {
-                                    if (!parerr)
-                                        resolve(parbody);
-                                })
-                            }).then(value => {
-                                const claimBody = {
-                                    "resourceType": "Claim",
-                                    "id": `${claimId}`,
-                                    "identifier": `${claimId}`,
-                                    "status": "active",
-                                    "type": "institutional",
-                                    "use": "claim",
-                                    "patient": {
-                                        "reference": `Patient/${memberId}`
-                                    },
-                                    "created": "2022-07-01T07:58:44.000+00:00",
-                                    "provider": "cdex-example-practitioner",
-                                    "priority": "normal",
-                                    "insurance": [
-                                        {
-                                            "sequence": 1,
-                                            "focal": true,
-                                            "identifier": {
-                                                "system": "http://CedarArmsMedicalCenter.com/claim",
-                                                "value": "MED-00050"
-                                            },
-                                            "coverage": {
-                                                "reference": "#coverage-1"
-                                            }
+                    if (attchType == 'DocumentReference') {
+                        if (attch.content[0].attachment.contentType == 'application/pdf') {
+                            return createBinary(attch.content[0], attachmentResource).then(value => {
+                                if (value.resourceType === "Binary") {
+                                    return createParameter(req, attachmentResource).then(value => {
+                                        if (value.resourceType === 'Parameters') {
+                                            upsertClaim(claimId, memberId, `Binary/CDex-${attachmentResource}`, existingClaim).then(value => {
+                                                if (claimExists) {
+                                                    operationOutcome = {
+                                                        "resourceType": "OperationOutcome",
+                                                        "id": "outcome_ok",
+                                                        "issue": [
+                                                            {
+                                                                "severity": "informational",
+                                                                "code": "informational",
+                                                                "details": {
+                                                                    "text": "Claim found and attachment saved."
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                                res.send(operationOutcome)
+                                            })
                                         }
-                                    ],
-                                    "supportingInfo": [
-                                        {
-                                            "sequence": 1,
-                                            "category": {
-                                                "text": "sample text"
-                                            },
-                                            "valueReference": {
-                                                "reference": `Binary/${attchId}`
-                                            }
-                                        }
-                                    ],
-                                    "total": "1234"
-                                }
-                                console.dir(claimBody);
-                                new Promise((resolve) => {
-                                    request.put({
-                                        headers: { 'content-type': 'application/json' },
-                                        url: `${baseurl}/Claim/${claimId}?upsert=true`,
-                                        body: claimBody,
-                                        json: true
-                                    }, function (claimerr, claimresp, claimbody) {
-                                        if (!claimerr) {
-                                            console.log('--------------------------------------------');
-                                            console.dir(claimbody);
-                                            resolve(claimbody);
-                                        } else
-                                            console.dir(claimerr);
                                     })
-                                }).then(value => {
+                                } else {
+                                    res.send('Something went wrong');
+                                }
+                            })
+                        }
+                    } else {
+                        return createResource(attch, attachmentResource).then(value => {
+                            return createParameter(req, attachmentResource).then(value => {
+                                upsertClaim(claimId, memberId, `${attch.resourceType}/CDex-${attch.resourceType}-${attachmentResource}`, existingClaim).then(value => {
                                     if (claimExists) {
                                         operationOutcome = {
                                             "resourceType": "OperationOutcome",
@@ -203,19 +169,144 @@ router.delete('/:id', (req, res) => {
         }
     });
     res.send(data);
-})
+});
 
-patientLookup = async (patient) => {
-    let url = "https://api.logicahealth.org/DaVinciCDexProvider/open/Patient?identifier=" + patient;
-    await axios.get(url).then((res) => {
-        if (res.data.total === 0) {
-            return false;
-        } else {
-            return true
+createParameter = async (req, attachmentResource) => {
+    return new Promise((resolve) => {
+        req.body.id = `${req.body.id}${attachmentResource}`;
+        request.put({
+            url: `${baseurl}/Parameters/${req.body.id}`,
+            body: req.body,
+            json: true
+        }, function (parerr, parresp, parbody) {
+            if (!parerr)
+                resolve(parbody);
+        })
+    })
+}
+
+createBinary = async (attch, attachmentResource) => {
+    return new Promise((resolve) => {
+        const binaryBody = {
+            "resourceType": "Binary",
+            "id": `CDex-${attachmentResource}`,
+            "contentType": "application/pdf",
+            "data": `${attch.attachment.data}`
         }
-    }).catch((error) => {
-        return error;
-    });
+        request.put({
+            headers: { 'content-type': 'application/json' },
+            url: `${baseurl}/Binary/CDex-${attachmentResource}`,
+            body: binaryBody,
+            json: true
+        }, function (binerr, binresp, binbody) {
+            if (!binerr)
+                resolve(binbody);
+        });
+    })
+}
+
+createResource = async (attch, attachmentResource) => {
+    return new Promise((resolve) => {
+        const binaryBody = {
+            "resourceType": `${attch.resourceType}`,
+            "id": `CDex-${attch.resourceType}-${attachmentResource}`,
+            "contentType": "application/pdf",
+            "data": `${attch}`
+        }
+        request.put({
+            headers: { 'content-type': 'application/json' },
+            url: `${baseurl}/${attch.resourceType}/${attch.id}`,
+            body: attch,
+            json: true
+        }, function (binerr, binresp, binbody) {
+            if (!binerr)
+                resolve(binbody);
+        });
+    })
+}
+
+claimLookup = async (claimId) => {
+    return new Promise((resolve, reject) => {
+        request(`${baseurl}/Claim/${claimId}`, { json: true }, function (claimerror, claimresp, claimbody) {
+            if (!claimerror)
+                resolve(claimbody);
+        })
+    })
+}
+
+patientLookup = async (memberId) => {
+    return new Promise(resolve => {
+        request(`${baseurl}/Patient/${memberId}`, { json: true }, (err, resp, body) => {
+            if (!err)
+                resolve(body);
+        })
+    })
+}
+
+upsertClaim = async (claimId, memberId, reference, existingClaim) => {
+    let claimBody = '';
+    if (existingClaim === '') {
+        claimBody = {
+            "resourceType": "Claim",
+            "id": `${claimId}`,
+            "identifier": `${claimId}`,
+            "status": "active",
+            "type": "institutional",
+            "use": "claim",
+            "patient": {
+                "reference": `Patient/${memberId}`
+            },
+            "created": "2022-07-01T07:58:44.000+00:00",
+            "provider": "cdex-example-practitioner",
+            "priority": "normal",
+            "insurance": [
+                {
+                    "sequence": 1,
+                    "focal": true,
+                    "identifier": {
+                        "system": "http://CedarArmsMedicalCenter.com/claim",
+                        "value": "MED-00050"
+                    },
+                    "coverage": {
+                        "reference": "#coverage-1"
+                    }
+                }
+            ],
+            "supportingInfo": {
+                "sequence": 1,
+                "category": 1,
+                "valueReference": {
+                    "reference": `${reference}`
+                }
+            },
+            "total": "1234"
+        };
+    } else {
+        claimBody = existingClaim;
+        claimBody.supportingInfo =
+        {
+            "sequence": 1,
+            "category": 1,
+            "valueReference": {
+                "reference": `${reference}`
+            }
+        }
+    }
+
+    return new Promise((resolve) => {
+        request.put({
+            headers: { 'content-type': 'application/json' },
+            url: `${baseurl}/Claim/${claimId}?upsert=true`,
+            body: claimBody,
+            json: true
+        }, function (claimerr, claimresp, claimbody) {
+            if (!claimerr) {
+                resolve(claimbody);
+            } else {
+                console.dir(claimerr);
+            }
+        });
+    })
 }
 
 module.exports = router;

@@ -49,10 +49,10 @@ if (!CLAIM) {
         $('#config-screen').hide();
         $('#communication-request-screen').hide();
         $('#direct-query-request-screen').hide();
-        $('#attachment-submit-screen').hide;
+        $('#attachment-submit-screen').hide();
         $('#query-request-screen').hide();
         $('#attachment-confirm-screen').hide();
-        $('#attachment-submit-screen').hide;
+        $('#attachment-submit-screen').hide();
         if (screenID === 'intro-screen') {
             $('#task-intro-screen').show();
         } else {
@@ -472,6 +472,7 @@ if (!CLAIM) {
     }
 
     CDEX.searchClaims = async () => {
+        $('#search-claim').html("<option>-- Select tracking control number --</option>");
         CLAIM.claimLookupByPatient(CDEX.patient.id).then(res => {
             if (res.total > 0) {
                 res.entry.forEach((value) => {
@@ -487,6 +488,7 @@ if (!CLAIM) {
 
     CDEX.displayAttachmentScreen = () => {
         CDEX.searchClaims().then(() => {
+            $('#loincCodes').html("<label>Code</label>");
             $('#loincCodes').append(
                 "<div id='codes'><input id='codeInput' list='codesList'>" +
                 "<datalist id='codesList'>" +
@@ -1101,110 +1103,304 @@ if (!CLAIM) {
         let claimPayload
         let claimExists = true;
         const reader = new FileReader();
+        const resourcesId = Date.now();
+        const fileName = $('#select-attch').get(0).files.item(0);
 
-        reader.readAsDataURL($('#select-attch').get(0).files.item(0));
-        reader.onloadend = (evt) => {
-            if (evt.target.readyState === FileReader.DONE) {
-                CDEX.attachmentPayload.parameter[0].valueCode = 'claim';//To check: $('#radio-claim').is(':checked')?'claim':'prior-auth';
-                CDEX.attachmentPayload.parameter[1].valueString = `${claimId}`;
-                CDEX.attachmentPayload.parameter[5].valueIdentifier.value = `${CDEX.patient.id}`;
-                CDEX.attachmentPayload.parameter[6].resource.id = `CDex-parameter-attachment-${Date.now()}`;
-                CDEX.attachmentPayload.parameter[6].resource.content[0].attachment.data = `${reader.result.split(';base64,')[1]}`;
-                CDEX.attachmentPayload.parameter[6].resource.content[0].title = `${$('#select-attch').get(0).files.item(0).name}`;
-                CDEX.attachmentPayload.parameter[6].resource.type.coding[0].code = `${$('#codeInput').val()}`;
-                let displayValue = $(`#${CDEX.attachmentPayload.parameter[6].resource.type.coding[0].code}`).text();
-                CDEX.attachmentPayload.parameter[6].resource.type.coding[0].display = `${displayValue}`;
+        CDEX.attachmentPayload.id = `CDex-parameter-${resourcesId}`;
+        CDEX.attachmentPayload.parameter[0].valueCode = 'claim';//To check: $('#radio-claim').is(':checked')?'claim':'prior-auth';
+        CDEX.attachmentPayload.parameter[1].valueString = `${claimId}`;
+        CDEX.attachmentPayload.parameter[5].valueIdentifier.value = `${CDEX.patient.id}`;
 
-                const binaryResource = {
-                    "attachment": {
-                        "contentType": "application/pdf",
-                        "data": CDEX.attachmentPayload.parameter[6].resource.content[0].attachment.data,
-                        "title": CDEX.attachmentPayload.parameter[6].resource.content[0].title
-                    }
-                }
-                let configProvider = {
-                    type: 'PUT',
-                    url: `${CDEX.payerEndpoint.url}/Binary/CDex-Binary-for-${claimId}?upsert=true`,
-                    data: JSON.stringify(binaryResource),
-                    contentType: "application/json"
-                };
-                $.ajax(configProvider).then(response => {
-                    $('#binary-output').html(JSON.stringify(response));
-                    // CLaim lookup
-                    CLAIM.claimLookupById(claimId).then((results) => {
-                        if (Object.keys(results).length === 0) {
-                            //New Claim creation
-                            claimExists = false;
-                            operationOutcome = {
-                                "resourceType": "OperationOutcome",
-                                "id": "outcome_noclaim",
-                                "issue": [
-                                    {
-                                        "severity": "warning",
-                                        "code": "informational",
-                                        "details": {
-                                            "text": "Claim not found - will create base claim."
-                                        }
-                                    }
-                                ]
-                            };
-                            $('#claimCreateUpdate').html('Claim successfully created.');
-                            CDEX.claimPayloadAttachment.id = claimId;
-                            CDEX.claimPayloadAttachment.supportingInfo.valueReference.reference = `CDex-Binary-for-${claimId}`;
-                            CDEX.claimPayloadAttachment.created = $("#serviceDate").val();
-                            CLAIM.claimUpsert(CDEX.claimPayloadAttachment).then((results) => {
-                                $('#claim-output').html(JSON.stringify(results));
-                            });
-                        } else {
-                            //Existing claim update
-                            $('#claimCreateUpdate').html('Claim successfully updated.');
-                            operationOutcome = {
-                                "resourceType": "OperationOutcome",
-                                "id": "outcome_ok",
-                                "issue": [
-                                    {
-                                        "severity": "informational",
-                                        "code": "informational",
-                                        "details": {
-                                            "text": "Claim found and attachment saved."
-                                        }
-                                    }
-                                ]
-                            };
-                            results.supportingInfo = {
-                                "sequence": 1,
-                                "category": {
-                                    "text": "sample text"
-                                },
-                                "valueReference": {
-                                    "reference": `Binary/CDex-Binary-for-${claimId}`
-                                }
-                            }
-                            CLAIM.claimUpsert(results).then((results) => {
-                                $('#claim-output').html(JSON.stringify(results));
-                            });
+
+        if (fileName.type === 'application/pdf') {
+            reader.readAsDataURL(fileName);
+            reader.onloadend = (evt) => {
+                if (evt.target.readyState === FileReader.DONE) {
+                    CDEX.attachmentPayload.parameter[6].resource.id = `CDex-parameter-attachment-${resourcesId}`;
+                    CDEX.attachmentPayload.parameter[6].resource.content[0].attachment.data = `${reader.result.split(';base64,')[1]}`;
+                    CDEX.attachmentPayload.parameter[6].resource.content[0].title = `${$('#select-attch').get(0).files.item(0).name}`;
+                    CDEX.attachmentPayload.parameter[6].resource.type.coding[0].code = `${$('#codeInput').val()}`;
+                    let displayValue = $(`#${CDEX.attachmentPayload.parameter[6].resource.type.coding[0].code}`).text();
+                    CDEX.attachmentPayload.parameter[6].resource.type.coding[0].display = `${displayValue}`;
+
+                    const binaryResource = {
+                        "attachment": {
+                            "contentType": "application/pdf",
+                            "data": CDEX.attachmentPayload.parameter[6].resource.content[0].attachment.data,
+                            "title": CDEX.attachmentPayload.parameter[6].resource.content[0].title
                         }
-                        //Parameter creation
-                        configProvider = {
-                            type: 'POST',
-                            url: `${CDEX.payerEndpoint.url}/Parameters`,
-                            data: JSON.stringify(CDEX.attachmentPayload),
-                            contentType: "application/json"
-                        };
-                        console.log(configProvider.data);
-                        $.ajax(configProvider).then(response => {
-                            $('#parameter-output').html(JSON.stringify(response));
-                            $('#operation-output').html(JSON.stringify(operationOutcome));
-                            CDEX.displayScreen('attachment-confirm-screen');
+                    }
+                    let configProvider = {
+                        type: 'PUT',
+                        url: `${CDEX.payerEndpoint.url}/Binary/CDex-Binary-for-${claimId}?upsert=true`,
+                        data: JSON.stringify(binaryResource),
+                        contentType: "application/json"
+                    };
+                    $.ajax(configProvider).then(response => {
+                        $('#Resource').html('Binary resource successfully created.');
+                        $('#binary-output').html(JSON.stringify(response));
+                        // CLaim lookup
+                        CLAIM.claimLookupById(claimId).then((results) => {
+                            if (Object.keys(results).length === 0) {
+                                //New Claim creation
+                                claimExists = false;
+                                operationOutcome = {
+                                    "resourceType": "OperationOutcome",
+                                    "id": "outcome_noclaim",
+                                    "issue": [
+                                        {
+                                            "severity": "warning",
+                                            "code": "informational",
+                                            "details": {
+                                                "text": "Claim not found - will create base claim."
+                                            }
+                                        }
+                                    ]
+                                };
+                                $('#claimCreateUpdate').html('Claim successfully created.');
+                                CDEX.claimPayloadAttachment.id = claimId;
+                                CDEX.claimPayloadAttachment.supportingInfo.valueReference.reference = `Binary/CDex-Binary-for-${claimId}`;
+                                CDEX.claimPayloadAttachment.created = $("#serviceDate").val();
+                                CLAIM.claimUpsert(CDEX.claimPayloadAttachment).then((results) => {
+                                    $('#claim-output').html(JSON.stringify(results));
+                                });
+                            } else {
+                                //Existing claim update
+                                $('#claimCreateUpdate').html('Claim successfully updated.');
+                                operationOutcome = {
+                                    "resourceType": "OperationOutcome",
+                                    "id": "outcome_ok",
+                                    "issue": [
+                                        {
+                                            "severity": "informational",
+                                            "code": "informational",
+                                            "details": {
+                                                "text": "Claim found and attachment saved."
+                                            }
+                                        }
+                                    ]
+                                };
+                                results.supportingInfo = {
+                                    "sequence": 1,
+                                    "category": {
+                                        "text": "sample text"
+                                    },
+                                    "valueReference": {
+                                        "reference": `Binary/CDex-Binary-for-${claimId}`
+                                    }
+                                }
+                                CLAIM.claimUpsert(results).then((results) => {
+                                    $('#claim-output').html(JSON.stringify(results));
+                                });
+                            }
+                            //Parameter creation
+                            configProvider = {
+                                type: 'PUT',
+                                url: `${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentPayload.id}`,
+                                data: JSON.stringify(CDEX.attachmentPayload),
+                                contentType: "application/json"
+                            };
+                            $.ajax(configProvider).then(response => {
+                                $('#parameter-output').html(JSON.stringify(response));
+                                $('#operation-output').html(JSON.stringify(operationOutcome));
+                                CDEX.displayScreen('attachment-confirm-screen');
+                            });
                         });
                     });
-                });
+                }
             }
-        };
+        } else if (fileName.type === 'application/json') {
+            reader.readAsText(fileName);
+            reader.onloadend = (evt) => {
+                let jsonContent = JSON.parse(reader.result);
+                CDEX.attachmentPayload.parameter[6].resource.id = `CDex-parameter-attachment-${resourcesId}`;
+                CDEX.attachmentPayload.parameter[6].resource = jsonContent;
+
+                if (jsonContent.resourceType === 'Condition') {
+                    jsonContent.subject.reference = `Patient/${CDEX.patient.id}`;
+                    configProvider = {
+                        type: 'PUT',
+                        url: `${CDEX.payerEndpoint.url}/Condition/${jsonContent.id}`,
+                        data: JSON.stringify(jsonContent),
+                        contentType: "application/json"
+                    };
+                    $.ajax(configProvider).then(response => {
+                        $('#Resource').html('Condition resource successfully created.');
+                        $('#binary-output').html(JSON.stringify(response));
+                        CLAIM.claimLookupById(claimId).then((results) => {
+                            if (Object.keys(results).length === 0) {
+                                //New Claim creation
+                                claimExists = false;
+                                operationOutcome = {
+                                    "resourceType": "OperationOutcome",
+                                    "id": "outcome_noclaim",
+                                    "issue": [
+                                        {
+                                            "severity": "warning",
+                                            "code": "informational",
+                                            "details": {
+                                                "text": "Claim not found - will create base claim."
+                                            }
+                                        }
+                                    ]
+                                };
+                                $('#claimCreateUpdate').html('Claim successfully created.');
+                                CDEX.claimPayloadAttachment.id = claimId;
+                                CDEX.claimPayloadAttachment.supportingInfo.valueReference.reference = `Condition/${jsonContent.id}`;
+                                CDEX.claimPayloadAttachment.created = $("#serviceDate").val();
+                                CLAIM.claimUpsert(CDEX.claimPayloadAttachment).then((results) => {
+                                    $('#claim-output').html(JSON.stringify(results));
+                                });
+                            } else {
+                                //Existing claim update
+                                $('#claimCreateUpdate').html('Claim successfully updated.');
+                                operationOutcome = {
+                                    "resourceType": "OperationOutcome",
+                                    "id": "outcome_ok",
+                                    "issue": [
+                                        {
+                                            "severity": "informational",
+                                            "code": "informational",
+                                            "details": {
+                                                "text": "Claim found and attachment saved."
+                                            }
+                                        }
+                                    ]
+                                };
+                                results.supportingInfo = {
+                                    "sequence": 1,
+                                    "category": {
+                                        "text": "sample text"
+                                    },
+                                    "valueReference": {
+                                        "reference": `Condition/${jsonContent.id}`
+                                    }
+                                }
+                                CLAIM.claimUpsert(results).then((results) => {
+                                    $('#claim-output').html(JSON.stringify(results));
+                                });
+                            }
+                            //Parameter creation
+                            configProvider = {
+                                type: 'PUT',
+                                url: `${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentPayload.id}`,
+                                data: JSON.stringify(CDEX.attachmentPayload),
+                                contentType: "application/json"
+                            };
+                            $.ajax(configProvider).then(response => {
+                                $('#parameter-output').html(JSON.stringify(response));
+                                $('#operation-output').html(JSON.stringify(operationOutcome));
+                                CDEX.displayScreen('attachment-confirm-screen');
+                            });
+                        });
+
+                        $('#parameter-output').html(JSON.stringify(response));
+                        $('#operation-output').html(JSON.stringify(operationOutcome));
+                        CDEX.displayScreen('attachment-confirm-screen');
+                    });
+                } else if (jsonContent.resourceType === 'Bundle') {
+                    if ($('#signature').is(':checked')) {
+                        if (!jsonContent.signature) {
+                            CDEX.signAttachment(jsonContent).then(response => {
+                                console.dir(response);
+                            });
+                        }
+                        alert('Signed document');
+                    }
+                    let configProvider = {
+                        type: 'PUT',
+                        url: `${CDEX.payerEndpoint.url}/Bundle/${jsonContent.id}`,
+                        data: JSON.stringify(jsonContent),
+                        contentType: "application/json"
+                    };
+                    $.ajax(configProvider).then(response => {
+                        $('#Resource').html('Bundle resource successfully created.');
+                        $('#binary-output').html(JSON.stringify(jsonContent));
+                        CLAIM.claimLookupById(claimId).then((results) => {
+                            if (Object.keys(results).length === 0) {
+                                //New Claim creation
+                                claimExists = false;
+                                operationOutcome = {
+                                    "resourceType": "OperationOutcome",
+                                    "id": "outcome_noclaim",
+                                    "issue": [
+                                        {
+                                            "severity": "warning",
+                                            "code": "informational",
+                                            "details": {
+                                                "text": "Claim not found - will create base claim."
+                                            }
+                                        }
+                                    ]
+                                };
+                                $('#claimCreateUpdate').html('Claim successfully created.');
+                                CDEX.claimPayloadAttachment.id = claimId;
+                                CDEX.claimPayloadAttachment.supportingInfo.valueReference.reference = `Bundle/${jsonContent.id}`;
+                                CDEX.claimPayloadAttachment.created = $("#serviceDate").val();
+                                CLAIM.claimUpsert(CDEX.claimPayloadAttachment).then((results) => {
+                                    $('#claim-output').html(JSON.stringify(results));
+                                });
+                            } else {
+                                //Existing claim update
+                                $('#claimCreateUpdate').html('Claim successfully updated.');
+                                operationOutcome = {
+                                    "resourceType": "OperationOutcome",
+                                    "id": "outcome_ok",
+                                    "issue": [
+                                        {
+                                            "severity": "informational",
+                                            "code": "informational",
+                                            "details": {
+                                                "text": "Claim found and attachment saved."
+                                            }
+                                        }
+                                    ]
+                                };
+                                results.supportingInfo = {
+                                    "sequence": 1,
+                                    "category": {
+                                        "text": "sample text"
+                                    },
+                                    "valueReference": {
+                                        "reference": `Bundle/${jsonContent.id}`
+                                    }
+                                }
+                                CLAIM.claimUpsert(results).then((results) => {
+                                    $('#claim-output').html(JSON.stringify(results));
+                                });
+                            }
+                            //Parameter creation
+                            configProvider = {
+                                type: 'PUT',
+                                url: `${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentPayload.id}`,
+                                data: JSON.stringify(CDEX.attachmentPayload),
+                                contentType: "application/json"
+                            };
+                            $.ajax(configProvider).then(response => {
+                                $('#parameter-output').html(JSON.stringify(response));
+                                $('#operation-output').html(JSON.stringify(operationOutcome));
+                                CDEX.displayScreen('attachment-confirm-screen');
+                            });
+                        });
+                    });
+                }
+            }
+        }
     }
 
-    CDEX.signAttachment = (bundle) => {
-        $.ajax({
+    CDEX.signAttachment = async (bundle) => {
+        let configProvider = {
+            type: 'POST',
+            url: 'http://127.0.0.1:9090/api/sign',
+            data: JSON.stringify(bundle),
+            contentType: "application/json"
+        };
+        const signedBundle = $.ajax(configProvider).then(response => {
+            return response;
+        });
+        return signedBundle;
+
+        /*return $.ajax({
             url: 'http://127.0.0.1:9090/api/sign',
             type: 'POST',
             data: bundle,
@@ -1214,7 +1410,7 @@ if (!CLAIM) {
             success: (result) => {
                 return result
             }
-        })
+        })*/
     }
 
     CDEX.directQueryRequest = () => {
