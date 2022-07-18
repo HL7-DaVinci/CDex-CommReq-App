@@ -120,14 +120,17 @@
             <input type='checkbox' id='signature' name='signature' value='signed'>
             <label for='signature'> Signature required </label>
         </div>
-        <p><button type="button" class="btn btn-primary" id="btn-attch-submit">Submit Attachment(s)</button></p>
+        <p>
+            <button type="button" class="btn btn-primary" id="btn-attch-submit">Submit Attachment(s)</button>
+            <a href="#" class="btn btn-primary" id="btn-restart">Cancel</a>
+        </p>
     </div>
 </div>
 
 <div id="attachment-confirm-screen" class="card alert-info screen">
     <div class="card-body">
         <h5 class="card-title">Created/Updated resources</h5>
-        <p class="card-text">Binary successfully created. </p>
+        <p class="card-text" id="Resource">Binary successfully created. </p>
         <p class="card-text"><textarea id="binary-output"></textarea></p>
         <p class="card-text" id="claimCreateUpdate"></p>
         <p class="card-text"><textarea id="claim-output"></textarea></p>
