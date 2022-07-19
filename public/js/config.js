@@ -269,7 +269,6 @@ if (!CDEX) {
   };
 
   CDEX.claimPayloadAttachment = {
-    //Define information to be added
     "resourceType": "Claim",
     "id": "",
     "identifier": "",
@@ -318,10 +317,6 @@ if (!CDEX) {
         "valueString": ""
       },
       {
-        "name": "ItemId",
-        "valueString": "1"
-      },
-      {
         "name": "OrganizationId",
         "valueIdentifier": {
           "system": "http://hl7.org/fhir/sid/us-npi",
@@ -343,43 +338,34 @@ if (!CDEX) {
         }
       },
       {
+        "name": "ServiceDate",
+        "valueDate": ""
+      },
+      {
         "name": "Attachment",
-        "resource": {
-          "resourceType": "DocumentReference",
-          "id": "",
-          "status": "current",
-          "type": {
-            "coding": [
-              {
-                "system": "http://loinc.org",
-                "code": "",
-                "display": ""
-              }
-            ]
+        "part": [
+          {
+            "name": "LineItem",
+            "valueString": "1"
           },
-          "category": [
-            {
+          {
+            "name": "Code",
+            "valueCodeableConcept": {
               "coding": [
                 {
-                  "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category",
-                  "code": "clinical-note",
-                  "display": "Clinical Note"
+                  "system": "http://loinc.org",
+                  "code": "",
+                  "display": ""
                 }
-              ],
-              "text": "Clinical Note 1"
+              ]
             }
-          ],
-          "date": "2021-12-03T18:30:56-08:00",
-          "content": [
-            {
-              "attachment": {
-                "contentType": "application/pdf",
-                "data": "",
-                "title": ""
-              }
+          },
+          {
+            "name": "Content",
+            "resource": {
             }
-          ]
-        }
+          }
+        ],
       }
     ]
   }
@@ -388,6 +374,21 @@ if (!CDEX) {
     "resourceType": "Binary",
     "contentType": "",
     "data": ""
+  }
+
+  CDEX.documentReferencePayload = {
+    "resourceType": "DocumentReference",
+    "id": "",
+    "status": "current",
+    "content": [
+      {
+        "attachment": {
+          "contentType": "application/pdf",
+          "data": "",
+          "title": ""
+        }
+      }
+    ]
   }
 
   CDEX.extensionDocRef = {

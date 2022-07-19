@@ -39,19 +39,18 @@ router.post('/', (req, res) => {
     let resource = '';
     let existingClaim = '';
     const attachmentResource = Date.now();
-    console.log(`Created resource ID ------------------------- CDex-${attachmentResource}`);
+    console.log(`Created resource ID -------------------------- ${attachmentResource}`);
 
-    if (resourceType && parameter && resourceType === 'Parameters') {
+    if (parameter && resourceType === 'Parameters') {
         parameter.forEach(element => {
             if (element.name === 'MemberId') {
                 memberId = element.valueIdentifier.value;
             } else if (element.name === 'TrackingId') {
                 claimId = element.valueString;
             } else if (element.name === 'Attachment') {
-                attchId = element.resource.id;
-                attch = element.resource;
-                resource = element.resource;
-                attchType = element.resource.resourceType;
+                attchId = element.part[2].resource.id;
+                resource = element.part[2].resource;
+                attchType = element.part[2].resource.resourceType;
             }
         });
         return patientLookup(memberId).then(value => {
@@ -79,7 +78,7 @@ router.post('/', (req, res) => {
                         existingClaim = value;
                         claimExists = true;
                     }
-                    if (attchType == 'DocumentReference') {
+                    /*if (attchType == 'DocumentReference') {
                         if (attch.content[0].attachment.contentType == 'application/pdf') {
                             return createBinary(attch.content[0], attachmentResource).then(value => {
                                 if (value.resourceType === "Binary") {
@@ -110,31 +109,32 @@ router.post('/', (req, res) => {
                                 }
                             })
                         }
-                    } else {
-                        return createResource(attch, attachmentResource).then(value => {
-                            return createParameter(req, attachmentResource).then(value => {
-                                upsertClaim(claimId, memberId, `${attch.resourceType}/CDex-${attch.resourceType}-${attachmentResource}`, existingClaim).then(value => {
-                                    if (claimExists) {
-                                        operationOutcome = {
-                                            "resourceType": "OperationOutcome",
-                                            "id": "outcome_ok",
-                                            "issue": [
-                                                {
-                                                    "severity": "informational",
-                                                    "code": "informational",
-                                                    "details": {
-                                                        "text": "Claim found and attachment saved."
-                                                    }
+                    } else {*/
+                    let resourceId = resource.id ? resource.id : `CDex-${resource.resourceType}-${attachmentResource}`;
+                    return createResource(resource, resourceId).then(value => {
+                        return createParameter(req, resourceId).then(value => {
+                            upsertClaim(claimId, memberId, `${resource.resourceType}/${resourceId}`, existingClaim).then(value => {
+                                if (claimExists) {
+                                    operationOutcome = {
+                                        "resourceType": "OperationOutcome",
+                                        "id": "outcome_ok",
+                                        "issue": [
+                                            {
+                                                "severity": "informational",
+                                                "code": "informational",
+                                                "details": {
+                                                    "text": "Claim found and attachment saved."
                                                 }
-                                            ]
-                                        }
+                                            }
+                                        ]
                                     }
-                                    res.send(operationOutcome)
-                                })
+                                }
+                                res.send(operationOutcome)
                             })
                         })
-                    }
-                })
+                    })
+                }
+                )//})
             }
         })
 
@@ -173,9 +173,8 @@ router.delete('/:id', (req, res) => {
 
 createParameter = async (req, attachmentResource) => {
     return new Promise((resolve) => {
-        req.body.id = `${req.body.id}${attachmentResource}`;
         request.put({
-            url: `${baseurl}/Parameters/${req.body.id}`,
+            url: `${baseurl}/Parameters/${req.body.id?req.body.id:`Parameter-with-${attachmentResource}`}`,
             body: req.body,
             json: true
         }, function (parerr, parresp, parbody) {
@@ -207,16 +206,10 @@ createBinary = async (attch, attachmentResource) => {
 
 createResource = async (attch, attachmentResource) => {
     return new Promise((resolve) => {
-        const binaryBody = {
-            "resourceType": `${attch.resourceType}`,
-            "id": `CDex-${attch.resourceType}-${attachmentResource}`,
-            "contentType": "application/pdf",
-            "data": `${attch}`
-        }
         request.put({
             headers: { 'content-type': 'application/json' },
-            url: `${baseurl}/${attch.resourceType}/${attch.id}`,
-            body: attch,
+            url: `${baseurl}/${attch.resourceType}/${attachmentResource}`,
+            body: attch.content,
             json: true
         }, function (binerr, binresp, binbody) {
             if (!binerr)
