@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>DaVinci CDex (Payer)</title>
+    <title>DaVinci CDex</title>
     <link rel="icon" type="image/png" href="images/favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="lib/fhir-client-0.1.8.js"></script>
@@ -18,7 +18,7 @@
 <body>
 <div class="wine-row">
     <img src="images/request.png" style="height:80px; width:130px">
-    <div class="wine-text-container"><h1>CDex Data Consumer (Payer)</h1></div>
+    <div class="wine-text-container"><h1></h1></div>
 </div>
 
 <div id="task-intro-screen" class="card alert-info screen">
@@ -62,7 +62,10 @@
 </div>
 <div id="communication-request-screen" class="screen">
     <h3>Patient: <span id="commRes-patient-name">[loading...]</span></h3>
-    <p><button type="button" class="btn btn-primary" id="btn-task-request">Create Data Request</button></p>
+    <p>
+        <button type="button" class="btn btn-primary" id="btn-task-request">Create Data Request</button>
+        <a href="#" class="btn btn-primary" id="btn-task-restart">Cancel</a>
+    </p>
     <div><p><div class='dvt'>
         <table class='table'>
             <thead>
@@ -83,7 +86,10 @@
             <option>-- Select search criteria --</option>
         </select>
         <div id="subsearch" class="subsearch"></div>
-        <p><button type="button" class="btn btn-primary" id="btn-query-request">Direct Query Request</button></p>
+        <p>
+            <button type="button" class="btn btn-primary" id="btn-query-request">Direct Query Request</button>
+            <a href="#" class="btn btn-primary" id="btn-query-restart">Cancel</a>
+        </p>
     </div>
 </div>
 <div id="attachment-submit-screen" class="card alert-info screen">
@@ -95,9 +101,19 @@
             </select>
             <div>
                 <input type='checkbox' id='type-claim' name='type-claim' value='typed'>
-                <label for='type-claim'> Type tracking control number </label>
+                <label for='type-claim'>Tracking Control Number</label>
             </div>
-            <input type='text' id='claimid' name='claimid' placeholder='Custom track #' disabled="disabled" value="">
+            <input type='text' id='claimid' name='claimid' disabled="disabled" value="">
+        </div>
+        <div class="form-check form-check-inline">
+            <label for="radio-claim">
+                <input type="radio" id="radio-claim" name="code" value="claim" checked="checked" disabled="disabled"> Claim
+            </label><br>
+        </div>
+        <div class="form-check form-check-inline">
+            <label for="radio-auth">
+                <input type="radio" id="radio-auth" name="code" value="prior-authorization" disabled="disabled">Prior Authorization
+            </label><br> 
         </div><br>
         <div>
             <label for="serviceDate">Service date</label><br>
@@ -106,16 +122,6 @@
         <div id="loincCodes"><label>Code</label></div><br>
         <input type="file" name="attachments" id="select-attch">
         <div id="selected-attch" class="subsearch"></div>
-        <div class="form-check form-check-inline">
-            <label for="radio-claim">
-                <input type="radio" id="radio-claim" name="code" value="claim" checked="checked"> Claim
-            </label><br>
-        </div>
-        <div class="form-check form-check-inline">
-            <label for="radio-auth">
-                <input type="radio" id="radio-auth" name="code" value="prior-authorization">Prior Authorization
-            </label><br> 
-        </div>
         <div>
             <input type='checkbox' id='signature' name='signature' value='signed'>
             <label for='signature'> Signature required </label>

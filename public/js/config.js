@@ -458,41 +458,21 @@ if (!CDEX) {
   CDEX.searchCriteria = {
     "criteria": [
       {
-        "name": "Scenario1",
-        "value": "Scenario1"
-      },
-      {
-        "name": "Scenario2",
-        "value": "Scenario2"
-      },
-      {
-        "name": "Scenario3",
-        "value": "Scenario3"
-      },
-      {
-        "name": "Custom Scenario",
-        "value": "custom"
-      }
-      /*{
-        "name": "Claim",
-        "value": "Claim"
+        "name": "Observation",
+        "value": "Observation"
       },
       {
         "name": "Condition",
         "value": "Condition"
       },
       {
-        "name": "Document reference",
-        "value": "DocumentReference"
+        "name": "Observation - HbA1c",
+        "value": "Observation - HbA1c"
       },
       {
-        "name": "Medication statement",
-        "value": "MedicationStatement"
-      },
-      {
-        "name": "Observation",
-        "value": "Observation"
-      }*/
+        "name": "Custom Scenario",
+        "value": "custom"
+      }
     ]
   };
 

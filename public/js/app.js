@@ -457,15 +457,6 @@ if (!CLAIM) {
             case "Condition":
                 CDEX.conditionSubsearch();
                 break;
-            case "Document reference":
-                CDEX.documentSubsearch();
-                break;
-            case "Claim":
-                CDEX.claimSubsearch();
-                break;
-            case "Medication statement":
-                CDEX.medicationSubsearch();
-                break;
             default:
                 break;
         }
@@ -506,20 +497,34 @@ if (!CLAIM) {
                     $("#claimid").removeAttr("disabled");
                     $("#claimid").focus();
                     $("#search-claim").attr("disabled", "disabled");
+                    $("#radio-claim").removeAttr("disabled");
+                    $("#radio-auth").removeAttr("disabled");
                 } else {
                     $("#claimid").attr("disabled", "disabled");
                     $("#search-claim").removeAttr("disabled");
+                    $("#radio-claim").attr("disabled", "disabled");
+                    $("#radio-auth").attr("disabled", "disabled");
                 }
             });
         });
     };
 
     CDEX.displayDirectQueryScreen = () => {
+        $('#search-criteria').html('');
         CDEX.searchCriteria.criteria.forEach((value) => {
             $('#search-criteria').append("<option value='" + value.value +
                 "'>" + value.name + "</option>");
         });
-        $('#search-criteria').change(() => { CDEX.selectSearchType($('#search-criteria').find(":selected").text()) });
+        $('#search-criteria').change(() => {
+            if($('#search-criteria').find(":selected").val() === 'custom') {
+                $('#subsearch').html( 
+                    "<label for='customquery'>Insert your query as {Resource}?{Search 1}&{Search 2}&...{Search n} :</label>" +
+                    "<input id='customquery'" +
+                    "name='customquery'>");
+            } else {
+                $('#subsearch').html('');
+            }
+        });
         CDEX.displayScreen('direct-query-request-screen');
     };
 
@@ -990,39 +995,14 @@ if (!CLAIM) {
     $('#btn-query-request').click(function () {
         //CDEX.displayScreen('query-request-screen');
 
-        if ($('#search-criteria')[0].selectedIndex == 5) {
-            if ($('#subobs0').is(":checked") && $('#obs-code').val() === "") {
-                alert("Please specify a code");
-            } else {
-                CDEX.directQueryRequest();
-            }
-        } else if ($('#search-criteria')[0].selectedIndex == 2) {
-            if ($('#condition0').is(":checked") && $('#active').is(":not(:checked)") &&
-                $('#recurrance').is(":not(:checked)") && $('#remission').is(":not(:checked)")) {
-                alert("Please specify a clinical status search criteria");
-            } else if ($('#provenance1').is(":checked") && $('#sub-provenance').is(":not(:checked)")) {
-                alert("Please specify a provenance search criteria");
-            } else {
-                CDEX.directQueryRequest();
-            }
-        } else if ($('#search-criteria')[0].selectedIndex == 3) {
-            if ($('#subdoc0').is(":checked") && $('#codeInput').val() === "") {
-                alert("Please specify a type or uncheck it");
-            } else if ($('#subdoc1').is(":checked") && $('#catInput').val() === "") {
-                alert("Please specify a category or uncheck it");
-            } else {
-                CDEX.directQueryRequest();
-            }
-        } else if ($('#search-criteria')[0].selectedIndex == 1) {
-            CDEX.directQueryRequest();
-        } else if ($('#search-criteria')[0].selectedIndex == 4) {
-            if ($('#submed0').is(":checked") && $('#medcodeInput').val() === "") {
-                alert("Please specify a code or uncheck it");
+        if ($('#search-criteria')[0].selectedIndex === 2) {
+            if ($('#customquery').val() === '') {
+                alert("Please specify a custom query");
             } else {
                 CDEX.directQueryRequest();
             }
         } else {
-            alert("Please select a search criteria");
+            CDEX.directQueryRequest();
         }
 
     });
@@ -1057,6 +1037,8 @@ if (!CLAIM) {
     $('#btn-query').click(CDEX.displayDirectQueryScreen);
     $('#btn-attach').click(CDEX.displayAttachmentScreen);
     $('#btn-restart').click(CDEX.restart);
+    $('#btn-query-restart').click(CDEX.restart);
+    $('#btn-task-restart').click(CDEX.restart);
     $('#dq-btn-restart').click(CDEX.restart);
     $('#attch-btn-restart').click(CDEX.restart);
     $('#btn-back').click(CDEX.displayCommReqScreen);
@@ -1101,7 +1083,6 @@ if (!CLAIM) {
 
     CDEX.submitAttachments = (claimId) => {
         let operationOutcome = '';
-        let claimPayload
         let claimExists = true;
         const reader = new FileReader();
         const resourcesId = Date.now();
@@ -1119,13 +1100,14 @@ if (!CLAIM) {
         let displayValue = $(`#${CDEX.attachmentPayload.parameter[6].part[1].valueCodeableConcept.coding[0].code}`).text();
         CDEX.attachmentPayload.parameter[6].part[1].valueCodeableConcept.coding[0].display = `${displayValue}`;
 
-        if (fileName.type === 'application/pdf') {
+        if (fileName.type === 'application/pdf' || fileName.type === "text/xml") {
             reader.readAsDataURL(fileName);
             reader.onloadend = (evt) => {
                 if (evt.target.readyState === FileReader.DONE) {
                     //Setting the document reference
                     CDEX.documentReferencePayload.content[0].attachment.data = `${reader.result.split(';base64,')[1]}`;
                     CDEX.documentReferencePayload.content[0].attachment.title = `${$('#select-attch').get(0).files.item(0).name}`;
+                    CDEX.documentReferencePayload.content[0].attachment.contentType = `${fileName.type}`;
                     CDEX.documentReferencePayload.id = `CDex-Document-Reference-${resourcesId}`;
 
                     CDEX.attachmentPayload.parameter[6].part[2].resource = CDEX.documentReferencePayload;
@@ -1138,7 +1120,7 @@ if (!CLAIM) {
                     };
                     $.ajax(configProvider).then(response => {
                         $('#Resource').html('Document reference successfully created.');
-                        $('#binary-output').html(JSON.stringify(response));
+                        $('#binary-output').html(JSON.stringify(response, null, '  '));
                         // CLaim lookup
                         CLAIM.claimLookupById(claimId).then((results) => {
                             if (Object.keys(results).length === 0) {
@@ -1161,8 +1143,9 @@ if (!CLAIM) {
                                 CDEX.claimPayloadAttachment.id = claimId;
                                 CDEX.claimPayloadAttachment.supportingInfo.valueReference.reference = `DocumentReference/CDex-Document-Reference-${resourcesId}`;
                                 CDEX.claimPayloadAttachment.created = $("#serviceDate").val();
+                                CDEX.claimPayloadAttachment.use = $('#radio-claim').is(':checked')?'claim':'preauthorization';
                                 CLAIM.claimUpsert(CDEX.claimPayloadAttachment).then((results) => {
-                                    $('#claim-output').html(JSON.stringify(results));
+                                    $('#claim-output').html(JSON.stringify(results, null, '  '));
                                 });
                             } else {
                                 //Existing claim update
@@ -1190,7 +1173,7 @@ if (!CLAIM) {
                                     }
                                 }
                                 CLAIM.claimUpsert(results).then((results) => {
-                                    $('#claim-output').html(JSON.stringify(results));
+                                    $('#claim-output').html(JSON.stringify(results, null, '  '));
                                 });
                             }
                             //Parameter creation
@@ -1201,8 +1184,8 @@ if (!CLAIM) {
                                 contentType: "application/json"
                             };
                             $.ajax(configProvider).then(response => {
-                                $('#parameter-output').html(JSON.stringify(response));
-                                $('#operation-output').html(JSON.stringify(operationOutcome));
+                                $('#parameter-output').html(JSON.stringify(response, null, '  '));
+                                $('#operation-output').html(JSON.stringify(operationOutcome, null, '  '));
                                 CDEX.displayScreen('attachment-confirm-screen');
                             });
                         });
@@ -1235,7 +1218,7 @@ if (!CLAIM) {
                 };
                 $.ajax(configProvider).then(response => {
                     $('#Resource').html(`${jsonContent.resourceType} resource successfully created.`);
-                    $('#binary-output').html(JSON.stringify(response));
+                    $('#binary-output').html(JSON.stringify(response, null, '  '));
                     CLAIM.claimLookupById(claimId).then((results) => {
                         if (Object.keys(results).length === 0) {
                             //New Claim creation
@@ -1257,8 +1240,9 @@ if (!CLAIM) {
                             CDEX.claimPayloadAttachment.id = claimId;
                             CDEX.claimPayloadAttachment.supportingInfo.valueReference.reference = `${jsonContent.resourceType}/${jsonContent.id}`;
                             CDEX.claimPayloadAttachment.created = $("#serviceDate").val();
+                            CDEX.claimPayloadAttachment.use = $('#radio-claim').is(':checked')?'claim':'preauthorization';
                             CLAIM.claimUpsert(CDEX.claimPayloadAttachment).then((results) => {
-                                $('#claim-output').html(JSON.stringify(results));
+                                $('#claim-output').html(JSON.stringify(results, null, '  '));
                             });
                         } else {
                             //Existing claim update
@@ -1286,7 +1270,7 @@ if (!CLAIM) {
                                 }
                             }
                             CLAIM.claimUpsert(results).then((results) => {
-                                $('#claim-output').html(JSON.stringify(results));
+                                $('#claim-output').html(JSON.stringify(results, null, '  '));
                             });
                         }
                         //Parameter creation
@@ -1297,8 +1281,8 @@ if (!CLAIM) {
                             contentType: "application/json"
                         };
                         $.ajax(configProvider).then(response => {
-                            $('#parameter-output').html(JSON.stringify(response));
-                            $('#operation-output').html(JSON.stringify(operationOutcome));
+                            $('#parameter-output').html(JSON.stringify(response, null, '  '));
+                            $('#operation-output').html(JSON.stringify(operationOutcome, null, '  '));
                             CDEX.displayScreen('attachment-confirm-screen');
                         });
                     });
@@ -1337,90 +1321,26 @@ if (!CLAIM) {
     }
 
     CDEX.directQueryRequest = () => {
-        let queryType = $('#search-criteria').val();
-        let condition = {};
-        let observation = {};
-        Object.assign(condition, CDEX.conditionPayload);
-        Object.assign(observation, CDEX.observationPayload);
+        let queryType = '';
+        if($('#search-criteria').val() === 'Observation - HbA1c'){
+            queryType = 'Observation?patient=5849&code=4548-4';
+        }else if ($('#search-criteria').val() !== 'custom') {
+            queryType = `${$('#search-criteria').val()}?patient=${CDEX.patient.id}`;
+        } else {
+            queryType = $('#customquery').val();
+        }
         let configPayer = {
             type: 'GET',
-            url: CDEX.payerEndpoint.url + CDEX.submitEndpoint,
+            url: `${CDEX.payerEndpoint.url}/${queryType}`,
             contentType: "application/fhir+json"
         };
 
-        $.ajax(configPayer).then((req) => {
-            let url = CDEX.payerEndpoint.url + "/" + queryType + "?patient=" + CDEX.patient.id;
-            let commaneeded = false;
-            switch (queryType) {
-                case "MedicationStatement":
-                    if ($('#submed0').is(":checked")) {
-                        url += "&code=" + $('#medcodeInput').val();
-                    }
-                    break;
-                case "Claim":
-                    if ($('#subclaim0').is(":checked")) {
-                        url += "&created=" + $('#select-range-claim').find(':selected').val() + $('#claim-time').val();
-                    }
-                    break;
-                case "DocumentReference":
-                    if ($('#subdoc0').is(":checked")) {
-                        url += "&type=" + $('#codeInput').val();
-                    }
-                    if ($('#subdoc1').is(":checked")) {
-                        url += "&category=" + $('#catInput').val();
-                    }
-                    break;
-                case "Observation":
-                    if ($('#subobs0').is(":checked")) {
-                        url += "&combo-code=" + $('#obs-code').val();
-                    }
-                    if ($('#subobs1').is(":checked")) {
-                        url += "&date=" + $('#select-range').find(':selected').val() + $('#obs-time').val();
-                    }
-                    break;
-                case "Condition":
-                    if ($('#condition0').is(":checked")) {
-                        url += "&clinical-status=";
-                        if ($('#active').is(":checked")) {
-                            url += "active";
-                            commaneeded = true;
-                        }
-                        if ($('#recurrance').is(":checked")) {
-                            if (commaneeded) {
-                                url += ",recurrance";
-                            } else {
-                                url += "recurrance";
-                            }
-                            commaneeded = true;
-                        }
-                        if ($('#remission').is(":checked")) {
-                            if (commaneeded) {
-                                url += ",remission";
-                            } else {
-                                url += "remission";
-                            }
-                            commaneeded = true;
-                        }
-                    }
-                    if ($('#provenance1').is(":checked")) {
-                        url += "&_revinclude=";
-                        if ($('#sub-provenance').is(":checked")) {
-                            url += "Provenance:target";
-                        }
-                    }
-                    break;
-                default:
-                    break;
-            }
-            $('#search-criteria').html("<option>-- Select search criteria --</option>");
-            $('#subsearch').html("");
-            $.ajax(url).then((res) => {
-
-                $("#dq-text-output").html(JSON.stringify(res, null, '  '));
-                $('#dq-submit-endpoint').html("<b>" + res.link[0].url + "</b>");
-                //$('#dq-submit-endpoint').append("<b>" + res.link[0].url + "</b>");
-                CDEX.displayScreen('dq-confirm-screen');
-            }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the submit endpoint configuration <br> You can close this window now"));
+        $.ajax(configPayer).then((res) => {
+            $("#dq-text-output").html(JSON.stringify(res, null, '  '));
+            $('#dq-submit-endpoint').html("<b>" + res.link[0].url + "</b>");
+            //$('#dq-submit-endpoint').append("<b>" + res.link[0].url + "</b>");
+            $('#subsearch').html('');
+            CDEX.displayScreen('dq-confirm-screen');
         }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the submit endpoint configuration <br> You can close this window now"));
 
     };
