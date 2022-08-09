@@ -516,8 +516,8 @@ if (!CLAIM) {
                 "'>" + value.name + "</option>");
         });
         $('#search-criteria').change(() => {
-            if($('#search-criteria').find(":selected").val() === 'custom') {
-                $('#subsearch').html( 
+            if ($('#search-criteria').find(":selected").val() === 'custom') {
+                $('#subsearch').html(
                     "<label for='customquery'>Insert your query as {Resource}?{Search 1}&{Search 2}&...{Search n} :</label>" +
                     "<input id='customquery'" +
                     "name='customquery'>");
@@ -1036,7 +1036,7 @@ if (!CLAIM) {
     $('#btn-task').click(CDEX.displayCommReqScreen);
     $('#btn-query').click(CDEX.displayDirectQueryScreen);
     $('#btn-attach').click(CDEX.displayAttachmentScreen);
-    $('#btn-restart').click(CDEX.restart);
+    $('#btn-task-restart').click(CDEX.restart);
     $('#btn-query-restart').click(CDEX.restart);
     $('#btn-task-restart').click(CDEX.restart);
     $('#dq-btn-restart').click(CDEX.restart);
@@ -1143,7 +1143,7 @@ if (!CLAIM) {
                                 CDEX.claimPayloadAttachment.id = claimId;
                                 CDEX.claimPayloadAttachment.supportingInfo.valueReference.reference = `DocumentReference/CDex-Document-Reference-${resourcesId}`;
                                 CDEX.claimPayloadAttachment.created = $("#serviceDate").val();
-                                CDEX.claimPayloadAttachment.use = $('#radio-claim').is(':checked')?'claim':'preauthorization';
+                                CDEX.claimPayloadAttachment.use = $('#radio-claim').is(':checked') ? 'claim' : 'preauthorization';
                                 CLAIM.claimUpsert(CDEX.claimPayloadAttachment).then((results) => {
                                     $('#claim-output').html(JSON.stringify(results, null, '  '));
                                 });
@@ -1240,7 +1240,7 @@ if (!CLAIM) {
                             CDEX.claimPayloadAttachment.id = claimId;
                             CDEX.claimPayloadAttachment.supportingInfo.valueReference.reference = `${jsonContent.resourceType}/${jsonContent.id}`;
                             CDEX.claimPayloadAttachment.created = $("#serviceDate").val();
-                            CDEX.claimPayloadAttachment.use = $('#radio-claim').is(':checked')?'claim':'preauthorization';
+                            CDEX.claimPayloadAttachment.use = $('#radio-claim').is(':checked') ? 'claim' : 'preauthorization';
                             CLAIM.claimUpsert(CDEX.claimPayloadAttachment).then((results) => {
                                 $('#claim-output').html(JSON.stringify(results, null, '  '));
                             });
@@ -1295,6 +1295,50 @@ if (!CLAIM) {
         }
     }
 
+    $('#download-resources').click(() => {
+        CDEX.downloadResources();
+    });
+
+    CDEX.downloadResources = () => {
+        var zip = new JSZip();
+        //Parameters
+        var resourceContent = document.getElementById('parameter-output').innerHTML;
+        zip.file("parameter.json", resourceContent);
+
+        //Claim
+        resourceContent = document.getElementById('claim-output').innerHTML;
+        zip.file("claim.json", resourceContent);
+
+        //Attachment
+        resourceContent = document.getElementById('binary-output').innerHTML;
+        zip.file("attachment.json", resourceContent);
+
+        zip.generateAsync({ type: "blob" })
+            .then(function (content) {
+                // Force down of the Zip file
+                saveAs(content, "submitAttachment.zip");
+            });
+
+        /*var contentAsBlob = new Blob([resourceContent], { type: 'text/plain' });
+        var fileNameToSaveAs = "parameter.json"; //filename.extension
+
+        var downloadLink = document.createElement("a");
+        downloadLink.download = fileNameToSaveAs;
+        downloadLink.innerHTML = "Download File";
+        if (window.webkitURL != null) {
+            // Chrome allows the link to be clicked without actually adding it to the DOM.
+            downloadLink.href = window.webkitURL.createObjectURL(contentAsBlob);
+        } else {
+            // Firefox requires the link to be added to the DOM before it can be clicked.
+            downloadLink.href = window.URL.createObjectURL(contentAsBlob);
+            downloadLink.onclick = destroyClickedElement;
+            downloadLink.style.display = "none";
+            document.body.appendChild(downloadLink);
+        }
+
+        downloadLink.click();*/
+    }
+
     CDEX.signAttachment = async (bundle) => {
         let configProvider = {
             type: 'POST',
@@ -1322,9 +1366,9 @@ if (!CLAIM) {
 
     CDEX.directQueryRequest = () => {
         let queryType = '';
-        if($('#search-criteria').val() === 'Observation - HbA1c'){
+        if ($('#search-criteria').val() === 'Observation - HbA1c') {
             queryType = 'Observation?patient=5849&code=4548-4';
-        }else if ($('#search-criteria').val() !== 'custom') {
+        } else if ($('#search-criteria').val() !== 'custom') {
             queryType = `${$('#search-criteria').val()}?patient=${CDEX.patient.id}`;
         } else {
             queryType = $('#customquery').val();
