@@ -20,9 +20,8 @@ app.use(cors())
 app.use(express.static(path.join(__dirname, 'public')))
 
 app.use('/api', require('./routes/index'));
-app.use('/api/movies', require('./routes/movies'));
 app.use('/api/users', require('./routes/thirdparty'));
-app.use('/api/attachments', require('./routes/attachments'));
+app.use('/\\$submit-attachment', require('./routes/attachments'));
 app.use('/api/sign', require('./routes/sign'))
 
 

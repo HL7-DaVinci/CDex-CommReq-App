@@ -6,6 +6,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="lib/fhir-client-0.1.8.js"></script>
     <script src="lib/jquery-3.3.1.js"></script>
+    <script src="lib/jszip.js"></script>
+    <script src="lib/FileSaver.js"></script>
     <link href="css/bootstrap.css" rel="stylesheet">
 
     <!--TODO: don't use CDN-->
@@ -144,7 +146,10 @@
         <p class="card-text"><textarea id="claim-output"></textarea></p>
         <p class="card-text" id="Resource">Binary successfully created. </p>
         <p class="card-text"><textarea id="binary-output"></textarea></p>
-        <p class="card-text"><a href="#" class="btn btn-primary" id="attch-btn-restart">OK</a></p>
+        <p class="card-text">
+            <a href="#" class="btn btn-primary" id="attch-btn-restart">OK</a>
+            <a href="#" class="btn btn-primary" id="download-resources">Download resources</a>
+        </p>
     </div>
 </div>
 
@@ -193,7 +198,7 @@
         <p class="card-text"><textarea id="text-output"></textarea></p>
         <p class="card-text" id="submit-endpoint2"></p>
         <p class="card-text"><textarea id="text-output2"></textarea></p>
-        <p class="card-text"><a href="#" class="btn btn-primary" id="btn-restart">OK</a></p>
+        <p class="card-text"><a href="#" class="btn btn-primary" id="btn-task-restart">OK</a></p>
     </div>
 </div>
 <div id="dq-confirm-screen" class="card alert-info screen">
