@@ -27,9 +27,10 @@
     <div class="card-body">
         <h5 class="card-title">CDex Scenarios Description</h5>
         <p class='card-text' id='task-intro'></p>
-        <a href="#" class="btn btn-primary" id="btn-task">Task Based Approach</a>
+        <!-- <a href="#" class="btn btn-primary" id="btn-task">Task Based Approach</a> -->
         <a href="#" class="btn btn-primary" id="btn-query">Direct Query</a>
         <a href="#" class="btn btn-primary" id="btn-attach">Submit Attachment(s)</a>
+        <a href="#" class="btn btn-primary" id="btn-request-attach">Request Attachment(s)</a>
     </div>
 </div>
 <div></div>
@@ -94,11 +95,12 @@
         </p>
     </div>
 </div>
+
 <div id="attachment-submit-screen" class="card alert-info screen">
     <div class="card-body">
         <h3>Patient: <span id="commRes-patient-name">[loading...]</span></h3>
         <div>
-            <select class='form-control' id='search-claim'>
+            <select class='form-control' id='submit-searchClaim'>
                 <option>-- Select tracking control number --</option>
             </select>
             <div>
@@ -130,7 +132,7 @@
         </div>
         <p>
             <button type="button" class="btn btn-primary" id="btn-attch-submit">Submit Attachment(s)</button>
-            <a href="#" class="btn btn-primary" id="btn-restart">Cancel</a>
+            <a href="#" class="btn btn-primary" id="btn-restart-attachment">Cancel</a>
         </p>
     </div>
 </div>
@@ -230,6 +232,113 @@
         <p class='card-text' id='error-message'></p>
     </div>
 </div>
+
+<div id="attachment-requested-screen" class="card alert-info screen">
+    <div class="card-body">
+        <h5 class="card-title">Attachment(s) requested</h5>
+        <p class="card-text">Task successfully created</p>
+        <p class="card-text"><textarea id="req-task-output"></textarea></p>
+        <p class="card-text">
+            <a href="#" class="btn btn-primary" id="reqattch-btn-restart">OK</a>
+            <a href="#" class="btn btn-primary" id="download-reqattch">Download resources</a>
+        </p>
+    </div>
+</div>
+
+<div id="request-provider-attachments" class="card alert-info screen">
+    <div class="card-body">
+        <h3>Patient: <span id="commRes-patient-name">[loading...]</span></h3>
+        <div>
+            <select class='form-control' id='req-searchClaim'>
+                <option>-- Select a Claim --</option>
+            </select>
+            <div>
+        </div>
+        <p>
+            <div id="incloincCodes"><label>Code</label></div>
+        </p>
+        <div>
+            <input type='checkbox' id='task-signature' name='signature' value='signed'>
+            <label for='signature'> Signature required </label>
+        </div>  
+        <p>
+            <button type="button" class="btn btn-primary" id="btn-create-task">Create Task</button>
+            <a href="#" class="btn btn-primary" id="btn-restart-task">Cancel</a>
+        </p>
+        <div>
+            <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th scope="col" colspan="2" class="table-warning">Data Element</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th>Tracking ID (Provider or Payer Assigned)</th>
+                    <td id="trackingIdCol"></td>
+                  </tr>
+                  <tr>
+                    <th>Use</th>
+                    <td id="useCol">Claim attachment (CLMATTCH)</td>
+                  </tr>
+                  <tr>
+                    <th>Payer ID</th>
+                    <td id="payerIdCol">Get it from app</td>
+                  </tr>
+                  <tr>
+                    <th>Payer URL</th>
+                    <td id="urlCol">Get it from app</td>
+                  </tr>
+                  <tr>
+                    <th>Organization ID</th>
+                    <td id="organizationCol">-</td>
+                  </tr>
+                  <tr>
+                    <th>Provider ID</th>
+                    <td id="providerIdCol">cdex-example-practitioner (Dr. Ronald Bone)</td>
+                  </tr>
+                  <tr>
+                    <th>Claim/PreAuth ID</th>
+                    <td id="claimIdCol"></td>
+                  </tr>
+                  <tr>
+                    <th>Line Items</th>
+                    <td id="lineItemsCol"></td>
+                  </tr>
+                  <tr>
+                    <th>LOINC Attachment Code</th>
+                    <td id="loincCol"></td>
+                  </tr>
+                  <tr>
+                    <th>Due date</th>
+                    <td id="dueDateCol"></td>
+                  </tr>
+                  <tr>
+                    <th>Date of service</th>
+                    <td id="serviceDateCol"></td>
+                  </tr>
+                  <tr>
+                    <th>Member ID</th>
+                    <td id="memberIdCol"></td>
+                  </tr>
+                  <tr>
+                    <th>Patient name</th>
+                    <td id="patientNameCol"></td>
+                  </tr>
+                  <tr>
+                    <th>Patient Account No.</th>
+                    <td id="patientAccCol"></td>
+                  </tr>
+                  <tr>
+                    <th>Patient DOB</th>
+                    <td id="patientDOBCol"></td>
+                  </tr>
+                </tbody>
+              </table>
+        </div>
+    </div>
+</div>
+
 <script src="js/patient.js"></script>
 <script src="js/claim.js"></script>
 <script src="js/app.js"></script>
