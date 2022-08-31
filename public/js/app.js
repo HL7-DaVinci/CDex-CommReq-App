@@ -52,7 +52,9 @@ if (!CLAIM) {
         $('#attachment-submit-screen').hide();
         $('#query-request-screen').hide();
         $('#attachment-confirm-screen').hide();
+        $('#attachment-requested-screen').hide();
         $('#attachment-submit-screen').hide();
+        $('#request-provider-attachments').hide();
         if (screenID === 'intro-screen') {
             $('#task-intro-screen').show();
         } else {
@@ -462,12 +464,12 @@ if (!CLAIM) {
         }
     }
 
-    CDEX.searchClaims = async () => {
-        $('#search-claim').html("<option>-- Select tracking control number --</option>");
+    CDEX.searchClaims = async (component, firstOption) => {
+        $(`#${component}`).html(firstOption);
         CLAIM.claimLookupByPatient(CDEX.patient.id).then(res => {
             if (res.total > 0) {
                 res.entry.forEach((value) => {
-                    $('#search-claim').append("<option value='" + value.resource.id +
+                    $(`#${component}`).append("<option value='" + value.resource.id +
                         "'>" + value.resource.id + "</option>");
                 });
             } else {
@@ -478,7 +480,7 @@ if (!CLAIM) {
     }
 
     CDEX.displayAttachmentScreen = () => {
-        CDEX.searchClaims().then(() => {
+        CDEX.searchClaims("submit-searchClaim", "<option>-- Select tracking control number --</option>").then(() => {
             $('#loincCodes').html("<label>Code</label>");
             $('#loincCodes').append(
                 "<div id='codes'><input id='codeInput' list='codesList'>" +
@@ -496,12 +498,12 @@ if (!CLAIM) {
                 if ($(this).is(":checked")) {
                     $("#claimid").removeAttr("disabled");
                     $("#claimid").focus();
-                    $("#search-claim").attr("disabled", "disabled");
+                    $("#submit-searchClaim").attr("disabled", "disabled");
                     $("#radio-claim").removeAttr("disabled");
                     $("#radio-auth").removeAttr("disabled");
                 } else {
                     $("#claimid").attr("disabled", "disabled");
-                    $("#search-claim").removeAttr("disabled");
+                    $("#submit-searchClaim").removeAttr("disabled");
                     $("#radio-claim").attr("disabled", "disabled");
                     $("#radio-auth").attr("disabled", "disabled");
                 }
@@ -509,6 +511,7 @@ if (!CLAIM) {
         });
     };
 
+    
     CDEX.displayDirectQueryScreen = () => {
         $('#search-criteria').html('');
         CDEX.searchCriteria.criteria.forEach((value) => {
@@ -566,6 +569,274 @@ if (!CLAIM) {
         $('#error-message').html(message);
         CDEX.displayScreen('error-screen');
     }
+
+    CDEX.displayRequestAttachmentScreen = () => {
+        CDEX.searchClaims("req-searchClaim", "<option>-- Select a Claim --</option>").then(() => {
+            $("#req-searchClaim").on('change keydown paste input', function () {
+                $('#trackingIdCol').html($('#req-searchClaim').val().toString() + "-TrackindId1234");
+            });
+            $('#payerIdCol').html(`${CDEX.patient.id}`);
+            $('#patientAccCol').html(`${CDEX.patient.id}`);
+            $('#urlCol').html(`${CDEX.payerEndpoint.url}`);
+            $('#patientDOBCol').html(`${CDEX.patient.birthDate}`);
+            $('#patientNameCol').html(`${CDEX.patient.name[0].given[0]} ${CDEX.patient.name[0].family}`);
+            let currentDate = new Date();
+            let dueDate = new Date();
+            dueDate.setDate(currentDate.getDate() + 10);
+            $('#serviceDateCol').html(currentDate.toISOString().slice(0, 10));
+            $('#dueDateCol').html(dueDate.toISOString().slice(0, 10));
+            $('#memberIdCol').html(`${CDEX.patient.id}`);
+            $('#incloincCodes').html("<label>Code</label>");
+            $('#incloincCodes').append(
+                `<div id='codes'><input id='inccodeInput' list='codesList' class='inline-elem'>
+                    <datalist id='codesList'></datalist>
+                    <button type="button" class="btn btn-success btn-sm" id='btn-add-code'>+</button>
+                    <button type="button" class="btn btn-danger btn-sm" id='btn-remove-code'>-</button>
+                    <div id="new_chq"></div>
+                </div>
+                <input type="hidden" value="1" id="total_chq">`
+            );
+            $("#inccodeInput").on('change', function () {
+                let loinVal = $("#inccodeInput").val();
+                $('#loincCol').html(loinVal);
+                try {
+                    $('#lineItemsCol').html($(`#${loinVal}`).html());
+                } catch {
+                    $('#lineItemsCol').html("");
+                }
+                for (let index = 2; index <= $('#total_chq').val(); index++) {
+                    loinVal = $(`#new_${index}`).val();
+                    $('#loincCol').append(`, ${loinVal}`);
+                    try {
+                        $('#lineItemsCol').append(", " + $(`#${loinVal}`).html());
+                    } catch { }
+                }
+            });
+            $("#req-searchClaim").on('change', function () {
+                $('#claimIdCol').html($("#req-searchClaim").val());
+            });
+            $("#btn-add-code").on('click', CDEX.addInputCode);
+            $("#btn-remove-code").on('click', CDEX.removeInputCode);
+            CDEX.loincTypes.loinc.forEach((code) => {
+                $('#codesList').append(
+                    "<option value='" + code.code + "' id='" + code.code + "'>" +
+                    code.display + "</option>"
+                );
+            });
+            $("#btn-create-task").on('click', CDEX.fillReqAttachmentPayload);
+            CDEX.displayScreen('request-provider-attachments');
+        });
+    };
+
+    CDEX.addInputCode = () => {
+        var new_chq_no = parseInt($('#total_chq').val()) + 1;
+        var new_input = "<div><input id='new_" + new_chq_no + "' list='codesList' class='inline-elem'></div>";
+
+        CDEX.loincTypes.loinc.forEach((code) => {
+            $(`#new_${new_chq_no}`).append(
+                "<option value='" + code.code + "' id='" + code.code + "'>" +
+                code.display + "</option>"
+            );
+        });
+
+        $('#new_chq').append(new_input);
+
+        $('#total_chq').val(new_chq_no);
+
+        $(`#new_${new_chq_no}`).on('change', function () {
+            $('#loincCol').html($("#inccodeInput").val());
+            let loinVal = $("#inccodeInput").val();
+            try {
+                $('#lineItemsCol').html($(`#${loinVal}`).html());
+            } catch {
+                $('#lineItemsCol').html("");
+            }
+            for (let index = 2; index <= $('#total_chq').val(); index++) {
+                loinVal = $(`#new_${index}`).val();
+                $('#loincCol').append(`, ${loinVal}`);
+                try {
+                    $('#lineItemsCol').append(", " + $(`#${loinVal}`).html());
+                } catch { }
+            }
+        });
+    };
+
+    CDEX.removeInputCode = () => {
+        var last_chq_no = $('#total_chq').val();
+
+        if (last_chq_no > 1) {
+            $('#new_' + last_chq_no).remove();
+            $('#total_chq').val(last_chq_no - 1);
+        }
+
+        $('#loincCol').html($("#inccodeInput").val());
+        let loinVal = $("#inccodeInput").val();
+        try {
+            $('#lineItemsCol').html($(`#${loinVal}`).html());
+        } catch {
+            $('#lineItemsCol').html("");
+        }
+        for (let index = 2; index <= $('#total_chq').val(); index++) {
+            loinVal = $(`#new_${index}`).val();
+            $('#loincCol').append(`, ${loinVal}`);
+            try {
+                $('#lineItemsCol').append(", " + $(`#${loinVal}`).html());
+            } catch { }
+        }
+    };
+
+    CDEX.fillReqAttachmentPayload = () => {
+        if ($("#req-searchClaim").find(':selected').val() === "-- Select a Claim --") {
+            alert(`Please select a valid Claim Id`);
+        } else if ($('#inccodeInput').val() === "") {
+            alert(`Please specify all codes for the request`);
+        } else {
+            let emptyLoinc = false;
+            for (let index = 2; index <= $('#total_chq').val(); index++) {
+                if ($(`#new_${index}`).val() === "") {
+                    emptyLoinc = true;
+                    break;
+                }
+            }
+            if (emptyLoinc && $('#total_chq').val() > 1) {
+                alert(`Please specify all codes for the request`);
+            } else {
+                CDEX.requestAttachmentPayload.identifier[0].system = CDEX.payerEndpoint.url.toString();
+                CDEX.requestAttachmentPayload.id = $('#req-searchClaim').val().toString() + "-TrackindId1234";
+                CDEX.requestAttachmentPayload.identifier[0].value = $('#req-searchClaim').val().toString() + "-TrackindId1234";
+                CDEX.requestAttachmentPayload.for.reference = CDEX.payerEndpoint.url + "/Patient/" + CDEX.patient.id;
+                CDEX.requestAttachmentPayload.authoredOn = $('#serviceDateCol').html();
+                CDEX.requestAttachmentPayload.lastModified = $('#serviceDateCol').html();
+                CDEX.requestAttachmentPayload.requester.identifier.value = CDEX.patient.id;
+                CDEX.requestAttachmentPayload.owner.identifier.value = "cdex-example-practitioner";
+                CDEX.requestAttachmentPayload.restriction.period.end = $('#dueDateCol').html();
+
+                //Create line item
+                CDEX.requestAttachmentPayload.input = [];
+                let loinVal = $('#inccodeInput').val();
+                CDEX.addAttachmentRequest($('#inccodeInput').val(), $(`#${loinVal}`).html(), $(`#${loinVal}`).html(), 1);
+
+                for (let index = 2; index <= $('#total_chq').val(); index++) {
+                    loinVal = $(`#new_${index}`).val();
+                    CDEX.addAttachmentRequest(loinVal, $(`#${loinVal}`).html(), $(`#${loinVal}`).html(), index);
+                }
+
+                if ($('#task-signature').is(":checked")) {
+                    CDEX.requestAttachmentPayload.input.push(
+                        {
+                            "type": {
+                                "coding": [
+                                    {
+                                        "system": "http://hl7.org/fhir/us/davinci-cdex/CodeSystem/cdex-temp",
+                                        "code": "signature-flag"
+                                    }
+                                ]
+                            },
+                            "valueBoolean": true
+                        }
+                    );
+                } else {
+                    CDEX.requestAttachmentPayload.input.push(
+                        {
+                            "type": {
+                                "coding": [
+                                    {
+                                        "system": "http://hl7.org/fhir/us/davinci-cdex/CodeSystem/cdex-temp",
+                                        "code": "signature-flag"
+                                    }
+                                ]
+                            },
+                            "valueBoolean": false
+                        }
+                    );
+                }
+
+                CDEX.requestAttachmentPayload.input.push(
+                    {
+                        "type": {
+                            "coding": [
+                                {
+                                    "system": "http://hl7.org/fhir/us/davinci-cdex/CodeSystem/cdex-temp",
+                                    "code": "payer-url"
+                                }
+                            ]
+                        },
+                        "valueUrl": `${CDEX.payerEndpoint.url}/$submit-attachment`
+                    },
+                    {
+                        "type": {
+                            "coding": [
+                                {
+                                    "system": "http://hl7.org/fhir/us/davinci-cdex/CodeSystem/cdex-temp",
+                                    "code": "service-date"
+                                }
+                            ]
+                        },
+                        "valueDate": `${$('#serviceDateCol').html()}`
+                    }
+                );
+
+                let configProvider = {
+                    type: 'PUT',
+                    url: CDEX.providerEndpoint.url + CDEX.submitTaskEndpoint + "/" + $('#req-searchClaim').val().toString() + "-TrackindId1234",
+                    data: JSON.stringify(CDEX.requestAttachmentPayload),
+                    contentType: "application/fhir+json"
+                };
+                $.ajax(configProvider).then((res) => {
+                    $('#req-task-output').html(JSON.stringify(res, null, 2));
+                    CDEX.displayScreen('attachment-requested-screen');
+                });                    
+            }
+        }
+    };
+
+    CDEX.addAttachmentRequest = (code, display, text, lineitem) => {
+        CDEX.requestAttachmentPayload.input.push(
+            {
+                "extension": [
+                    {
+                        "url": "http://hl7.org/fhir/us/davinci-pas/StructureDefinition/extension-serviceLineNumber",
+                        "valuePositiveInt": lineitem
+                    }
+                ],
+                "type": {
+                    "coding": [
+                        {
+                            "system": "http://hl7.org/fhir/us/davinci-hrex/CodeSystem/hrex-temp",
+                            "code": "data-code"
+                        }
+                    ]
+                },
+                "valueCodeableConcept": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": `${code}`,
+                            "display": `${display}`
+                        }
+                    ],
+                    "text": `${text}`
+                }
+            }
+        );
+    };
+
+    $('#download-reqattch').click(() => {
+        CDEX.downloadAttchReqTask();
+    });
+
+    CDEX.downloadAttchReqTask = () => {
+        var zip = new JSZip();
+        //Task
+        var resourceContent = document.getElementById('req-task-output').innerHTML;
+        zip.file("requestedAttachmens.json", resourceContent);
+
+        zip.generateAsync({ type: "blob" })
+            .then(function (content) {
+                // Force down of the Zip file
+                saveAs(content, "reqAttachment.zip");
+            });
+    };
 
     CDEX.enable = (id) => {
         $("#" + id).prop("disabled", false);
@@ -1012,7 +1283,7 @@ if (!CLAIM) {
         if ($("#type-claim").is(':checked')) {
             claimID = $("#claimid").val()
         } else {
-            claimID = $("#search-claim").find(':selected').val();
+            claimID = $("#submit-searchClaim").find(':selected').val();
         }
         if ($('#select-attch').get(0).files.length == 0) {
             alert("No file(s) selected. Please select at least one file to submit");
@@ -1036,11 +1307,16 @@ if (!CLAIM) {
     $('#btn-task').click(CDEX.displayCommReqScreen);
     $('#btn-query').click(CDEX.displayDirectQueryScreen);
     $('#btn-attach').click(CDEX.displayAttachmentScreen);
+    $('#btn-request-attach').click(CDEX.displayRequestAttachmentScreen);
     $('#btn-task-restart').click(CDEX.restart);
     $('#btn-query-restart').click(CDEX.restart);
     $('#btn-task-restart').click(CDEX.restart);
     $('#dq-btn-restart').click(CDEX.restart);
+    $('#btn-restart-task').click(CDEX.restart);
+    $('#btn-restart-attachment').click(CDEX.restart);
     $('#attch-btn-restart').click(CDEX.restart);
+    $('#reqattch-btn-restart').click(CDEX.restart);
+    $('#attch-req-restart').click(CDEX.restart);
     $('#btn-back').click(CDEX.displayCommReqScreen);
     $('#btn-edit').click(CDEX.displayDataRequestScreen);
     $('#btn-submit').click(CDEX.reconcile);
@@ -1318,26 +1594,7 @@ if (!CLAIM) {
                 // Force down of the Zip file
                 saveAs(content, "submitAttachment.zip");
             });
-
-        /*var contentAsBlob = new Blob([resourceContent], { type: 'text/plain' });
-        var fileNameToSaveAs = "parameter.json"; //filename.extension
-
-        var downloadLink = document.createElement("a");
-        downloadLink.download = fileNameToSaveAs;
-        downloadLink.innerHTML = "Download File";
-        if (window.webkitURL != null) {
-            // Chrome allows the link to be clicked without actually adding it to the DOM.
-            downloadLink.href = window.webkitURL.createObjectURL(contentAsBlob);
-        } else {
-            // Firefox requires the link to be added to the DOM before it can be clicked.
-            downloadLink.href = window.URL.createObjectURL(contentAsBlob);
-            downloadLink.onclick = destroyClickedElement;
-            downloadLink.style.display = "none";
-            document.body.appendChild(downloadLink);
-        }
-
-        downloadLink.click();*/
-    }
+    };
 
     CDEX.signAttachment = async (bundle) => {
         let configProvider = {
@@ -1350,19 +1607,7 @@ if (!CLAIM) {
             return response;
         });
         return signedBundle;
-
-        /*return $.ajax({
-            url: 'http://127.0.0.1:9090/api/sign',
-            type: 'POST',
-            data: bundle,
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            success: (result) => {
-                return result
-            }
-        })*/
-    }
+    };
 
     CDEX.directQueryRequest = () => {
         let queryType = '';

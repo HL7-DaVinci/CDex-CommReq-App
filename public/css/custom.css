@@ -19,6 +19,8 @@ td {
 #direct-query-request-screen,
 #attachment-submit-screen,
 #attachment-confirm-screen,
+#attachment-requested-screen,
+#request-provider-attachments,
 .dvt {
     align-self: center;
     width: 700px;
@@ -69,7 +71,8 @@ img {
 #claim-output,
 #binary-output,
 #parameter-output,
-#operation-output {
+#operation-output,
+#req-task-output {
     height: 300px;
     width: 600px;
 }

@@ -4540,6 +4540,61 @@ if (!CDEX) {
     ]
   };
 
+  CDEX.requestAttachmentPayload = {
+    "resourceType": "Task",
+    "id": "",
+    "identifier": [
+      {
+        "type": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/us/davinci-cdex/CodeSystem/cdex-temp",
+              "code": "tracking-id",
+              "display": "Tracking Id"
+            }
+          ],
+          "text": "Re-Association Tracking Control Number"
+        },
+        "system": "",
+        "value": ""
+      }
+    ],
+    "status": "requested",
+    "intent": "order",
+    "code": {
+      "coding": [
+        {
+          "system": "http://hl7.org/fhir/us/davinci-cdex/CodeSystem/cdex-temp",
+          "code": "attachment-request"
+        }
+      ],
+      "text": "Attachment Request"
+    },
+    "for": {
+      "reference": ""
+    },
+    "authoredOn": "",
+    "lastModified": "",
+    "requester": {
+      "identifier": {
+        "system": "http://example.org/cdex/payer/payer-ids",
+        "value": ""
+      }
+    },
+    "owner": {
+      "identifier": {
+        "system": "http://hl7.org/fhir/sid/us-npi",
+        "value": ""
+      }
+    },
+    "restriction": {
+      "period": {
+        "end": ""
+      }
+    },
+    "input": []
+  }
+
   CDEX.loincTypes = {
     "loinc": [
       {
