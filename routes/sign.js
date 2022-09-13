@@ -6,6 +6,12 @@ const jose = require('node-jose')
 
 const router = express.Router()
 
+router.get('/', async (req, res) => {
+  const response = await fetch('https://jsonplaceholder.typicode.com/users');
+  const users = await response.json();    
+  res.json(users);
+});
+
 router.post('/', async (req, res) => {
   const certPath = path.join(__dirname, '../config/cert.pem')
   const cert = fs.readFileSync(certPath)
