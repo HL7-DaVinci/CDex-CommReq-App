@@ -7,6 +7,15 @@ const jose = require('node-jose')
 const fetch = require('node-fetch')
 
 router.post('/', async (req, res) => {
+  const certPath = path.join(__dirname, '../config/cert.pem');
+  const cert = fs.readFileSync(certPath);
+  const der = cert.toString().replace('-----BEGIN CERTIFICATE-----', '').replace('-----END CERTIFICATE-----', '').replace(/(\r\n|\n|\r)/gm, '');
+  const header = {
+    alg: 'RS256',
+    kty: "RS",
+    x5c: [der]
+  };
+
   const response = await fetch('https://jsonplaceholder.typicode.com/users');
   const users = await response.json();    
   res.json(users);
