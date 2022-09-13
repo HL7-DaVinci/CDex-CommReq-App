@@ -18,9 +18,16 @@ router.post('/', async (req, res) => {
 
   const privateKeyPath = path.join(__dirname, '../config/private-key.pem');
   const privateKey = fs.readFileSync(privateKeyPath);
+  const key = await jose.JWK.asKey(privateKey, 'pem');
+
+  const { id, meta, ...rest } = req.body;
+
+  const payload = canonicalize(rest);
+  const signature = await jose.JWS.createSign({ format: 'compact' }, { key, header }).update(payload).final();
+  const base64JWS = btoa(signature);
 
   const users = {
-    "wentThrough": "privateKey"
+    "wentThrough": "base64JWS"
   };    
   res.json(users);
 });
