@@ -1,10 +1,10 @@
-const express = require('express')
+const { Router } = require('express');
+const router = Router();
 const path = require('path')
 const fs = require('fs')
 const canonicalize = require('canonicalize')
 const jose = require('node-jose')
-
-const router = express.Router()
+const fetch = require('node-fetch')
 
 router.get('/', async (req, res) => {
   const response = await fetch('https://jsonplaceholder.typicode.com/users');
