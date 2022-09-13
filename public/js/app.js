@@ -600,19 +600,11 @@ if (!CLAIM) {
                 <input type="hidden" value="1" id="total_chq">`
             );
             $("#inccodeInput").on('change', function () {
-                let loinVal = $("#inccodeInput").val();
-                $('#loincCol').html(loinVal);
-                try {
-                    $('#lineItemsCol').html($(`#${loinVal}`).html());
-                } catch {
-                    $('#lineItemsCol').html("");
-                }
+                let loinVal = $("#inccodeInput").val();//#${loinVal}`).html()
+                $('#loincCol').html($(`#${loinVal}`).html() + `(${loinVal})`);
                 for (let index = 2; index <= $('#total_chq').val(); index++) {
                     loinVal = $(`#new_${index}`).val();
-                    $('#loincCol').append(`, ${loinVal}`);
-                    try {
-                        $('#lineItemsCol').append(", " + $(`#${loinVal}`).html());
-                    } catch { }
+                    $('#loincCol').append(', ' +  $(`#${loinVal}`).html() + '(' + loinVal + ')');
                 }
             });
             $("#req-searchClaim").on('change', function () {
@@ -647,19 +639,11 @@ if (!CLAIM) {
         $('#total_chq').val(new_chq_no);
 
         $(`#new_${new_chq_no}`).on('change', function () {
-            $('#loincCol').html($("#inccodeInput").val());
             let loinVal = $("#inccodeInput").val();
-            try {
-                $('#lineItemsCol').html($(`#${loinVal}`).html());
-            } catch {
-                $('#lineItemsCol').html("");
-            }
+            $('#loincCol').html($(`#${loinVal}`).html() + '(' + $("#inccodeInput").val() + ')');
             for (let index = 2; index <= $('#total_chq').val(); index++) {
                 loinVal = $(`#new_${index}`).val();
-                $('#loincCol').append(`, ${loinVal}`);
-                try {
-                    $('#lineItemsCol').append(", " + $(`#${loinVal}`).html());
-                } catch { }
+                $('#loincCol').append(', ' + $(`#${loinVal}`).html() + '(' + loinVal + ')');
             }
         });
     };
@@ -672,19 +656,11 @@ if (!CLAIM) {
             $('#total_chq').val(last_chq_no - 1);
         }
 
-        $('#loincCol').html($("#inccodeInput").val());
         let loinVal = $("#inccodeInput").val();
-        try {
-            $('#lineItemsCol').html($(`#${loinVal}`).html());
-        } catch {
-            $('#lineItemsCol').html("");
-        }
+        $('#loincCol').html($(`#${loinVal}`).html() + '(' + $("#inccodeInput").val() + ')');
         for (let index = 2; index <= $('#total_chq').val(); index++) {
             loinVal = $(`#new_${index}`).val();
-            $('#loincCol').append(`, ${loinVal}`);
-            try {
-                $('#lineItemsCol').append(", " + $(`#${loinVal}`).html());
-            } catch { }
+            $('#loincCol').append(', ' + $(`#${loinVal}`).html() + '(' + loinVal + ')');
         }
     };
 
