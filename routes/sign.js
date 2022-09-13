@@ -16,8 +16,12 @@ router.post('/', async (req, res) => {
     x5c: [der]
   };
 
-  const response = await fetch('https://jsonplaceholder.typicode.com/users');
-  const users = await response.json();    
+  const privateKeyPath = path.join(__dirname, '../config/private-key.pem');
+  const privateKey = fs.readFileSync(privateKeyPath);
+
+  const users = {
+    "wentThrough": "privateKey"
+  };    
   res.json(users);
 });
 
