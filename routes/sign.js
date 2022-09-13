@@ -6,7 +6,7 @@ const canonicalize = require('canonicalize')
 const jose = require('node-jose')
 const fetch = require('node-fetch')
 
-router.post('/', async (req, res) => {
+/*router.post('/', async (req, res) => {
   const certPath = path.join(__dirname, '../config/cert.pem');
   const cert = fs.readFileSync(certPath);
   const der = cert.toString().replace('-----BEGIN CERTIFICATE-----', '').replace('-----END CERTIFICATE-----', '').replace(/(\r\n|\n|\r)/gm, '');
@@ -24,15 +24,16 @@ router.post('/', async (req, res) => {
 
   const payload = canonicalize(rest);
   const signature = await jose.JWS.createSign({ format: 'compact' }, { key, header }).update(payload).final();
-  /*const base64JWS = btoa(signature);*/
+  const base64JWS = Buffer.from(signature).toString('base64');
+  //const base64JWS = btoa(signature);
 
   const users = {
-    "wentThrough": "signature"
+    "wentThrough": `${base64JWS}`
   };    
   res.json(users);
-});
+});*/
 
-router.post('/try', async (req, res) => {
+router.post('/', async (req, res) => {
   const certPath = path.join(__dirname, '../config/cert.pem')
   const cert = fs.readFileSync(certPath)
 
@@ -53,7 +54,8 @@ router.post('/try', async (req, res) => {
 
   const payload = canonicalize(rest)
   const signature = await jose.JWS.createSign({ format: 'compact' }, { key, header }).update(payload).final()
-  const base64JWS = btoa(signature)
+  const base64JWS = Buffer.from(signature).toString('base64');
+  //const base64JWS = btoa(signature)
 
   const sigElement = {
     type: [
