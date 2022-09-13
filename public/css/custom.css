@@ -21,9 +21,11 @@ td {
 #attachment-confirm-screen,
 #attachment-requested-screen,
 #request-provider-attachments,
+#submit-payer-attachments,
+#attch-req-confirm-screen,
 .dvt {
     align-self: center;
-    width: 700px;
+    width: 1000px;
     margin-bottom: 1rem;
 }
 
@@ -72,9 +74,12 @@ img {
 #binary-output,
 #parameter-output,
 #operation-output,
-#req-task-output {
+#req-task-output,
+#req-parameter-output,
+#req-operation-output,
+#req-claim-output {
     height: 300px;
-    width: 600px;
+    width: 900px;
 }
 
 .sub-inline {
@@ -83,4 +88,8 @@ img {
 
 .inline-elem {
     margin-inline: 5px;
+}
+
+table {
+    width: 1000px;
 }
