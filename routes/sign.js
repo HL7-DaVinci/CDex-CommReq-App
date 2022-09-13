@@ -22,12 +22,12 @@ router.post('/', async (req, res) => {
 
   const { id, meta, ...rest } = req.body;
 
-  /*const payload = canonicalize(rest);
-  const signature = await jose.JWS.createSign({ format: 'compact' }, { key, header }).update(payload).final();
+  const payload = canonicalize(rest);
+  /*const signature = await jose.JWS.createSign({ format: 'compact' }, { key, header }).update(payload).final();
   const base64JWS = btoa(signature);*/
 
   const users = {
-    "wentThrough": "Jose and req.body"
+    "wentThrough": "canonicalize"
   };    
   res.json(users);
 });
