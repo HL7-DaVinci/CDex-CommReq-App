@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>DaVinci CDex</title>
     <link rel="icon" type="image/png" href="images/favicon.png">
@@ -11,336 +12,425 @@
     <link href="css/bootstrap.css" rel="stylesheet">
 
     <!--TODO: don't use CDN-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
 
     <link href="css/custom.css" rel="stylesheet">
     <script src="js/config.js"></script>
 </head>
+
 <body>
-<div class="wine-row">
-    <img src="images/request.png" style="height:80px; width:130px">
-    <div class="wine-text-container"><h1></h1></div>
-</div>
-
-<div id="task-intro-screen" class="card alert-info screen">
-    <div class="card-body">
-        <h5 class="card-title">CDex Scenarios Description</h5>
-        <p class='card-text' id='task-intro'></p>
-        <!-- <a href="#" class="btn btn-primary" id="btn-task">Task Based Approach</a> -->
-        <a href="#" class="btn btn-primary" id="btn-query">Direct Query</a>
-        <a href="#" class="btn btn-primary" id="btn-attach">Submit Attachment(s)</a>
-        <a href="#" class="btn btn-primary" id="btn-request-attach">Request Attachment(s)</a>
-    </div>
-</div>
-<div></div>
-
-<div id="query-request-screen" class="card alert-info screen">
-    <div class="card-body">
-        <h5 class="card-title">Direct Query Type</h5>
-        <label for="basic-url">Query URI</label>
-        <div class="input-group mb-3">
-            <div class="input-group-prepend">
-                <span class="input-group-text" id="basic-addon3">&clinical-status=active,recurrance,remission</span>
-            </div>
-            <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3">
+    <div class="wine-row">
+        <img src="images/request.png" style="height:80px; width:130px">
+        <div class="wine-text-container">
+            <h1></h1>
         </div>
-        <a href="#" class="btn btn-primary" id="btn-execute-query">Proceed</a>
     </div>
-</div>
-<div id="preview-communication-screen" class="screen">
-    <p>
+
+    <div id="task-intro-screen" class="card alert-info screen">
+        <div class="card-body">
+            <h5 class="card-title">CDex Scenarios Description</h5>
+            <p class='card-text' id='task-intro'></p>
+            <!-- <a href="#" class="btn btn-primary" id="btn-task">Task Based Approach</a> -->
+            <a href="#" class="btn btn-primary" id="btn-query">Direct Query</a>
+            <a href="#" class="btn btn-primary" id="btn-attach">Submit Attachment</a>
+            <a href="#" class="btn btn-primary" id="btn-request-attach">Request Attachment</a>
+            <a href="#" class="btn btn-primary" id="btn-submit-attach">Submit Solicited Attachments</a>
+        </div>
+    </div>
+    <div></div>
+
+    <div id="query-request-screen" class="card alert-info screen">
+        <div class="card-body">
+            <h5 class="card-title">Direct Query Type</h5>
+            <label for="basic-url">Query URI</label>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon3">&clinical-status=active,recurrance,remission</span>
+                </div>
+                <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3">
+            </div>
+            <a href="#" class="btn btn-primary" id="btn-execute-query">Proceed</a>
+        </div>
+    </div>
+    <div id="preview-communication-screen" class="screen">
+        <p>
         <div class='dvt' id='resources-list'>
 
         </div>
-    </p>
-    <button type="button" class="btn btn-secondary" id="btn-back">Back</button>
-</div>
-<div id="preview-screen" class="screen">
-    <table class='table'>
-        <tr><td colspan="5"><img src="images/glow.gif" id="spinner-preview" style="height:400px; width:500px"></td></tr>
-        <tbody id='preview-list'></tbody>
-    </table>
-    <button type="button" class="btn btn-secondary" id="btn-back-communication">Back</button>
-</div>
-<div id="communication-request-screen" class="screen">
-    <h3>Patient: <span id="commRes-patient-name">[loading...]</span></h3>
-    <p>
-        <button type="button" class="btn btn-primary" id="btn-task-request">Create Data Request</button>
-        <a href="#" class="btn btn-primary" id="btn-task-restart">Cancel</a>
-    </p>
-    <div><p><div class='dvt'>
+        </p>
+        <button type="button" class="btn btn-secondary" id="btn-back">Back</button>
+    </div>
+    <div id="preview-screen" class="screen">
         <table class='table'>
-            <thead>
-            <th>Data Request (Task)</th>
-            <th>Created</th>
-            <th>Workflow Type</th>
-            <th>Status</th>
-            </thead>
-            <tbody id='comm-request-list'></tbody>
+            <tr>
+                <td colspan="5"><img src="images/glow.gif" id="spinner-preview" style="height:400px; width:500px"></td>
+            </tr>
+            <tbody id='preview-list'></tbody>
         </table>
-    </div></p></div>
-    <div id='communication-request-screen-loader'><p>[loading...]</p></div>
-</div>
-<div id="direct-query-request-screen" class="card alert-info screen">
-    <div class="card-body">
-        <h3>Patient: <span id="commRes-patient-name">[loading...]</span></h3>
-        <select class='form-control' id='search-criteria'>
-            <option>-- Select search criteria --</option>
-        </select>
-        <div id="subsearch" class="subsearch"></div>
-        <p>
-            <button type="button" class="btn btn-primary" id="btn-query-request">Direct Query Request</button>
-            <a href="#" class="btn btn-primary" id="btn-query-restart">Cancel</a>
-        </p>
+        <button type="button" class="btn btn-secondary" id="btn-back-communication">Back</button>
     </div>
-</div>
-
-<div id="attachment-submit-screen" class="card alert-info screen">
-    <div class="card-body">
+    <div id="communication-request-screen" class="screen">
         <h3>Patient: <span id="commRes-patient-name">[loading...]</span></h3>
+        <p>
+            <button type="button" class="btn btn-primary" id="btn-task-request">Create Data Request</button>
+            <a href="#" class="btn btn-primary" id="btn-task-restart">Cancel</a>
+        </p>
         <div>
-            <select class='form-control' id='submit-searchClaim'>
-                <option>-- Select tracking control number --</option>
-            </select>
-            <div>
-                <input type='checkbox' id='type-claim' name='type-claim' value='typed'>
-                <label for='type-claim'>Tracking Control Number</label>
+            <p>
+            <div class='dvt'>
+                <table class='table'>
+                    <thead>
+                        <th>Data Request (Task)</th>
+                        <th>Created</th>
+                        <th>Workflow Type</th>
+                        <th>Status</th>
+                    </thead>
+                    <tbody id='comm-request-list'></tbody>
+                </table>
             </div>
-            <input type='text' id='claimid' name='claimid' disabled="disabled" value="">
+            </p>
         </div>
-        <div class="form-check form-check-inline">
-            <label for="radio-claim">
-                <input type="radio" id="radio-claim" name="code" value="claim" checked="checked" disabled="disabled"> Claim
-            </label><br>
+        <div id='communication-request-screen-loader'>
+            <p>[loading...]</p>
         </div>
-        <div class="form-check form-check-inline">
-            <label for="radio-auth">
-                <input type="radio" id="radio-auth" name="code" value="prior-authorization" disabled="disabled">Prior Authorization
-            </label><br> 
-        </div><br>
-        <div>
-            <label for="serviceDate">Service date</label><br>
-            <input type="date" id="serviceDate" name="serviceDate">
-        </div><br>
-        <div id="loincCodes"><label>Code</label></div><br>
-        <input type="file" name="attachments" id="select-attch">
-        <div id="selected-attch" class="subsearch"></div>
-        <div>
-            <input type='checkbox' id='signature' name='signature' value='signed'>
-            <label for='signature'> Signature required </label>
-        </div>
-        <p>
-            <button type="button" class="btn btn-primary" id="btn-attch-submit">Submit Attachment(s)</button>
-            <a href="#" class="btn btn-primary" id="btn-restart-attachment">Cancel</a>
-        </p>
     </div>
-</div>
-
-<div id="attachment-confirm-screen" class="card alert-info screen">
-    <div class="card-body">
-        <h5 class="card-title">Created/Updated resources</h5>
-        <p class="card-text">Parameter successfully created</p>
-        <p class="card-text"><textarea id="parameter-output"></textarea></p>
-        <p class="card-text">Operation outcome</p>
-        <p class="card-text"><textarea id="operation-output"></textarea></p>
-        <p class="card-text" id="claimCreateUpdate"></p>
-        <p class="card-text"><textarea id="claim-output"></textarea></p>
-        <p class="card-text" id="Resource">Binary successfully created. </p>
-        <p class="card-text"><textarea id="binary-output"></textarea></p>
-        <p class="card-text">
-            <a href="#" class="btn btn-primary" id="attch-btn-restart">OK</a>
-            <a href="#" class="btn btn-primary" id="download-resources">Download resources</a>
-        </p>
-    </div>
-</div>
-
-<div id="data-request-screen" class="screen">
-    <h3>Edit data request (patient: <span id="patient-name"><p>[loading...]</p></span>)</h3>
-    <div id="subscription-selection"><p>
-        Workflow Type
-        <!--<input type="checkbox" id="chk-subscription" checked="checked">-->
-        <div class="btn-group btn-group-toggle" data-toggle="buttons">
-            <label class="btn btn-primary active">
-              <input type="radio" name="options" id="polling" autocomplete="off" checked> Polling
-            </label>
-            <label class="btn btn-primary">
-              <input type="radio" name="options" id="subscription" autocomplete="off"> Subscription
-            </label>
-          </div>
-    </p></div>
-    <div id="menu-request-list"><p>
-        Request Details
-        <div class='dvt'>
-        <div id='selection-query-list'></div>
-    </div></p></div>
-    <!--<div><a href='#' id="btn-add">add another request</a></div>-->
-    <div><!--<br>-->
-    <button type="button" class="btn btn-primary" id="btn-review">Review</button>
-    </div>
-</div>
-<div id="review-screen" class="screen">
-    <h3>Review data request (patient: <span id="review-name"><p>[loading...]</p></span>)</h3>
-    <p class="alert-warning card-text">
-        <strong>Workflow:</strong> <span id="review-workflow" class="card-text"></span><br/>
-        <strong>Request:</strong> <span id='final-list'></span>
-    </p>
-    <div>
-        <button type="button" class="btn btn-secondary" id="btn-edit">Edit</button>
-        <button type="button" class="btn btn-secondary" id="btn-configuration">Configure endpoint</button>
-        <button type="button" class="btn btn-primary" id="btn-submit">Submit</button>
-    </div>
-</div>
-<div id="confirm-screen" class="card alert-info screen">
-    <div class="card-body">
-        <h5 class="card-title">Confirmation</h5>
-        <div id="request-id"></div>
-        <p class="card-text">Data request (Task) successfully sent to Data Source (Provider). </p>
-        <p class="card-text" id="submit-endpoint"></p>
-        <p class="card-text"><textarea id="text-output"></textarea></p>
-        <p class="card-text" id="submit-endpoint2"></p>
-        <p class="card-text"><textarea id="text-output2"></textarea></p>
-        <p class="card-text"><a href="#" class="btn btn-primary" id="btn-task-restart">OK</a></p>
-    </div>
-</div>
-<div id="dq-confirm-screen" class="card alert-info screen">
-    <div class="card-body">
-        <h5 class="card-title">Confirmation</h5>
-        <p class="card-text">Direct Query request successfully sent to url: </p>
-        <p class="card-text" id="dq-submit-endpoint"></p>
-        <p class="card-text"><textarea id="dq-text-output"></textarea></p>
-        <p class="card-text"><a href="#" class="btn btn-primary" id="dq-btn-restart">OK</a></p>
-    </div>
-</div>
-<div id="config-screen" class="card alert-info screen">
-    <div class="card-body">
-        <h5 class="card-title">Provider Endpoint Configuration</h5>
-        <p class='card-text'>
-        <p>
-            <select class='custom-select' id='config-select'></select>
-        </p>
-        <p>
-            <textarea id="config-text"></textarea>
-        </p>
-        </p>
-        <a href="#" class="btn btn-primary" id="btn-config">Save configuration</a>
-    </div>
-</div>
-<div id="error-screen" class="card alert-danger screen">
-    <div class="card-body">
-        <h5 class="card-title" id='error-title'>Error</h5>
-        <p class='card-text' id='error-message'></p>
-    </div>
-</div>
-
-<div id="attachment-requested-screen" class="card alert-info screen">
-    <div class="card-body">
-        <h5 class="card-title">Attachment(s) requested</h5>
-        <p class="card-text">Task successfully created</p>
-        <p class="card-text"><textarea id="req-task-output"></textarea></p>
-        <p class="card-text">
-            <a href="#" class="btn btn-primary" id="reqattch-btn-restart">OK</a>
-            <a href="#" class="btn btn-primary" id="download-reqattch">Download resources</a>
-        </p>
-    </div>
-</div>
-
-<div id="request-provider-attachments" class="card alert-info screen">
-    <div class="card-body">
-        <h3>Patient: <span id="commRes-patient-name">[loading...]</span></h3>
-        <div>
-            <select class='form-control' id='req-searchClaim'>
-                <option>-- Select a Claim --</option>
+    <div id="direct-query-request-screen" class="card alert-info screen">
+        <div class="card-body">
+            <h3>Patient: <span id="commRes-patient-name">[loading...]</span></h3>
+            <select class='form-control' id='search-criteria'>
+                <option>-- Select search criteria --</option>
             </select>
-            <div>
-        </div>
-        <p>
-            <div id="incloincCodes"><label>Code</label></div>
-        </p>
-        <div>
-            <input type='checkbox' id='task-signature' name='signature' value='signed'>
-            <label for='signature'> Signature required </label>
-        </div>  
-        <p>
-            <button type="button" class="btn btn-primary" id="btn-create-task">Create Task</button>
-            <a href="#" class="btn btn-primary" id="btn-restart-task">Cancel</a>
-        </p>
-        <div>
-            <table class="table table-bordered">
-                <thead>
-                  <tr>
-                    <th scope="col" colspan="2" class="table-warning">Data Element</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <th>Tracking ID (Provider or Payer Assigned)</th>
-                    <td id="trackingIdCol"></td>
-                  </tr>
-                  <tr>
-                    <th>Use</th>
-                    <td id="useCol">Claim attachment (CLMATTCH)</td>
-                  </tr>
-                  <tr>
-                    <th>Payer ID</th>
-                    <td id="payerIdCol">Get it from app</td>
-                  </tr>
-                  <tr>
-                    <th>Payer URL</th>
-                    <td id="urlCol">Get it from app</td>
-                  </tr>
-                  <tr>
-                    <th>Organization ID</th>
-                    <td id="organizationCol">-</td>
-                  </tr>
-                  <tr>
-                    <th>Provider ID</th>
-                    <td id="providerIdCol">cdex-example-practitioner (Dr. Ronald Bone)</td>
-                  </tr>
-                  <tr>
-                    <th>Claim/PreAuth ID</th>
-                    <td id="claimIdCol"></td>
-                  </tr>
-                  <tr>
-                    <th>Line Items</th>
-                    <td id="lineItemsCol"></td>
-                  </tr>
-                  <tr>
-                    <th>LOINC Attachment Code</th>
-                    <td id="loincCol"></td>
-                  </tr>
-                  <tr>
-                    <th>Due date</th>
-                    <td id="dueDateCol"></td>
-                  </tr>
-                  <tr>
-                    <th>Date of service</th>
-                    <td id="serviceDateCol"></td>
-                  </tr>
-                  <tr>
-                    <th>Member ID</th>
-                    <td id="memberIdCol"></td>
-                  </tr>
-                  <tr>
-                    <th>Patient name</th>
-                    <td id="patientNameCol"></td>
-                  </tr>
-                  <tr>
-                    <th>Patient Account No.</th>
-                    <td id="patientAccCol"></td>
-                  </tr>
-                  <tr>
-                    <th>Patient DOB</th>
-                    <td id="patientDOBCol"></td>
-                  </tr>
-                </tbody>
-              </table>
+            <div id="subsearch" class="subsearch"></div>
+            <p>
+                <button type="button" class="btn btn-primary" id="btn-query-request">Direct Query Request</button>
+                <a href="#" class="btn btn-primary" id="btn-query-restart">Cancel</a>
+            </p>
         </div>
     </div>
-</div>
 
-<script src="js/patient.js"></script>
-<script src="js/claim.js"></script>
-<script src="js/app.js"></script>
+    <div id="attachment-submit-screen" class="card alert-info screen">
+        <div class="card-body">
+            <h3>Patient: <span id="commRes-patient-name">[loading...]</span></h3>
+            <div>
+                <select class='form-control' id='submit-searchClaim'>
+                    <option>-- Select tracking control number --</option>
+                </select>
+                <div>
+                    <input type='checkbox' id='type-claim' name='type-claim' value='typed'>
+                    <label for='type-claim'>Tracking Control Number</label>
+                </div>
+                <input type='text' id='claimid' name='claimid' disabled="disabled" value="">
+            </div>
+            <div class="form-check form-check-inline">
+                <label for="radio-claim">
+                    <input type="radio" id="radio-claim" name="code" value="claim" checked="checked"
+                        disabled="disabled"> Claim
+                </label><br>
+            </div>
+            <div class="form-check form-check-inline">
+                <label for="radio-auth">
+                    <input type="radio" id="radio-auth" name="code" value="prior-authorization"
+                        disabled="disabled">Prior Authorization
+                </label><br>
+            </div><br>
+            <div>
+                <label for="serviceDate">Service date</label><br>
+                <input type="date" id="serviceDate" name="serviceDate">
+            </div><br>
+            <div id="loincCodes"><label>Code</label></div><br>
+            <input type="file" name="attachments" id="select-attch">
+            <div id="selected-attch" class="subsearch"></div>
+            <div>
+                <input type='checkbox' id='signature' name='signature' value='signed'>
+                <label for='signature'> Signature required </label>
+            </div>
+            <p>
+                <button type="button" class="btn btn-primary" id="btn-attch-submit">Submit Attachment(s)</button>
+                <a href="#" class="btn btn-primary" id="btn-restart-attachment">Cancel</a>
+            </p>
+        </div>
+    </div>
+
+    <div id="attachment-confirm-screen" class="card alert-info screen">
+        <div class="card-body">
+            <h5 class="card-title">Created/Updated resources</h5>
+            <p class="card-text">Parameter successfully created</p>
+            <p class="card-text"><textarea id="parameter-output"></textarea></p>
+            <p class="card-text">Operation outcome</p>
+            <p class="card-text"><textarea id="operation-output"></textarea></p>
+            <p class="card-text" id="claimCreateUpdate"></p>
+            <p class="card-text"><textarea id="claim-output"></textarea></p>
+            <p class="card-text" id="Resource">Binary successfully created. </p>
+            <p class="card-text"><textarea id="binary-output"></textarea></p>
+            <p class="card-text">
+                <a href="#" class="btn btn-primary" id="attch-btn-restart">OK</a>
+                <a href="#" class="btn btn-primary" id="download-resources">Download resources</a>
+            </p>
+        </div>
+    </div>
+
+    <div id="data-request-screen" class="screen">
+        <h3>Edit data request (patient: <span id="patient-name">
+                <p>[loading...]</p>
+            </span>)</h3>
+        <div id="subscription-selection">
+            <p>
+                Workflow Type
+                <!--<input type="checkbox" id="chk-subscription" checked="checked">-->
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <label class="btn btn-primary active">
+                    <input type="radio" name="options" id="polling" autocomplete="off" checked> Polling
+                </label>
+                <label class="btn btn-primary">
+                    <input type="radio" name="options" id="subscription" autocomplete="off"> Subscription
+                </label>
+            </div>
+            </p>
+        </div>
+        <div id="menu-request-list">
+            <p>
+                Request Details
+            <div class='dvt'>
+                <div id='selection-query-list'></div>
+            </div>
+            </p>
+        </div>
+        <!--<div><a href='#' id="btn-add">add another request</a></div>-->
+        <div>
+            <!--<br>-->
+            <button type="button" class="btn btn-primary" id="btn-review">Review</button>
+        </div>
+    </div>
+    <div id="review-screen" class="screen">
+        <h3>Review data request (patient: <span id="review-name">
+                <p>[loading...]</p>
+            </span>)</h3>
+        <p class="alert-warning card-text">
+            <strong>Workflow:</strong> <span id="review-workflow" class="card-text"></span><br />
+            <strong>Request:</strong> <span id='final-list'></span>
+        </p>
+        <div>
+            <button type="button" class="btn btn-secondary" id="btn-edit">Edit</button>
+            <button type="button" class="btn btn-secondary" id="btn-configuration">Configure endpoint</button>
+            <button type="button" class="btn btn-primary" id="btn-submit">Submit</button>
+        </div>
+    </div>
+    <div id="confirm-screen" class="card alert-info screen">
+        <div class="card-body">
+            <h5 class="card-title">Confirmation</h5>
+            <div id="request-id"></div>
+            <p class="card-text">Data request (Task) successfully sent to Data Source (Provider). </p>
+            <p class="card-text" id="submit-endpoint"></p>
+            <p class="card-text"><textarea id="text-output"></textarea></p>
+            <p class="card-text" id="submit-endpoint2"></p>
+            <p class="card-text"><textarea id="text-output2"></textarea></p>
+            <p class="card-text"><a href="#" class="btn btn-primary" id="btn-task-restart">OK</a></p>
+        </div>
+    </div>
+    <div id="dq-confirm-screen" class="card alert-info screen">
+        <div class="card-body">
+            <h5 class="card-title">Confirmation</h5>
+            <p class="card-text">Direct Query request successfully sent to url: </p>
+            <p class="card-text" id="dq-submit-endpoint"></p>
+            <p class="card-text"><textarea id="dq-text-output"></textarea></p>
+            <p class="card-text"><a href="#" class="btn btn-primary" id="dq-btn-restart">OK</a></p>
+        </div>
+    </div>
+    <div id="config-screen" class="card alert-info screen">
+        <div class="card-body">
+            <h5 class="card-title">Provider Endpoint Configuration</h5>
+            <p class='card-text'>
+            <p>
+                <select class='custom-select' id='config-select'></select>
+            </p>
+            <p>
+                <textarea id="config-text"></textarea>
+            </p>
+            </p>
+            <a href="#" class="btn btn-primary" id="btn-config">Save configuration</a>
+        </div>
+    </div>
+    <div id="error-screen" class="card alert-danger screen">
+        <div class="card-body">
+            <h5 class="card-title" id='error-title'>Error</h5>
+            <p class='card-text' id='error-message'></p>
+        </div>
+    </div>
+
+    <div id="attachment-requested-screen" class="card alert-info screen">
+        <div class="card-body">
+            <h5 class="card-title">Attachment(s) requested</h5>
+            <p class="card-text">Task successfully created</p>
+            <p class="card-text"><textarea id="req-task-output"></textarea></p>
+            <p class="card-text">
+                <a href="#" class="btn btn-primary" id="reqattch-btn-restart">OK</a>
+                <a href="#" class="btn btn-primary" id="download-reqattch">Download resources</a>
+            </p>
+        </div>
+    </div>
+
+    <div id="request-provider-attachments" class="card alert-info screen">
+        <div class="card-body">
+            <h3>Patient: <span id="commRes-patient-name">[loading...]</span></h3>
+            <div>
+                <select class='form-control' id='req-searchClaim'>
+                    <option>-- Select a Claim --</option>
+                </select>
+                <div>
+                </div>
+                <p>
+                <div id="incloincCodes"><label>Code</label></div>
+                </p>
+                <div>
+                    <input type='checkbox' id='task-signature' name='signature' value='signed'>
+                    <label for='signature'> Signature required </label>
+                </div>
+                <p>
+                    <button type="button" class="btn btn-primary" id="btn-create-task">Create Task</button>
+                    <a href="#" class="btn btn-primary" id="btn-restart-task">Cancel</a>
+                </p>
+                <div>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th scope="col" colspan="2" class="table-warning">Data Element</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th>Tracking ID (Provider or Payer Assigned)</th>
+                                <td id="trackingIdCol"></td>
+                            </tr>
+                            <tr>
+                                <th>Use</th>
+                                <td id="useCol">Claim attachment (CLMATTCH)</td>
+                            </tr>
+                            <tr>
+                                <th>Payer ID</th>
+                                <td id="payerIdCol">Get it from app</td>
+                            </tr>
+                            <tr>
+                                <th>Payer URL</th>
+                                <td id="urlCol">Get it from app</td>
+                            </tr>
+                            <tr>
+                                <th>Organization ID</th>
+                                <td id="organizationCol">-</td>
+                            </tr>
+                            <tr>
+                                <th>Provider ID</th>
+                                <td id="providerIdCol">cdex-example-practitioner (Dr. Ronald Bone)</td>
+                            </tr>
+                            <tr>
+                                <th>Claim/PreAuth ID</th>
+                                <td id="claimIdCol"></td>
+                            </tr>
+                            <tr>
+                                <th>Line Items</th>
+                                <td id="lineItemsCol"></td>
+                            </tr>
+                            <tr>
+                                <th>LOINC Attachment Code</th>
+                                <td id="loincCol"></td>
+                            </tr>
+                            <tr>
+                                <th>Due date</th>
+                                <td id="dueDateCol"></td>
+                            </tr>
+                            <tr>
+                                <th>Date of service</th>
+                                <td id="serviceDateCol"></td>
+                            </tr>
+                            <tr>
+                                <th>Member ID</th>
+                                <td id="memberIdCol"></td>
+                            </tr>
+                            <tr>
+                                <th>Patient name</th>
+                                <td id="patientNameCol"></td>
+                            </tr>
+                            <tr>
+                                <th>Patient Account No.</th>
+                                <td id="patientAccCol"></td>
+                            </tr>
+                            <tr>
+                                <th>Patient DOB</th>
+                                <td id="patientDOBCol"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="submit-payer-attachments" class="card alert-info screen">
+        <div class="card-body">
+            <h3 class="card-title">Attachment(s) requested</h3>
+            <div>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Task</th>
+                            <th scope="col">Date</th>
+                            <th scope="col"></th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tasks-list"></tbody>
+                </table>
+            </div>
+            <p></p>
+            <button type="button" class="btn btn-secondary" id="btn-restart-comm-list">Back</button>
+        </div>
+    </div>
+
+    <div id="attch-request-screen" class="screen" style="display: block;">
+        <h2>Patient <span id="req-patient-name">[Loading ...]</span></h2>
+        <div id="attch-request-list">
+        </div>
+        <p></p>
+        <div class="dvt">
+            <table class="table table-striped">
+                <thead>
+                    <th>Select</th>
+                    <th>Name</th>
+                    <th>Date</th>
+                    <th>LOINC</th>
+                </thead>
+                <tbody id="selection-list">
+                </tbody>
+            </table>
+        </div>
+        <button type="button" class="btn btn-secondary" id="btn-back-comm-list">Back</button>
+        <button type="button" class="btn btn-primary" id="btn-submit-req-attch">Submit</button>
+        <input type="hidden" value="1" id="total_attch">
+    </div>
+
+    <div id="attch-req-confirm-screen" class="card alert-info screen">
+        <div class="card-body">
+            <h5 class="card-title">Created/Updated resources</h5>
+            <p class="card-text">Parameter created</p>
+            <p class="card-text"><textarea id="req-parameter-output"></textarea></p>
+            <p class="card-text">Operation outcome</p>
+            <p class="card-text"><textarea id="req-operation-output"></textarea></p>
+            <p class="card-text">Claim updated</p>
+            <p class="card-text"><textarea id="req-claim-output"></textarea></p>
+            <p class="card-text">
+                <a href="#" class="btn btn-primary" id="req-attch-btn-restart">OK</a>
+                <a href="#" class="btn btn-primary" id="req-download-resources">Download resources</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="js/patient.js"></script>
+    <script src="js/claim.js"></script>
+    <script src="js/app.js"></script>
 </body>
+
 </html>

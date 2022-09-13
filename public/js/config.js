@@ -18,6 +18,11 @@ if (!CDEX) {
     "name": "DaVinci CDex Provider (Open)",
     "display": "open",
     "url": "https://api.logicahealth.org/DaVinciCDexProvider/open"
+  },
+  {
+    "name": "DaVinci CDex Provider (Data)",
+    "display": "data",
+    "url": "https://api.logicahealth.org/DaVinciCDexProvider/data"
   }
   ];
 
@@ -368,6 +373,73 @@ if (!CDEX) {
         ],
       }
     ]
+  }
+
+  CDEX.attachmentRequestedPayload = {
+    "resourceType": "Parameters",
+    "id": "",
+    "parameter": [
+      {
+        "name": "AttachTo",
+        "valueCode": ""
+      },
+      {
+        "name": "TrackingId",
+        "valueString": ""
+      },
+      {
+        "name": "OrganizationId",
+        "valueIdentifier": {
+          "system": "http://hl7.org/fhir/sid/us-npi",
+          "value": "CDex-Test-Organization"
+        }
+      },
+      {
+        "name": "ProviderId",
+        "valueIdentifier": {
+          "system": "http://hl7.org/fhir/sid/us-npi",
+          "value": "CDex-Test-Provider"
+        }
+      },
+      {
+        "name": "MemberId",
+        "valueIdentifier": {
+          "system": "http://example.org/cdex/member-ids",
+          "value": ""
+        }
+      },
+      {
+        "name": "ServiceDate",
+        "valueDate": ""
+      }
+    ]
+  }
+
+  CDEX.attachmentToAdd = {
+    "name": "Attachment",
+    "part": [
+      {
+        "name": "LineItem",
+        "valueString": "1"
+      },
+      {
+        "name": "Code",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "",
+              "display": ""
+            }
+          ]
+        }
+      },
+      {
+        "name": "Content",
+        "resource": {
+        }
+      }
+    ],
   }
 
   CDEX.binaryPayload = {
