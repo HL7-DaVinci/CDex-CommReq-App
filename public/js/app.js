@@ -472,8 +472,14 @@ if (!CLAIM) {
         CLAIM.claimLookupByPatient(CDEX.patient.id).then(res => {
             if (res.total > 0) {
                 res.entry.forEach((value) => {
+                    let optionText = value.resource.id;
+                    if(value.resource.use === 'claim') {
+                        optionText = optionText.concat(" (C)");
+                    } else {
+                        optionText = optionText.concat(" (PA)");
+                    }
                     $(`#${component}`).append("<option value='" + value.resource.id +
-                        "'>" + value.resource.id + "</option>");
+                        "'>" + optionText + "</option>");
                 });
             } else {
                 alert(`Not available claims for selected patient`);
