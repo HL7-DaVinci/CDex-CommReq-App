@@ -383,6 +383,7 @@ if (!CLAIM) {
                     "<datalist id='codesList'>" +
                     "</datalist></div>"
                 );
+                $('#codesList').html('');
                 CDEX.loincTypes.loinc.forEach((code) => {
                     $('#codesList').append(
                         "<option value='" + code.code + "'>" +
@@ -473,7 +474,7 @@ if (!CLAIM) {
             if (res.total > 0) {
                 res.entry.forEach((value) => {
                     let optionText = value.resource.id;
-                    if(value.resource.use === 'claim') {
+                    if (value.resource.use === 'claim') {
                         optionText = optionText.concat(" (C)");
                     } else {
                         optionText = optionText.concat(" (PA)");
@@ -496,6 +497,7 @@ if (!CLAIM) {
                 "<datalist id='codesList'>" +
                 "</datalist></div>"
             );
+            $('#codesList').html('');
             CDEX.loincTypes.loinc.forEach((code) => {
                 $('#codesList').append(
                     "<option value='" + code.code + "' id='" + code.code + "'>" +
@@ -610,7 +612,7 @@ if (!CLAIM) {
                 $('#loincCol').html($(`#${loinVal}`).html() + `(${loinVal})`);
                 for (let index = 2; index <= $('#total_chq').val(); index++) {
                     loinVal = $(`#new_${index}`).val();
-                    $('#loincCol').append(', ' +  $(`#${loinVal}`).html() + '(' + loinVal + ')');
+                    $('#loincCol').append(', ' + $(`#${loinVal}`).html() + '(' + loinVal + ')');
                 }
             });
             $("#req-searchClaim").on('change', function () {
@@ -618,6 +620,7 @@ if (!CLAIM) {
             });
             $("#btn-add-code").on('click', CDEX.addInputCode);
             $("#btn-remove-code").on('click', CDEX.removeInputCode);
+            $('#codesList').html('');
             CDEX.loincTypes.loinc.forEach((code) => {
                 $('#codesList').append(
                     "<option value='" + code.code + "' id='" + code.code + "'>" +
@@ -632,7 +635,7 @@ if (!CLAIM) {
     CDEX.addInputCode = () => {
         var new_chq_no = parseInt($('#total_chq').val()) + 1;
         var new_input = "<div><input id='new_" + new_chq_no + "' list='codesList' class='inline-elem'></div>";
-
+        $(`#new_${new_chq_no}`).html('');
         CDEX.loincTypes.loinc.forEach((code) => {
             $(`#new_${new_chq_no}`).append(
                 "<option value='" + code.code + "' id='" + code.code + "'>" +
@@ -1176,7 +1179,6 @@ if (!CLAIM) {
                 };
 
                 $('#request-id').html("<p><strong>Task ID:</strong> " + CDEX.taskPayload.id + "</p>");
-                console.log(CDEX.taskPayload);
                 $("#submit-endpoint").html(configProvider.type + ' ' + configProvider.url);
                 $("#text-output").html(JSON.stringify(CDEX.taskPayload, null, '  '));
 
@@ -1200,7 +1202,6 @@ if (!CLAIM) {
                         $.ajax(configPayer2).then(() => {
                             $('#submit-endpoint2').show();
                             $("#text-output2").show();
-                            console.log(CDEX.subscriptionPayload);
                             $("#submit-endpoint2").html(configProvider2.type + ' ' + configProvider2.url);
                             $("#text-output2").html(JSON.stringify(CDEX.subscriptionPayload, null, '  '));
 
@@ -1246,8 +1247,9 @@ if (!CLAIM) {
         };
         $.ajax(configProvider).then((res) => {
             $('#tasks-list').html('');
-            res.entry.forEach(task => {
-                $('#tasks-list').append(`<tr>
+            if (res.total > 0) {
+                res.entry.forEach(task => {
+                    $('#tasks-list').append(`<tr>
                     <td>
                         <a href="https://api.logicahealth.org/DaVinciCDexProvider/open/Task/${task.resource.id}">
                             ${task.resource.id}
@@ -1257,33 +1259,50 @@ if (!CLAIM) {
                     <td><a href="#" id="btn-${task.resource.id}">View</a></td>
                     <td>${task.resource.status}</td>
                 </tr>`);
-                $(`#btn-${task.resource.id}`).on('click', () => {
-                    $('#total_attch').val(0);
-                    $('#attch-request-list').html("");
-                    $('#req-patient-name').html(`${CDEX.patient.name[0].given[0]} ${CDEX.patient.name[0].family}`);
-                    $('#attch-request-list').append(`<p><b>Task: </b>${task.resource.id}</p>`);
-                    let claimForTask = task.resource.id.split("-T");
-                    $('#attch-request-list').append(`<p><b>Claim: </b><span id="currentClaimId">${claimForTask[0]}</span></p><p><b>Requested attachments: </b></p>`);
-                    task.resource.input.forEach(attch => {
-                        if (attch.valueCodeableConcept) {
-                            $('#attch-request-list').append(`
+                    $(`#btn-${task.resource.id}`).on('click', () => {
+                        $('#total_attch').val(0);
+                        $('#attch-request-list').html("");
+                        $('#req-patient-name').html(`${CDEX.patient.name[0].given[0]} ${CDEX.patient.name[0].family}`);
+                        $('#attch-request-list').append(`<p><b>Task: </b>${task.resource.id}</p>`);
+                        let claimForTask = task.resource.id.split("-T");
+                        $('#attch-request-list').append(`<p><b>Claim: </b><span id="currentClaimId">${claimForTask[0]}</span></p><p><b>Requested attachments: </b></p>`);
+                        let provider = {
+                            type: 'GET',
+                            url: `https://api.logicahealth.org/DaVinciCDexProvider/open/Task/${task.resource.id}`,
+                            contentType: "application/fhir+json"
+                        };
+                        let requestedSignComponent = '';
+                        let requestedSign = false;
+                        $.ajax(provider).then((res) => {
+                            res.input.forEach(input => {
+                                if (input.type.coding[0].code === 'signature-flag') {
+                                    requestedSignComponent = input.valueBoolean ? '<div class="bg-warning w-25"><b>Signature requested</b></div>' : '<div class="bg-success w-25"><b>Signature not requested</b></div>';
+                                    requestedSign = input.valueBoolean;
+                                }
+                            })
+                            $('#attch-request-list').append(requestedSignComponent);
+                        });
+
+                        task.resource.input.forEach(attch => {
+                            if (attch.valueCodeableConcept) {
+                                $('#attch-request-list').append(`
                                 <p>${attch.valueCodeableConcept.coding[0].code} / ${attch.valueCodeableConcept.coding[0].display}</p>
                             `);
-                        }
-                    });
-                    let configProvider = {
-                        type: 'GET',
-                        url: `${CDEX.payerEndpoint.url}/Observation?patient=${CDEX.patient.id}`,
-                        contentType: "application/fhir+json"
-                    };
-                    $.ajax(configProvider).then((res) => {
-                        $('#total_attch').val(1);
-                        $('#selection-list').html("");
-                        let current_attch = parseInt($('#total_attch').val());
-                        res.entry.forEach(resource => {
-                            resource.resource.code.coding.forEach(coding => {
-                                if (coding.system === "http://loinc.org") {
-                                    $('#selection-list').append(`
+                            }
+                        });
+                        let configProvider = {
+                            type: 'GET',
+                            url: `${CDEX.payerEndpoint.url}/Observation?patient=${CDEX.patient.id}`,
+                            contentType: "application/fhir+json"
+                        };
+                        $.ajax(configProvider).then((res) => {
+                            $('#total_attch').val(1);
+                            $('#selection-list').html("");
+                            let current_attch = parseInt($('#total_attch').val());
+                            res.entry.forEach(resource => {
+                                resource.resource.code.coding.forEach(coding => {
+                                    if (coding.system === "http://loinc.org") {
+                                        $('#selection-list').append(`
                                         <tr>
                                             <td><input type="checkbox" id="chk_${current_attch}" name="chk_${current_attch}" value="Observation/${resource.resource.id}"></td>
                                             <td>${coding.display}</td>
@@ -1291,20 +1310,21 @@ if (!CLAIM) {
                                             <td>${coding.code}</td>
                                         </tr>
                                     `);
-                                    current_attch++;
-                                }
+                                        current_attch++;
+                                    }
+                                });
                             });
-                        });
-                        configProvider = {
-                            type: 'GET',
-                            url: `${CDEX.payerEndpoint.url}/Condition?patient=${CDEX.patient.id}`,
-                            contentType: "application/fhir+json"
-                        };
-                        $.ajax(configProvider).then((res) => {
-                            res.entry.forEach(resource => {
-                                resource.resource.code.coding.forEach(coding => {
-                                    if (coding.system === "http://loinc.org") {
-                                        $('#selection-list').append(`
+                            configProvider = {
+                                type: 'GET',
+                                url: `${CDEX.payerEndpoint.url}/Condition?patient=${CDEX.patient.id}`,
+                                contentType: "application/fhir+json"
+                            };
+                            $.ajax(configProvider).then((res) => {
+                                if (res.total > 0) {
+                                    res.entry.forEach(resource => {
+                                        resource.resource.code.coding.forEach(coding => {
+                                            if (coding.system === "http://loinc.org") {
+                                                $('#selection-list').append(`
                                             <tr>
                                                 <td><input type="checkbox" id="chk_${current_attch}" name="chk_${current_attch}" value="Condition/${resource.resource.id}"></td>
                                                 <td>${coding.display}</td>
@@ -1312,127 +1332,172 @@ if (!CLAIM) {
                                                 <td>${coding.code}</td>
                                             </tr>
                                         `);
-                                        current_attch++;
-                                    }
-                                });
-                            });
-                        });
-                        $('#total_attach').val(current_attch - 1);
-                        $('#btn-submit-req-attch').click(function () {
-                            const resourcesId = Date.now();
-                            const currentDate = new Date().toISOString().slice(0, 10);
-
-                            CDEX.claimPayloadAttachment.patient.reference = `Patient/${CDEX.patient.id}`;
-                            let parameter = [
-                                {
-                                    "name": "AttachTo",
-                                    "valueCode": "claim"
-                                },
-                                {
-                                    "name": "TrackingId",
-                                    "valueString": `${$('#currentClaimId').text()}`
-                                },
-                                {
-                                    "name": "OrganizationId",
-                                    "valueIdentifier": {
-                                        "system": "http://hl7.org/fhir/sid/us-npi",
-                                        "value": "CDex-Test-Organization"
-                                    }
-                                },
-                                {
-                                    "name": "ProviderId",
-                                    "valueIdentifier": {
-                                        "system": "http://hl7.org/fhir/sid/us-npi",
-                                        "value": "CDex-Test-Provider"
-                                    }
-                                },
-                                {
-                                    "name": "MemberId",
-                                    "valueIdentifier": {
-                                        "system": "http://example.org/cdex/member-ids",
-                                        "value": `${CDEX.patient.id}`
-                                    }
-                                },
-                                {
-                                    "name": "ServiceDate",
-                                    "valueDate": `${currentDate}`
+                                                current_attch++;
+                                            }
+                                        });
+                                    });
                                 }
-                            ]
-                            CDEX.attachmentRequestedPayload.id = `CDex-parameter-${resourcesId}`;
-
-                            //Claim
-                            let configProvider = {
+                            });
+                            configProvider = {
                                 type: 'GET',
-                                url: `${CDEX.payerEndpoint.url}/Claim/${$('#currentClaimId').text()}`,
+                                url: `${CDEX.payerEndpoint.url}/DiagnosticReport?patient=${CDEX.patient.id}`,
                                 contentType: "application/fhir+json"
                             };
                             $.ajax(configProvider).then((res) => {
+                                if (res.total > 0) {
+                                    res.entry.forEach(resource => {
+                                        resource.resource.code.coding.forEach(coding => {
+                                            if (coding.system === "http://loinc.org") {
+                                                $('#selection-list').append(`
+                                            <tr>
+                                                <td><input type="checkbox" id="chk_${current_attch}" name="chk_${current_attch}" value="Condition/${resource.resource.id}"></td>
+                                                <td>${coding.display}</td>
+                                                <td>${resource.resource.recordedDate}</td>
+                                                <td>${coding.code}</td>
+                                            </tr>
+                                        `);
+                                                current_attch++;
+                                            }
+                                        });
+                                    });
+                                }
+                            });
+                            $('#total_attach').val(current_attch - 1);
+                            $('#btn-submit-req-attch').click(function () {
+                                const resourcesId = Date.now();
+                                const currentDate = new Date().toISOString().slice(0, 10);
+
+                                CDEX.claimPayloadAttachment.patient.reference = `Patient/${CDEX.patient.id}`;
+                                let parameter = [
+                                    {
+                                        "name": "AttachTo",
+                                        "valueCode": "claim"
+                                    },
+                                    {
+                                        "name": "TrackingId",
+                                        "valueString": `${$('#currentClaimId').text()}`
+                                    },
+                                    {
+                                        "name": "OrganizationId",
+                                        "valueIdentifier": {
+                                            "system": "http://hl7.org/fhir/sid/us-npi",
+                                            "value": "CDex-Test-Organization"
+                                        }
+                                    },
+                                    {
+                                        "name": "ProviderId",
+                                        "valueIdentifier": {
+                                            "system": "http://hl7.org/fhir/sid/us-npi",
+                                            "value": "CDex-Test-Provider"
+                                        }
+                                    },
+                                    {
+                                        "name": "MemberId",
+                                        "valueIdentifier": {
+                                            "system": "http://example.org/cdex/member-ids",
+                                            "value": `${CDEX.patient.id}`
+                                        }
+                                    },
+                                    {
+                                        "name": "ServiceDate",
+                                        "valueDate": `${currentDate}`
+                                    }
+                                ]
+                                CDEX.attachmentRequestedPayload.id = `CDex-parameter-${resourcesId}`;
+
+                                //Claim
+                                let configProvider = {
+                                    type: 'GET',
+                                    url: `${CDEX.payerEndpoint.url}/Claim/${$('#currentClaimId').text()}`,
+                                    contentType: "application/fhir+json"
+                                };
+                                $.ajax(configProvider).then((res) => {
+                                    for (let index = 1; index < current_attch; index++) {
+                                        if ($(`#chk_${index}`).is(':checked')) {
+                                            let supportingInfo = {
+                                                "sequence": 1,
+                                                "category": {
+                                                    "text": "sample text"
+                                                },
+                                                "valueReference": {
+                                                    "reference": `${$(`#chk_${index}`).val()}`
+                                                }
+                                            };
+                                            res.supportingInfo = [];
+                                            res.supportingInfo.push(supportingInfo);
+                                        }
+                                    }
+                                    CLAIM.claimUpsert(res);
+                                    $('#req-claim-output').html(JSON.stringify(res, null, '  '));
+                                });
+
+                                //Update attachments
                                 for (let index = 1; index < current_attch; index++) {
                                     if ($(`#chk_${index}`).is(':checked')) {
-                                        let supportingInfo = {
-                                            "sequence": 1,
-                                            "category": {
-                                                "text": "sample text"
-                                            },
-                                            "valueReference": {
-                                                "reference": `${$(`#chk_${index}`).val()}`
-                                            }
-                                        };
-                                        res.supportingInfo = [];
-                                        res.supportingInfo.push(supportingInfo);
-                                    }
-                                }
-                                CLAIM.claimUpsert(res);
-                                $('#req-claim-output').html(JSON.stringify(res, null, '  '));
-                            });
-
-                            //Update attachments
-                            for (let index = 1; index < current_attch; index++) {
-                                if ($(`#chk_${index}`).is(':checked')) {
-                                    configProvider = {
-                                        type: 'GET',
-                                        url: `${CDEX.payerEndpoint.url}/${$(`#chk_${index}`).val()}`,
-                                        contentType: "application/fhir+json"
-                                    };
-                                    $.ajax(configProvider).then((resourceRes) => {
-                                        //let signedRes = CDEX.signReqRes();
-                                        //console.log(JSON.stringify(signedRes, null, '    '));
-                                        let attachment = {
-                                            "name": "Attachment",
-                                            "part": [
-                                                {
-                                                    "name": "LineItem",
-                                                    "valueString": "1"
-                                                },
-                                                {
-                                                    "name": "Code",
-                                                    "valueCodeableConcept": {
-                                                        "coding": [
-                                                            {
-                                                                "system": "http://loinc.org",
-                                                                "code": `${resourceRes.code.coding[0].code}`,
-                                                                "display": `${resourceRes.code.coding[0].display}`
-                                                            }
-                                                        ]
-                                                    }
-                                                },
-                                                {
-                                                    "name": "Content",
-                                                    "resource": resourceRes
-                                                }
-                                            ]
-                                        };
-                                        parameter.push(attachment);
-                                        CDEX.attachmentRequestedPayload.parameter = parameter;
                                         configProvider = {
-                                            type: 'PUT',
-                                            url: `${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentRequestedPayload.id}`,
-                                            data: JSON.stringify(CDEX.attachmentRequestedPayload),
-                                            contentType: "application/json"
+                                            type: 'GET',
+                                            url: `${CDEX.payerEndpoint.url}/${$(`#chk_${index}`).val()}`,
+                                            contentType: "application/fhir+json"
                                         };
-                                        $.ajax(configProvider).then(response => {
-                                            $('#req-parameter-output').html(JSON.stringify(response, null, '  '));
-                                            console.log(response);
+                                        $.ajax(configProvider).then((resourceRes) => {
+                                            let attachment = '';
+                                            if(requestedSign) {
+                                                attachment = {
+                                                    "name": "Attachment",
+                                                    "part": [
+                                                        {
+                                                            "name": "LineItem",
+                                                            "valueString": "1"
+                                                        },
+                                                        {
+                                                            "name": "Code",
+                                                            "valueCodeableConcept": {
+                                                                "coding": [
+                                                                    {
+                                                                        "system": "http://loinc.org",
+                                                                        "code": `${resourceRes.code.coding[0].code}`,
+                                                                        "display": `${resourceRes.code.coding[0].display}`
+                                                                    }
+                                                                ]
+                                                            }
+                                                        },
+                                                        {
+                                                            "name": "Content",
+                                                            "resource": resourceRes,
+                                                            "signature": {}
+                                                        }
+                                                    ]
+                                                };
+                                            } else {
+                                                attachment = {
+                                                    "name": "Attachment",
+                                                    "part": [
+                                                        {
+                                                            "name": "LineItem",
+                                                            "valueString": "1"
+                                                        },
+                                                        {
+                                                            "name": "Code",
+                                                            "valueCodeableConcept": {
+                                                                "coding": [
+                                                                    {
+                                                                        "system": "http://loinc.org",
+                                                                        "code": `${resourceRes.code.coding[0].code}`,
+                                                                        "display": `${resourceRes.code.coding[0].display}`
+                                                                    }
+                                                                ]
+                                                            }
+                                                        },
+                                                        {
+                                                            "name": "Content",
+                                                            "resource": resourceRes
+                                                        }
+                                                    ]
+                                                };
+                                            }
+                                            
+
+                                            let signature = resourceRes;
                                             const operationOutcome = {
                                                 "resourceType": "OperationOutcome",
                                                 "id": "outcome_ok",
@@ -1446,19 +1511,56 @@ if (!CLAIM) {
                                                     }
                                                 ]
                                             };
-                                            $('#req-operation-output').html(JSON.stringify(operationOutcome, null, '  '));
+                                            if (requestedSign) {
+                                                let provider = {
+                                                    type: 'POST',
+                                                    url: `https://davinci-cdex-commreq.logicahealth.org/api/sign`,
+                                                    data: JSON.stringify(resourceRes),
+                                                    contentType: "application/fhir+json"
+                                                };
+                                                $.ajax(provider).then(response => {
+                                                    attachment.part[2].signature = response;
+                                                    parameter.push(attachment);
+                                                    CDEX.attachmentRequestedPayload.parameter = parameter;
+                                                    configProvider = {
+                                                        type: 'PUT',
+                                                        url: `${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentRequestedPayload.id}`,
+                                                        data: JSON.stringify(CDEX.attachmentRequestedPayload),
+                                                        contentType: "application/json"
+                                                    };
+                                                    $.ajax(configProvider).then(response => {
+                                                        $('#req-parameter-output').html(JSON.stringify(response, null, '  '));
+                                                        $('#req-operation-output').html(JSON.stringify(operationOutcome, null, '  '));
+                                                    });
+                                                });
+                                            } else {
+                                                parameter.push(attachment);
+                                                CDEX.attachmentRequestedPayload.parameter = parameter;
+                                                configProvider = {
+                                                    type: 'PUT',
+                                                    url: `${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentRequestedPayload.id}`,
+                                                    data: JSON.stringify(CDEX.attachmentRequestedPayload),
+                                                    contentType: "application/json"
+                                                };
+                                                $.ajax(configProvider).then(response => {
+                                                    $('#req-parameter-output').html(JSON.stringify(response, null, '  '));
+                                                    $('#req-operation-output').html(JSON.stringify(operationOutcome, null, '  '));
+                                                });
+                                            }
                                         });
-                                    });
+                                    }
                                 }
-                            }
-                            CDEX.displayScreen('attch-req-confirm-screen');
+                                CDEX.displayScreen('attch-req-confirm-screen');
+                            });
                         });
+                        CDEX.displayScreen('attch-request-screen');
                     });
-                    CDEX.displayScreen('attch-request-screen');
                 });
-            });
 
-            CDEX.displayScreen('submit-payer-attachments');
+                CDEX.displayScreen('submit-payer-attachments');
+            } else {
+                alert(`No tasks available for selected provider.`);
+            }
         }, () => CDEX.displayErrorScreen("Communication request submission failed", "Please check the submit endpoint configuration <br> You can close this window now"));
     };
 
