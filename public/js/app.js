@@ -1439,9 +1439,26 @@ if (!CLAIM) {
                                             url: `${CDEX.payerEndpoint.url}/${$(`#chk_${index}`).val()}`,
                                             contentType: "application/fhir+json"
                                         };
+
+                                        const operationOutcome = {
+                                            "resourceType": "OperationOutcome",
+                                            "id": "outcome_ok",
+                                            "issue": [
+                                                {
+                                                    "severity": "informational",
+                                                    "code": "informational",
+                                                    "details": {
+                                                        "text": "Claim found and attachment saved."
+                                                    }
+                                                }
+                                            ]
+                                        };;
+
                                         $.ajax(configProvider).then((resourceRes) => {
                                             let attachment = '';
-                                            if(requestedSign) {
+                                            $('#req-parameter-output').html('');
+                                            $('#req-operation-output').html('');
+                                            if (requestedSign) {
                                                 attachment = {
                                                     "name": "Attachment",
                                                     "part": [
@@ -1463,11 +1480,47 @@ if (!CLAIM) {
                                                         },
                                                         {
                                                             "name": "Content",
-                                                            "resource": resourceRes,
-                                                            "signature": {}
+                                                            "resource": {
+                                                                "resourceType": "Bundle",
+                                                                "id": `Bundle-${Date.now()}`,
+                                                                "identifier": {
+                                                                    "system": "urn:ietf:rfc:3986",
+                                                                    "value": "urn:uuid:c173535e-135e-48e3-ab64-38bacc68dba8"
+                                                                },
+                                                                "entry": [
+                                                                    {
+                                                                        "fullUrl": "urn:uuid:014a68ec-d691-49e0-b980-91b0d924e570",
+                                                                        "resource": resourceRes
+                                                                    }
+                                                                ],
+                                                                "signature": {}
+                                                            }
                                                         }
                                                     ]
                                                 };
+                                                
+                                                let provider = {
+                                                    type: 'POST',
+                                                    url: `https://davinci-cdex-commreq.logicahealth.org/api/sign`,
+                                                    data: JSON.stringify(resourceRes),
+                                                    contentType: "application/fhir+json"
+                                                };
+                                                $.ajax(provider).then(response => {
+                                                    attachment.part[2].resource.signature = response;
+                                                    parameter.push(attachment);
+                                                    CDEX.attachmentRequestedPayload.parameter = parameter;
+                                                    configProvider = {
+                                                        type: 'PUT',
+                                                        url: `${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentRequestedPayload.id}`,
+                                                        data: JSON.stringify(CDEX.attachmentRequestedPayload),
+                                                        contentType: "application/json"
+                                                    };
+                                                    $.ajax(configProvider).then(response => {
+                                                        $('#req-parameter-output').html(JSON.stringify(response, null, '  '));
+                                                        $('#req-operation-output').html(JSON.stringify(operationOutcome, null, '  '));
+                                                        requestedSign = false;
+                                                    });
+                                                });
                                             } else {
                                                 attachment = {
                                                     "name": "Attachment",
@@ -1494,33 +1547,8 @@ if (!CLAIM) {
                                                         }
                                                     ]
                                                 };
-                                            }
-                                            
 
-                                            let signature = resourceRes;
-                                            const operationOutcome = {
-                                                "resourceType": "OperationOutcome",
-                                                "id": "outcome_ok",
-                                                "issue": [
-                                                    {
-                                                        "severity": "informational",
-                                                        "code": "informational",
-                                                        "details": {
-                                                            "text": "Claim found and attachment saved."
-                                                        }
-                                                    }
-                                                ]
-                                            };
-                                            if (requestedSign) {
-                                                let provider = {
-                                                    type: 'POST',
-                                                    url: `https://davinci-cdex-commreq.logicahealth.org/api/sign`,
-                                                    data: JSON.stringify(resourceRes),
-                                                    contentType: "application/fhir+json"
-                                                };
-                                                $.ajax(provider).then(response => {
-                                                    attachment.part[2].signature = response;
-                                                    parameter.push(attachment);
+                                                parameter.push(attachment);
                                                     CDEX.attachmentRequestedPayload.parameter = parameter;
                                                     configProvider = {
                                                         type: 'PUT',
@@ -1532,20 +1560,6 @@ if (!CLAIM) {
                                                         $('#req-parameter-output').html(JSON.stringify(response, null, '  '));
                                                         $('#req-operation-output').html(JSON.stringify(operationOutcome, null, '  '));
                                                     });
-                                                });
-                                            } else {
-                                                parameter.push(attachment);
-                                                CDEX.attachmentRequestedPayload.parameter = parameter;
-                                                configProvider = {
-                                                    type: 'PUT',
-                                                    url: `${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentRequestedPayload.id}`,
-                                                    data: JSON.stringify(CDEX.attachmentRequestedPayload),
-                                                    contentType: "application/json"
-                                                };
-                                                $.ajax(configProvider).then(response => {
-                                                    $('#req-parameter-output').html(JSON.stringify(response, null, '  '));
-                                                    $('#req-operation-output').html(JSON.stringify(operationOutcome, null, '  '));
-                                                });
                                             }
                                         });
                                     }
