@@ -27,7 +27,6 @@ router.post('/', async (req, res) => {
   const payload = canonicalize(rest)
   const signature = await jose.JWS.createSign({ format: 'compact' }, { key, header }).update(payload).final()
   const base64JWS = Buffer.from(signature).toString('base64');
-  //const base64JWS = btoa(signature)
 
   const sigElement = {
     type: [
@@ -39,10 +38,10 @@ router.post('/', async (req, res) => {
     ],
     when: new Date(),
     who: {
-      reference: "Practitioner/123"
+      reference: "Practitioner/cdex-example-practitioner"
     },
     onBehalfOf: {
-      reference: "Organization/123"
+      reference: "Organization/cdex-example-provider"
     },
     data: base64JWS,
   }
