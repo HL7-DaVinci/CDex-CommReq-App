@@ -1384,6 +1384,10 @@ if (!CLAIM) {
                             });
                             $('#total_attach').val(current_attch - 1);
                             $('#btn-submit-req-attch').click(function () {
+                                let parameterEndpoint = CDEX.payerEndpoint.url;
+                                if($('#customEndpoint').val() !== '') {
+                                    parameterEndpoint = $('#customEndpoint').val();
+                                }
                                 const resourcesId = Date.now();
                                 const currentDate = new Date().toISOString().slice(0, 10);
 
@@ -1537,7 +1541,7 @@ if (!CLAIM) {
                                                     CDEX.attachmentRequestedPayload.parameter = parameter;
                                                     configProvider = {
                                                         type: 'PUT',
-                                                        url: `${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentRequestedPayload.id}`,
+                                                        url: `${parameterEndpoint}/Parameters/${CDEX.attachmentRequestedPayload.id}`,
                                                         data: JSON.stringify(CDEX.attachmentRequestedPayload),
                                                         contentType: "application/json"
                                                     };
@@ -1578,7 +1582,7 @@ if (!CLAIM) {
                                                 CDEX.attachmentRequestedPayload.parameter = parameter;
                                                 configProvider = {
                                                     type: 'PUT',
-                                                    url: `${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentRequestedPayload.id}`,
+                                                    url: `${parameterEndpoint}/Parameters/${CDEX.attachmentRequestedPayload.id}`,
                                                     data: JSON.stringify(CDEX.attachmentRequestedPayload),
                                                     contentType: "application/json"
                                                 };
