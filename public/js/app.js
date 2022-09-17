@@ -1350,7 +1350,7 @@ if (!CLAIM) {
                                             if (coding.system === "http://loinc.org") {
                                                 $('#selection-list').append(`
                                             <tr>
-                                                <td><input type="checkbox" id="chk_${current_attch}" name="chk_${current_attch}" value="Condition/${resource.resource.id}"></td>
+                                                <td><input type="checkbox" id="chk_${current_attch}" name="chk_${current_attch}" value="DiagnosticReport/${resource.resource.id}"></td>
                                                 <td>${coding.display}</td>
                                                 <td>${resource.resource.recordedDate}</td>
                                                 <td>${coding.code}</td>
@@ -1359,6 +1359,26 @@ if (!CLAIM) {
                                                 current_attch++;
                                             }
                                         });
+                                    });
+                                }
+                            });
+                            configProvider = {
+                                type: 'GET',
+                                url: `${CDEX.payerEndpoint.url}/DocumentReference?_patient=${CDEX.patient.id}`,
+                                contentType: "application/fhir+json"
+                            };
+                            $.ajax(configProvider).then((res) => {
+                                if (res.total > 0) {
+                                    res.entry.forEach(resource => {
+                                        $('#selection-list').append(`
+                                            <tr>
+                                                <td><input type="checkbox" id="chk_${current_attch}" name="chk_${current_attch}" value="DocumentReference/${resource.resource.id}"></td>
+                                                <td>${resource.resource.content[0].attachment.title}</td>
+                                                <td>${resource.resource.meta.lastUpdated}</td>
+                                                <td>-</td>
+                                            </tr>
+                                        `);
+                                        current_attch++;
                                     });
                                 }
                             });
@@ -1458,6 +1478,12 @@ if (!CLAIM) {
                                             let attachment = '';
                                             $('#req-parameter-output').html('');
                                             $('#req-operation-output').html('');
+                                            let code = "";
+                                            let display = "";
+                                            if(resourceRes.resourceType !== 'DocumentReference'){
+                                                code = resourceRes.code.coding[0].code;
+                                                display = resourceRes.code.coding[0].display;
+                                            }
                                             if (requestedSign) {
                                                 attachment = {
                                                     "name": "Attachment",
@@ -1472,8 +1498,8 @@ if (!CLAIM) {
                                                                 "coding": [
                                                                     {
                                                                         "system": "http://loinc.org",
-                                                                        "code": `${resourceRes.code.coding[0].code}`,
-                                                                        "display": `${resourceRes.code.coding[0].display}`
+                                                                        "code": `${code}`,
+                                                                        "display": `${display}`
                                                                     }
                                                                 ]
                                                             }
@@ -1498,7 +1524,7 @@ if (!CLAIM) {
                                                         }
                                                     ]
                                                 };
-                                                
+
                                                 let provider = {
                                                     type: 'POST',
                                                     url: `https://davinci-cdex-commreq.logicahealth.org/api/sign`,
@@ -1535,8 +1561,8 @@ if (!CLAIM) {
                                                                 "coding": [
                                                                     {
                                                                         "system": "http://loinc.org",
-                                                                        "code": `${resourceRes.code.coding[0].code}`,
-                                                                        "display": `${resourceRes.code.coding[0].display}`
+                                                                        "code": `${code}`,
+                                                                        "display": `${display}`
                                                                     }
                                                                 ]
                                                             }
@@ -1549,17 +1575,17 @@ if (!CLAIM) {
                                                 };
 
                                                 parameter.push(attachment);
-                                                    CDEX.attachmentRequestedPayload.parameter = parameter;
-                                                    configProvider = {
-                                                        type: 'PUT',
-                                                        url: `${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentRequestedPayload.id}`,
-                                                        data: JSON.stringify(CDEX.attachmentRequestedPayload),
-                                                        contentType: "application/json"
-                                                    };
-                                                    $.ajax(configProvider).then(response => {
-                                                        $('#req-parameter-output').html(JSON.stringify(response, null, '  '));
-                                                        $('#req-operation-output').html(JSON.stringify(operationOutcome, null, '  '));
-                                                    });
+                                                CDEX.attachmentRequestedPayload.parameter = parameter;
+                                                configProvider = {
+                                                    type: 'PUT',
+                                                    url: `${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentRequestedPayload.id}`,
+                                                    data: JSON.stringify(CDEX.attachmentRequestedPayload),
+                                                    contentType: "application/json"
+                                                };
+                                                $.ajax(configProvider).then(response => {
+                                                    $('#req-parameter-output').html(JSON.stringify(response, null, '  '));
+                                                    $('#req-operation-output').html(JSON.stringify(operationOutcome, null, '  '));
+                                                });
                                             }
                                         });
                                     }
@@ -1783,6 +1809,8 @@ if (!CLAIM) {
             reader.onloadend = (evt) => {
                 if (evt.target.readyState === FileReader.DONE) {
                     //Setting the document reference
+                    CDEX.documentReferencePayload.event[0].concept.coding[0].code = `${$('#codeInput').val()}`;
+                    CDEX.documentReferencePayload.event[0].concept.coding[0].display = `${displayValue}`;
                     CDEX.documentReferencePayload.content[0].attachment.data = `${reader.result.split(';base64,')[1]}`;
                     CDEX.documentReferencePayload.content[0].attachment.title = `${$('#select-attch').get(0).files.item(0).name}`;
                     CDEX.documentReferencePayload.content[0].attachment.contentType = `${fileName.type}`;

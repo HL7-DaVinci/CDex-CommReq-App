@@ -452,6 +452,19 @@ if (!CDEX) {
     "resourceType": "DocumentReference",
     "id": "",
     "status": "current",
+    "event": [
+      {
+        "concept": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "",
+              "display": ""
+            }
+          ]
+        }
+      }
+    ],
     "content": [
       {
         "attachment": {
