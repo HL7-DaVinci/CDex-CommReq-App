@@ -15,6 +15,7 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
+    req.headers['content-type'] = 'application/fhir+json';
     const { resourceType, parameter } = req.body;
     let operationOutcome = {
         "resourceType": "OperationOutcome",
@@ -174,6 +175,7 @@ router.delete('/:id', (req, res) => {
 createParameter = async (req, attachmentResource) => {
     return new Promise((resolve) => {
         request.put({
+            headers: { 'content-type': 'application/fhir+json' },
             url: `${baseurl}/Parameters/${req.body.id?req.body.id:`Parameter-with-${attachmentResource}`}`,
             body: req.body,
             json: true
@@ -193,7 +195,7 @@ createBinary = async (attch, attachmentResource) => {
             "data": `${attch.attachment.data}`
         }
         request.put({
-            headers: { 'content-type': 'application/json' },
+            headers: { 'content-type': 'application/fhir+json' },
             url: `${baseurl}/Binary/CDex-${attachmentResource}`,
             body: binaryBody,
             json: true
@@ -207,7 +209,7 @@ createBinary = async (attch, attachmentResource) => {
 createResource = async (attch, attachmentResource) => {
     return new Promise((resolve) => {
         request.put({
-            headers: { 'content-type': 'application/json' },
+            headers: { 'content-type': 'application/fhir+json' },
             url: `${baseurl}/${attch.resourceType}/${attachmentResource}`,
             body: attch.content,
             json: true
@@ -288,7 +290,7 @@ upsertClaim = async (claimId, memberId, reference, existingClaim) => {
 
     return new Promise((resolve) => {
         request.put({
-            headers: { 'content-type': 'application/json' },
+            headers: { 'content-type': 'application/fhir+json' },
             url: `${baseurl}/Claim/${claimId}?upsert=true`,
             body: claimBody,
             json: true
