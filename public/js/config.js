@@ -4626,58 +4626,114 @@ if (!CDEX) {
   };
 
   CDEX.requestAttachmentPayload = {
-    "resourceType": "Task",
-    "id": "",
-    "identifier": [
+    "resourceType" : "Task",
+    "id" : "",
+    "contained" : [
       {
-        "type": {
-          "coding": [
-            {
-              "system": "http://hl7.org/fhir/us/davinci-cdex/CodeSystem/cdex-temp",
-              "code": "tracking-id",
-              "display": "Tracking Id"
-            }
-          ],
-          "text": "Re-Association Tracking Control Number"
+        "resourceType" : "Patient",
+        "id" : "patient",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/davinci-cdex/StructureDefinition/cdex-patient-demographics"
+          ]
         },
-        "system": "",
-        "value": ""
+        "identifier" : [
+          {
+            "use" : "usual",
+            "type" : {
+              "coding" : [
+                {
+                  "system" : "http://hl7.org/fhir/us/davinci-hrex/CodeSystem/hrex-temp",
+                  "code" : "UMB",
+                  "display" : "Member Number"
+                }
+              ],
+              "text" : "Member Number"
+            },
+            "system" : "http://example.org/cdex/payer/member-ids",
+            "value" : "Member123"
+          }
+        ],
+        "name" : [
+          {
+            "family" : "",
+            "given" : [
+              ""
+            ]
+          }
+        ],
+        "birthDate" : ""
       }
     ],
-    "status": "requested",
-    "intent": "order",
-    "code": {
-      "coding": [
+    "identifier" : [
+      {
+        "type" : {
+          "coding" : [
+            {
+              "system" : "http://hl7.org/fhir/us/davinci-cdex/CodeSystem/cdex-temp",
+              "code" : "tracking-id",
+              "display" : "Tracking Id"
+            }
+          ],
+          "text" : "Re-Association Tracking Control Number"
+        },
+        "system" : "",
+        "value" : ""
+      }
+    ],
+    "status" : "requested",
+    "statusReason": {
+      "text": "Claim support documentation"
+    },
+    "intent" : "order",
+    "code" : {
+      "coding" : [
         {
-          "system": "http://hl7.org/fhir/us/davinci-cdex/CodeSystem/cdex-temp",
-          "code": "attachment-request"
+          "system" : "http://hl7.org/fhir/us/davinci-cdex/CodeSystem/cdex-temp",
+          "code" : "attachment-request"
         }
       ],
-      "text": "Attachment Request"
+      "text" : "Attachment Request"
     },
-    "for": {
-      "reference": ""
+    "for" : {
+      "reference" : "#patient"
     },
-    "authoredOn": "",
-    "lastModified": "",
-    "requester": {
-      "identifier": {
-        "system": "http://example.org/cdex/payer/payer-ids",
-        "value": ""
+    "authoredOn" : "",
+    "lastModified" : "",
+    "requester" : {
+      "identifier" : {
+        "system" : "http://example.org/cdex/payer/payer-ids",
+        "value" : ""
       }
     },
-    "owner": {
-      "identifier": {
-        "system": "http://hl7.org/fhir/sid/us-npi",
-        "value": ""
+    "owner" : {
+      "identifier" : {
+        "system" : "http://hl7.org/fhir/sid/us-npi",
+        "value" : "9941339108"
       }
     },
-    "restriction": {
-      "period": {
-        "end": ""
+    "reasonCode" : {
+      "coding" : [
+        {
+          "system" : "http://hl7.org/fhir/claim-use",
+          "code" : "claim",
+          "display" : "Claim"
+        }
+      ],
+      "text" : "claim"
+    },
+    "reasonReference" : {
+      "identifier" : {
+        "system" : "http://example.org/cdex/payer/claim-ids",
+        "value" : "Claim123"
       }
     },
-    "input": []
+    "restriction" : {
+      "period" : {
+        "end" : ""
+      }
+    },
+    "input" : []
   }
 
   CDEX.loincTypes = {
