@@ -38,10 +38,10 @@ router.post('/', async (req, res) => {
     ],
     when: new Date(),
     who: {
-      reference: "Practitioner/cdex-example-practitioner"
+      reference: "https://api.logicahealth.org/DaVinciCDexProvider/open/Practitioner/cdex-example-practitioner"
     },
     onBehalfOf: {
-      reference: "Organization/cdex-example-provider"
+      reference: "https://api.logicahealth.org/DaVinciCDexProvider/open/Organization/cdex-example-provider"
     },
     data: base64JWS,
   }

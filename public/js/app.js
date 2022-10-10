@@ -689,15 +689,19 @@ if (!CLAIM) {
             if (emptyLoinc && $('#total_chq').val() > 1) {
                 alert(`Please specify all codes for the request`);
             } else {
-                CDEX.requestAttachmentPayload.identifier[0].system = CDEX.payerEndpoint.url.toString();
                 CDEX.requestAttachmentPayload.id = $('#req-searchClaim').val().toString() + "-T1234";
+                CDEX.requestAttachmentPayload.identifier[0].system = CDEX.payerEndpoint.url.toString();
                 CDEX.requestAttachmentPayload.identifier[0].value = $('#req-searchClaim').val().toString() + "-T1234";
-                CDEX.requestAttachmentPayload.for.reference = CDEX.payerEndpoint.url + "/Patient/" + CDEX.patient.id;
                 CDEX.requestAttachmentPayload.authoredOn = $('#serviceDateCol').html();
                 CDEX.requestAttachmentPayload.lastModified = $('#serviceDateCol').html();
                 CDEX.requestAttachmentPayload.requester.identifier.value = CDEX.patient.id;
                 CDEX.requestAttachmentPayload.owner.identifier.value = "cdex-example-practitioner";
                 CDEX.requestAttachmentPayload.restriction.period.end = $('#dueDateCol').html();
+                CDEX.requestAttachmentPayload.reasonReference.identifier.value = $('#req-searchClaim').val().toString();
+                CDEX.requestAttachmentPayload.contained[0].id = CDEX.patient.id;
+                CDEX.requestAttachmentPayload.contained[0].name[0].family = CDEX.patient.name[0].family;
+                CDEX.requestAttachmentPayload.contained[0].name[0].given = CDEX.patient.name[0].given;
+                CDEX.requestAttachmentPayload.contained[0].birthday = CDEX.patient.birthday;
 
                 //Create line item
                 CDEX.requestAttachmentPayload.input = [];
@@ -763,7 +767,6 @@ if (!CLAIM) {
                         "valueDate": `${$('#serviceDateCol').html()}`
                     }
                 );
-
                 let configProvider = {
                     type: 'PUT',
                     url: CDEX.providerEndpoint.url + CDEX.submitTaskEndpoint + "/" + $('#req-searchClaim').val().toString() + "-T1234",
@@ -1489,6 +1492,8 @@ if (!CLAIM) {
                                                 display = resourceRes.code.coding[0].display;
                                             }
                                             if (requestedSign) {
+                                                const dateNow = Date.now();
+                                                const dateFormat = (new Date()).toISOString().slice(0, 10);
                                                 attachment = {
                                                     "name": "Attachment",
                                                     "part": [
@@ -1512,14 +1517,100 @@ if (!CLAIM) {
                                                             "name": "Content",
                                                             "resource": {
                                                                 "resourceType": "Bundle",
-                                                                "id": `Bundle-${Date.now()}`,
+                                                                "id": `Bundle-${dateNow}`,
                                                                 "identifier": {
                                                                     "system": "urn:ietf:rfc:3986",
                                                                     "value": "urn:uuid:c173535e-135e-48e3-ab64-38bacc68dba8"
                                                                 },
+                                                                "type": "document",
+                                                                "timestamp": `${dateFormat}`,
                                                                 "entry": [
                                                                     {
-                                                                        "fullUrl": "urn:uuid:014a68ec-d691-49e0-b980-91b0d924e570",
+                                                                        "fullUrl": `Composition/Composition-for-Bundle-${dateNow}`,
+                                                                        "resource": {
+                                                                            "resourceType": "Composition",
+                                                                            "id": `Composition-for-Bundle-${dateNow}`,
+                                                                            "status": "final",
+                                                                            "type": {
+                                                                                "coding": [
+                                                                                    {
+                                                                                        "system": "http://loinc.org",
+                                                                                        "code": "11503-0"
+                                                                                    }
+                                                                                ],
+                                                                                "text": "Medical records"
+                                                                            },
+                                                                            "subject": {
+                                                                                "reference": `Patient/${CDEX.patient.id}`,
+                                                                                "display": `${CDEX.patient.name[0].family}, ${CDEX.patient.name[0].given[0]}`
+                                                                            },
+                                                                            "date": "2021-10-25T20:16:29-07:00",
+                                                                            "author": [
+                                                                                {
+                                                                                    "reference": "Practitioner/cdex-example-practitioner",
+                                                                                    "display": "Bone, Ronald"
+                                                                                }
+                                                                            ],
+                                                                            "title": "Requested attachments",
+                                                                            "attester": [
+                                                                                {
+                                                                                    "mode": "legal",
+                                                                                    "time": `${dateFormat}`,
+                                                                                    "party": {
+                                                                                        "reference": "Practitioner/cdex-example-practitioner",
+                                                                                        "display": "Bone, Ronald"
+                                                                                    }
+                                                                                }
+                                                                            ],
+                                                                            "section": [
+                                                                                {
+                                                                                    "title": `${resourceRes.content[0].attachment.title}`,
+                                                                                    "entry": [
+                                                                                        {
+                                                                                            "reference": `${resourceRes.resourceType}/${resourceRes.id}`
+                                                                                        }
+                                                                                    ]
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "fullUrl": `Patient/${CDEX.patient.id}`,
+                                                                        "resource": {
+                                                                            "resourceType": "Patient",
+                                                                            "id": `${CDEX.patient.id}`,
+                                                                            "active": true,
+                                                                            "name": [
+                                                                                {
+                                                                                    "text": `${CDEX.patient.id}`,
+                                                                                    "family": `${CDEX.patient.name[0].family}`,
+                                                                                    "given": [
+                                                                                        `${CDEX.patient.name[0].given}`
+                                                                                    ]
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "fullUrl": "Practitioner/cdex-example-practitioner",
+                                                                        "resource": {
+                                                                            "resourceType": "Practitioner",
+                                                                            "id": "cdex-example-practitioner",
+                                                                            "meta": {
+                                                                                "lastUpdated": "2013-05-05T16:13:03+00:00"
+                                                                            },
+                                                                           "name": [
+                                                                                {
+                                                                                    "family": "Bone",
+                                                                                    "given": [
+                                                                                        "Ronald"
+                                                                                    ]
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "fullUrl": `${resourceRes.resourceType}/${resourceRes.id}`,
                                                                         "resource": resourceRes
                                                                     }
                                                                 ],
@@ -1539,11 +1630,12 @@ if (!CLAIM) {
                                                     attachment.part[2].resource.signature = response;
                                                     parameter.push(attachment);
                                                     CDEX.attachmentRequestedPayload.parameter = parameter;
+                                                    console.log(JSON.stringify(CDEX.attachmentRequestedPayload));
                                                     configProvider = {
                                                         type: 'PUT',
                                                         url: `${parameterEndpoint}/Parameters/${CDEX.attachmentRequestedPayload.id}`,
                                                         data: JSON.stringify(CDEX.attachmentRequestedPayload),
-                                                        contentType: "application/json"
+                                                        contentType: "application/fhir+json"
                                                     };
                                                     $.ajax(configProvider).then(response => {
                                                         $('#req-parameter-output').html(JSON.stringify(response, null, '  '));

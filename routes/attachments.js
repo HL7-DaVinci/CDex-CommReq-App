@@ -7,7 +7,7 @@ const data = require('../attachments.json');
 
 const axios = require('axios');
 
-const baseurl = "https://api.logicahealth.org/DaVinciCDexProvider/open";
+const baseurl = "https://api.logicahealth.org/DaVinciCDexPayer/open";
 
 //Movies
 router.get('/', (req, res) => {
@@ -15,7 +15,9 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-    req.headers['content-type'] = 'application/fhir+json';
+    req.headers['accept'] = 'application/fhir+json';
+    req.headers['content-type'] = 'application/fhir+json;charset=UTF-8';
+    console.log(JSON.stringify(req.headers));
     const { resourceType, parameter } = req.body;
     let operationOutcome = {
         "resourceType": "OperationOutcome",
@@ -40,7 +42,6 @@ router.post('/', (req, res) => {
     let resource = '';
     let existingClaim = '';
     const attachmentResource = Date.now();
-    console.log(`Created resource ID -------------------------- ${attachmentResource}`);
 
     if (parameter && resourceType === 'Parameters') {
         parameter.forEach(element => {
@@ -79,38 +80,6 @@ router.post('/', (req, res) => {
                         existingClaim = value;
                         claimExists = true;
                     }
-                    /*if (attchType == 'DocumentReference') {
-                        if (attch.content[0].attachment.contentType == 'application/pdf') {
-                            return createBinary(attch.content[0], attachmentResource).then(value => {
-                                if (value.resourceType === "Binary") {
-                                    return createParameter(req, attachmentResource).then(value => {
-                                        if (value.resourceType === 'Parameters') {
-                                            upsertClaim(claimId, memberId, `Binary/CDex-${attachmentResource}`, existingClaim).then(value => {
-                                                if (claimExists) {
-                                                    operationOutcome = {
-                                                        "resourceType": "OperationOutcome",
-                                                        "id": "outcome_ok",
-                                                        "issue": [
-                                                            {
-                                                                "severity": "informational",
-                                                                "code": "informational",
-                                                                "details": {
-                                                                    "text": "Claim found and attachment saved."
-                                                                }
-                                                            }
-                                                        ]
-                                                    }
-                                                }
-                                                res.send(operationOutcome)
-                                            })
-                                        }
-                                    })
-                                } else {
-                                    res.send('Something went wrong');
-                                }
-                            })
-                        }
-                    } else {*/
                     let resourceId = resource.id ? resource.id : `CDex-${resource.resourceType}-${attachmentResource}`;
                     return createResource(resource, resourceId).then(value => {
                         return createParameter(req, resourceId).then(value => {
@@ -135,7 +104,7 @@ router.post('/', (req, res) => {
                         })
                     })
                 }
-                )//})
+                )
             }
         })
 
@@ -174,6 +143,7 @@ router.delete('/:id', (req, res) => {
 
 createParameter = async (req, attachmentResource) => {
     return new Promise((resolve) => {
+        req.headers['content-type'] = 'application/fhir+json';
         request.put({
             headers: { 'content-type': 'application/fhir+json' },
             url: `${baseurl}/Parameters/${req.body.id?req.body.id:`Parameter-with-${attachmentResource}`}`,
