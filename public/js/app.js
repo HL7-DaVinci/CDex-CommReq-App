@@ -1493,7 +1493,7 @@ if (!CLAIM) {
                                             }
                                             if (requestedSign) {
                                                 const dateNow = Date.now();
-                                                const dateFormat = (new Date()).toISOString().slice(0, 10);
+                                                const dateFormat = (new Date()).toISOString();//.slice(0, 10);
                                                 attachment = {
                                                     "name": "Attachment",
                                                     "part": [

@@ -12,7 +12,7 @@ const app = express();
 
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: false, limit: '32mb' }));
-app.use(bodyParser.json({ limit: '32mb' }));
+app.use(bodyParser.json({ limit: '32mb', type: ['application/json', 'application/fhir+json'] }));
 app.use(helmet({
     contentSecurityPolicy: false,
   }));
