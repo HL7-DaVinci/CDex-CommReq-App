@@ -15,7 +15,7 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-    req.headers['accept'] = 'application/fhir+json';
+    req.headers['accept'] = 'application/fhir+json;charset=UTF-8';
     req.headers['content-type'] = 'application/fhir+json;charset=UTF-8';
     console.log(JSON.stringify(req.headers));
     const { resourceType, parameter } = req.body;
