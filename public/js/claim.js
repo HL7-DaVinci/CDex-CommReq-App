@@ -28,12 +28,9 @@ if (!CDEX) {
     };
 
     CLAIM.claimLookupById = async (claim) => {
-        let url = `${CDEX.payerEndpoint.url}/Claim?_id=${claim}`;
+        let url = `${CDEX.payerEndpoint.url}/Claim/${claim}`;
         let existingClaim = await $.ajax(url).then((res) => {
-            if (res.total > 0) {
-                return res.entry[0].resource;
-            }
-            return {};
+            return res;
         }).catch((error) => {
             console.log(error);
             return {};
@@ -42,10 +39,10 @@ if (!CDEX) {
         return existingClaim;
     };
 
-    CLAIM.claimUpsert = async (claim) => {
+    CLAIM.claimUpsert = async (claim, endpoint) => {
         let configProvider = {
             type: 'PUT',
-            url: `${CDEX.payerEndpoint.url}/Claim/${claim.id}?upsert=true`,
+            url: `${endpoint}/Claim/${claim.id}?upsert=true`,
             data: JSON.stringify(claim),
             contentType: "application/json"
         };

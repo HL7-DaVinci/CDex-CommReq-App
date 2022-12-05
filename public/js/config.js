@@ -4627,7 +4627,7 @@ if (!CDEX) {
 
   CDEX.requestAttachmentPayload = {
     "resourceType" : "Task",
-    "id" : "",
+    "id" : "patient",
     "contained" : [
       {
         "resourceType" : "Patient",
