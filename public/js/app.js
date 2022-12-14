@@ -1511,13 +1511,9 @@ if (!CLAIM) {
                                         },
                                         {
                                             "name": "TrackingId",
-                                            "valueString": `${$('#currentClaimId').text()}`
-                                        },
-                                        {
-                                            "name": "OrganizationId",
                                             "valueIdentifier": {
-                                                "system": "http://hl7.org/fhir/sid/us-npi",
-                                                "value": "CDex-Test-Organization"
+                                                "system": "http://example.org/provider",
+                                                "value": `${task.resource.id}`
                                             }
                                         },
                                         {
@@ -1973,7 +1969,7 @@ if (!CLAIM) {
     $('#btn-request-attach').click(CDEX.displayRequestAttachmentScreen);
     $('#btn-task-restart').click(CDEX.restart);
     $('#btn-query-restart').click(CDEX.restart);
-    $('#btn-task-restart').click(CDEX.restart);
+    $('#btn-task-restart-commreq').click(CDEX.restart);
     $('#dq-btn-restart').click(CDEX.restart);
     $('#btn-restart-task').click(CDEX.restart);
     $('#btn-restart-attachment').click(CDEX.restart);
@@ -2032,7 +2028,7 @@ if (!CLAIM) {
 
         CDEX.attachmentPayload.id = `CDex-parameter-${resourcesId}`;
         CDEX.attachmentPayload.parameter[0].valueCode = 'claim';//To check: $('#radio-claim').is(':checked')?'claim':'prior-auth';
-        CDEX.attachmentPayload.parameter[1].valueString = `${claimId}`;
+        CDEX.attachmentPayload.parameter[1].valueIdentifier.value = `${claimId}_${Date.now()}`;
         CDEX.attachmentPayload.parameter[4].valueIdentifier.value = `${CDEX.patient.id}`;
         CDEX.attachmentPayload.parameter[5].valueDate = $('#serviceDate').val();
         //Setting the parameters payload
@@ -2114,7 +2110,7 @@ if (!CLAIM) {
                                         "reference": `DocumentReference/CDex-Document-Reference-${resourcesId}`
                                     }
                                 }
-                                CLAIM.claimUpsert(results, payerEndpoint).then((results) => {
+                                CLAIM.claimUpsert(results, CDEX.payerEndpoint.url).then((results) => {
                                     $('#claim-output').html(JSON.stringify(results, null, '  '));
                                 });
                             }

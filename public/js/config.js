@@ -319,7 +319,10 @@ if (!CDEX) {
       },
       {
         "name": "TrackingId",
-        "valueString": ""
+        "valueIdentifier": {
+          "system": "http://example.org/provider",
+          "value": ""
+      }
       },
       {
         "name": "OrganizationId",
