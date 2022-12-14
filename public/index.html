@@ -10,6 +10,8 @@
     <script src="lib/jszip.js"></script>
     <script src="lib/FileSaver.js"></script>
     <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="lib/chosen/chosen.min.css" rel="stylesheet"/>
+    <script src="lib/chosen/chosen.jquery.min.js"></script>
 
     <!--TODO: don't use CDN-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
@@ -35,7 +37,7 @@
         <div class="card-body">
             <h5 class="card-title">CDex Scenarios Description</h5>
             <p class='card-text' id='task-intro'></p>
-            <!-- <a href="#" class="btn btn-primary" id="btn-task">Task Based Approach</a> -->
+            <a href="#" class="btn btn-primary" id="btn-task">Task Based Approach</a>
             <a href="#" class="btn btn-primary" id="btn-query">Direct Query</a>
             <a href="#" class="btn btn-primary" id="btn-attach">Submit Attachment</a>
             <a href="#" class="btn btn-primary" id="btn-request-attach">Request Attachment</a>
@@ -78,7 +80,7 @@
         <h3>Patient: <span id="commRes-patient-name">[loading...]</span></h3>
         <p>
             <button type="button" class="btn btn-primary" id="btn-task-request">Create Data Request</button>
-            <a href="#" class="btn btn-primary" id="btn-task-restart">Cancel</a>
+            <a href="#" class="btn btn-primary" id="btn-task-restart-commreq">Cancel</a>
         </p>
         <div>
             <p>
@@ -281,7 +283,7 @@
                 <select class='form-control' id='req-searchClaim'>
                     <option>-- Select a Claim --</option>
                 </select>
-                <div>
+                <div id='lineItems'>
                 </div>
                 <p>
                 <div id="incloincCodes"><label>Code</label></div>
@@ -359,6 +361,8 @@
                 </div>
             </div>
         </div>
+        <label for="name"><b>Custom provider endpoint: </b></label>
+        <input type="text" id="customProviderEndpoint" name="customProviderEndpoint" required placeholder="https://api.logicahealth.org/DaVinciCDexProvider/open">
     </div>
 
     <div id="submit-payer-attachments" class="card alert-info screen">
@@ -394,12 +398,13 @@
                     <th>Name</th>
                     <th>Date</th>
                     <th>LOINC</th>
+                    <th>Extensions</th>
                 </thead>
                 <tbody id="selection-list">
                 </tbody>
             </table>
             <label for="name"><b>Custom payer endpoint: </b></label>
-            <input type="text" id="customEndpoint" name="customEndpoint" required placeholder="https://api.logicahealth.org/DaVinciCDexPayer/open">
+            <input type="text" id="customPayerEndpoint" name="customPayerEndpoint" required placeholder="https://api.logicahealth.org/DaVinciCDexPayer/open">
         </div>
 
         <button type="button" class="btn btn-secondary" id="btn-back-comm-list">Back</button>

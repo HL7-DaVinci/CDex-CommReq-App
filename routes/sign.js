@@ -4,6 +4,7 @@ const path = require('path')
 const fs = require('fs')
 const canonicalize = require('canonicalize')
 const jose = require('node-jose')
+const crypto = require('crypto')
 
 router.post('/', async (req, res) => {
   const certPath = path.join(__dirname, '../config/cert.pem')
@@ -19,6 +20,9 @@ router.post('/', async (req, res) => {
 
   const privateKeyPath = path.join(__dirname, '../config/private-key.pem')
   const privateKey = fs.readFileSync(privateKeyPath)
+
+  const publicKeyPath = path.join(__dirname, '../config/public-key.pem')
+  const publicKey = fs.readFileSync(publicKeyPath)
 
   const key = await jose.JWK.asKey(privateKey, 'pem')
 
@@ -43,9 +47,23 @@ router.post('/', async (req, res) => {
     onBehalfOf: {
       reference: "https://api.logicahealth.org/DaVinciCDexProvider/open/Organization/cdex-example-provider"
     },
-    data: base64JWS,
+    data: signature,
   }
+  // Using Hashing Algorithm
+  const algorithm = "SHA256";
 
+  // Converting string to buffer
+  const data = Buffer.from(JSON.stringify(rest));
+
+  // Sign the data and returned signature in buffer
+  const sign = crypto.sign(algorithm, data, privateKey);
+  console.log(sign);
+
+  // Verifying signature using crypto.verify() function
+  const isVerified = crypto.verify(algorithm, data, publicKey, sign);
+
+  // Printing the result
+  console.log(`Is signature verified: ${isVerified}`);
   res.json(sigElement)
 });
 
