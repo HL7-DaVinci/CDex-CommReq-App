@@ -4642,17 +4642,6 @@ if (!CDEX) {
         },
         "identifier" : [
           {
-            "use" : "usual",
-            "type" : {
-              "coding" : [
-                {
-                  "system" : "http://hl7.org/fhir/us/davinci-hrex/CodeSystem/hrex-temp",
-                  "code" : "UMB",
-                  "display" : "Member Number"
-                }
-              ],
-              "text" : "Member Number"
-            },
             "system" : "http://example.org/cdex/payer/member-ids",
             "value" : "Member123"
           }

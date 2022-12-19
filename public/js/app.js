@@ -1,3 +1,5 @@
+const { result } = require('underscore');
+
 var CDEX;
 if (!CDEX) {
     CDEX = {};
@@ -743,7 +745,7 @@ if (!CLAIM) {
             } else {
                 CDEX.requestAttachmentPayload.id = $('#req-searchClaim').val().toString() + "-T1234";
                 CDEX.requestAttachmentPayload.identifier[0].system = CDEX.payerEndpoint.url.toString();
-                CDEX.requestAttachmentPayload.identifier[0].value = $('#req-searchClaim').val().toString() + "-T1234";
+                CDEX.requestAttachmentPayload.identifier[0].value = $('#req-searchClaim').val().toString();
                 CDEX.requestAttachmentPayload.authoredOn = $('#serviceDateCol').html();
                 CDEX.requestAttachmentPayload.lastModified = $('#serviceDateCol').html();
                 CDEX.requestAttachmentPayload.requester.identifier.value = CDEX.patient.id;
@@ -2028,7 +2030,7 @@ if (!CLAIM) {
 
         CDEX.attachmentPayload.id = `CDex-parameter-${resourcesId}`;
         CDEX.attachmentPayload.parameter[0].valueCode = 'claim';//To check: $('#radio-claim').is(':checked')?'claim':'prior-auth';
-        CDEX.attachmentPayload.parameter[1].valueIdentifier.value = `${claimId}_${Date.now()}`;
+        CDEX.attachmentPayload.parameter[1].valueIdentifier.value = `${claimId}`;
         CDEX.attachmentPayload.parameter[4].valueIdentifier.value = `${CDEX.patient.id}`;
         CDEX.attachmentPayload.parameter[5].valueDate = $('#serviceDate').val();
         //Setting the parameters payload
@@ -2198,16 +2200,39 @@ if (!CLAIM) {
                                     }
                                 ]
                             };
-                            results.supportingInfo = {
-                                "sequence": 1,
-                                "category": {
-                                    "text": "sample text"
-                                },
-                                "valueReference": {
-                                    "reference": `${jsonContent.resourceType}/${jsonContent.id}`
+                            let itemAssoc = 0;
+                            let supInfoExist = false;
+                            result.supportingInfo.forEach((supInf) => {
+                                if (supInf.valueReference.reference === `${jsonContent.resourceType}/${jsonContent.id}`) {
+                                    supInfoExist = true;
+                                    itemAssoc = supInf.sequence;
+                                }
+                            });
+                            if (!supInfoExist) {
+                                if (!results.supportingInfo) {
+                                    results.supportingInfo = [{
+                                        "sequence": 1,
+                                        "category": {
+                                            "text": "sample text"
+                                        },
+                                        "valueReference": {
+                                            "reference": `${jsonContent.resourceType}/${jsonContent.id}`
+                                        }
+                                    }]
+                                } else {
+                                    results.supportingInfo.push({
+                                        "sequence": results.supportingInfo.length + 1,
+                                        "category": {
+                                            "text": "sample text"
+                                        },
+                                        "valueReference": {
+                                            "reference": `${jsonContent.resourceType}/${jsonContent.id}`
+                                        }
+                                    })
                                 }
                             }
-                            CLAIM.claimUpsert(results, payerEndpoint).then((results) => {
+                            //TODO: Line items association for unsolicited attachments.
+                            CLAIM.claimUpsert(results, CDEX.payerEndpoint.url).then((results) => {
                                 $('#claim-output').html(JSON.stringify(results, null, '  '));
                             });
                         }
