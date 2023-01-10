@@ -6,7 +6,7 @@ if (!CDEX) {
 (function () {
 
   CDEX.clientSettings = {
-    "client_id": "bed3bfd0-17d1-473f-90ac-c006fec5e9c9",//"619c591e-8957-43d8-9b6d-21489025177c",
+    "client_id": "619c591e-8957-43d8-9b6d-21489025177c",//"bed3bfd0-17d1-473f-90ac-c006fec5e9c9",
     "scope": "launch patient/*.* openid profile"
   };
 
@@ -4727,6 +4727,220 @@ if (!CDEX) {
     },
     "input" : []
   }
+
+  CDEX.questionnairePayload = {
+    "resourceType": "Questionnaire",
+    "name": "HomeOxygenTherapyQuestionnaire",
+    "title": "Home Oxygen Therapy Questionnaire",
+    "url": "http://example.org/cdex-questionnaire-example1",
+    "status": "draft",
+    "subjectType": [
+        "Patient"
+    ],
+    "date": "2022-01-17",
+    "item": [
+        {
+            "linkId": "1",
+            "text": "Relevant Patient Diagnoses (conditions that might be expected to improve with oxygen therapy)",
+            "type": "text",
+            "required": true
+        },
+        {
+            "linkId": "2",
+            "text": "Order Reason",
+            "type": "choice",
+            "required": true,
+            "answerOption": [
+                {
+                    "valueCoding": {
+                        "system": "http://example.org",
+                        "code": "1",
+                        "display": "Initial or original order for certification"
+                    }
+                },
+                {
+                    "valueCoding": {
+                        "system": "http://example.org",
+                        "code": "2",
+                        "display": "Change in status"
+                    }
+                },
+                {
+                    "valueCoding": {
+                        "system": "http://example.org",
+                        "code": "3",
+                        "display": "Revision or change in equipment"
+                    }
+                },
+                {
+                    "valueCoding": {
+                        "system": "http://example.org",
+                        "code": "4",
+                        "display": "Replacement"
+                    }
+                }
+            ]
+        }
+    ]
+}
+
+  CDEX.questionnaireResponse = {
+    "resourceType": "QuestionnaireResponse",
+    "questionnaire": "http://example.org/cdex-questionnaire-example1",
+    "status": "completed",
+    "subject": {
+        "identifier": {
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/us/davinci-hrex/CodeSystem/hrex-temp",
+                        "code": "UMB",
+                        "display": "Member Number"
+                    }
+                ],
+                "text": "Member Number"
+            },
+            "system": "http://example.org/cdex/payer/member-ids",
+            "value": "Member123"
+        },
+        "display": "Amy Shaw"
+    },
+    "authored": "2022-06-17",
+    "author": {
+        "identifier": {
+            "system": "http://hl7.org/fhir/sid/us-npi",
+            "value": "9941339100"
+        }
+    },
+    "item": [
+        {
+            "linkId": "1",
+            "text": "Relevant Patient Diagnoses (conditions that might be expected to improve with oxygen therapy)",
+            "answer": [
+                {
+                    "valueString": "Examplitis"
+                }
+            ]
+        },
+        {
+            "linkId": "2",
+            "text": "Order Reason",
+            "answer": [
+                {
+                    "valueCoding": {
+                        "system": "http://example.org",
+                        "code": "4",
+                        "display": "Replacement"
+                    }
+                }
+            ]
+        }
+    ]
+}
+
+  CDEX.requestQuestionnairePayload = {
+    "resourceType": "Task",
+    "status": "requested",
+    "intent": "order",
+    "code": {
+        "coding": [
+            {
+                "system": "http://hl7.org/fhir/us/davinci-cdex/CodeSystem/cdex-temp",
+                "code": "attachment-request-questionnaire"
+            }
+        ]
+    },
+    "for": {
+        "identifier": {
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/us/davinci-hrex/CodeSystem/hrex-temp",
+                        "code": "UMB",
+                        "display": "Member Number"
+                    }
+                ],
+                "text": "Member Number"
+            },
+            "system": "http://example.org/cdex/payer/member-ids",
+            "value": "Member123"
+        }
+    },
+    "authoredOn": "2022-06-17T16:16:06Z",
+    "lastModified": "2022-06-17T16:16:06Z",
+    "requester": {
+        "identifier": {
+            "system": "http://example.org/cdex/payer/payer-ids",
+            "value": "Payer123"
+        }
+    },
+    "owner": {
+        "identifier": {
+            "system": "http://hl7.org/fhir/sid/us-npi",
+            "value": "9941339108"
+        }
+    },
+    "reasonReference": {
+        "identifier": {
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "FILL",
+                        "display": "Filler Identifier"
+                    }
+                ],
+                "text": "Payer Claim ID"
+            },
+            "system": "http://example.org/cdex/payer/claim-ids",
+            "value": "Claim123"
+        }
+    },
+    "input": [
+        {
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/uv/sdc/CodeSystem/temp",
+                        "code": "questionnaire"
+                    }
+                ]
+            },
+            "valueCanonical": "http://example.org/cdex-questionnaire-example1"
+        },
+        {
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/us/davinci-cdex/CodeSystem/cdex-temp",
+                        "code": "purpose-of-use"
+                    }
+                ]
+            },
+            "valueCodeableConcept": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+                        "code": "COVERAGE"
+                    }
+                ]
+            }
+        },
+        {
+          "type": {
+              "coding": [
+                  {
+                      "system": "http://hl7.org/fhir/us/davinci-cdex/CodeSystem/cdex-temp",
+                      "code": "signature-flag"
+                  }
+              ]
+          },
+          "valueBoolean": false
+      }
+    ],
+    "output": []
+}
 
   CDEX.loincTypes = {
     "loinc": [

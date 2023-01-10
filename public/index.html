@@ -10,7 +10,7 @@
     <script src="lib/jszip.js"></script>
     <script src="lib/FileSaver.js"></script>
     <link href="css/bootstrap.css" rel="stylesheet">
-    <link href="lib/chosen/chosen.min.css" rel="stylesheet"/>
+    <link href="lib/chosen/chosen.min.css" rel="stylesheet" />
     <script src="lib/chosen/chosen.jquery.min.js"></script>
 
     <!--TODO: don't use CDN-->
@@ -37,11 +37,89 @@
         <div class="card-body">
             <h5 class="card-title">CDex Scenarios Description</h5>
             <p class='card-text' id='task-intro'></p>
-            <a href="#" class="btn btn-primary" id="btn-task">Task Based Approach</a>
-            <a href="#" class="btn btn-primary" id="btn-query">Direct Query</a>
-            <a href="#" class="btn btn-primary" id="btn-attach">Submit Attachment</a>
-            <a href="#" class="btn btn-primary" id="btn-request-attach">Request Attachment</a>
-            <a href="#" class="btn btn-primary" id="btn-submit-attach">Submit Solicited Attachments</a>
+            <a href="#" class="btn btn-primary" id="btn-task" data-toggle="tooltip" data-placement="top">
+                Task Based Approach
+                <span>
+                    <b>Task Based Approach:</b><br>
+                    A system that needs information about a patient/member and which can solicit that information using the asynchronous CDEX Task based approach.<br>
+                    For detailed documentation see: http://build.fhir.org/ig/HL7/davinci-ecdx/task-based-approach.html<br>
+                    <ul>
+                        <li>
+                            Example Transaction:
+                            <ul>
+                                <li>Data Consumer creates a Task on the Data Source’s system soliciting a patient’s knee surgery report and then polls for updates to the Task.</li>
+                                <li>Data Source completes the data request and updates the Task with the requested information and the status to “completed”.</li>
+                                <li>The Data Consumer fetches the completed Task and the documents referenced in it.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </span>
+            </a>
+            <a href="#" class="btn btn-primary" id="btn-query" data-toggle="tooltip" data-placement="top">Direct Query
+                <span>
+                    <b>Direct Query:</b><br>
+                    A system that needs information about a patient/member and which can solicit that information using standard FHIR RESTful queries.<br>
+                    For detailed documentation see: http://build.fhir.org/ig/HL7/davinci-ecdx/direct-query.html<br>
+                    <ul>
+                        <li>Example Transaction: Action: Synchronous Data Consumer executes a RESTful search the Synchronous Data Source’s system that will return the patient’s active medication orders</li>
+                    </ul>
+                </span>
+            </a>
+            <a href="#" class="btn btn-primary" id="btn-attach" data-toggle="tooltip" data-placement="top">Submit Attachment
+                <span><b>Submit unsolicited attachment:<br></b>
+                Provider invokes the ‘$submit-attachment’ operation on the Payer’s endpoint to attach a document to an existing Claim or Prior Authorization.
+                <br>The Data Consumer returns a success code For detailed documentation see: http://build.fhir.org/ig/HL7/davinci-ecdx/sending-attachments.html
+                <br>Example Transaction:
+                <br><ul><li>Provider submits a visit summary for a claim they are submitting to the Payer using $submit-attachment.</li>
+                <li>The Data Consumer returns a success code indicating that the $submit-attachment payload was recieved.</li>
+                <li>Association of the attachment to the Claim resource.</li></ul></span></a>
+            <a href="#" class="btn btn-primary" id="btn-request-attach" data-toggle="tooltip" data-placement="top">Request Attachment
+                <span><b>Requesting Attachments:<br></b>
+                Payer solicits additional information for a claim or prior authorization using the asynchronous CDEX Task based approach.<br>
+                The actual data requested uses “attachments codes” or a FHIR Questinnaire. For detailed documentation see:<br>
+                http://build.fhir.org/ig/HL7/davinci-ecdx/requesting-attachments-code.html and http://build.fhir.org/ig/HL7/davinci-ecdx/requesting-attachments-code.html.<br>
+                <ul>
+                    <li>
+                        Example Transaction 1:
+                        <ul>
+                            <li>Payer asks for a visit summary for a Payer’s claim using Task using and attachment code</li>
+                            <li>In a separate transaction the Provider submits the requested data using $submit-attachment to the Payer.</li>
+                        </ul>
+                    </li>
+                    <li>
+                        Example Transaction 2:
+                        <ul>
+                            <li>Payer asks for a additional data for a Payer’s Home Oxygen Therapy Claim using a FHIR Questionnaire</li>
+                            <li>In a separate transaction the Provider submits the completed FHIR QuestionnaireResponse using $submit-attachment to the Payer.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </span></a>
+            <a href="#" class="btn btn-primary" id="btn-submit-attach" data-toggle="tooltip" data-placement="top">Submit Solicited Attachments
+                <span><b>Submit Solicited (Requested) Attachment:<br></b>
+                    Provider invokes the ‘$submit-attachment’ operation on the Payer’s endpoint to attach a document or QuestionnaireResponse to an existing Claim or Prior Authorization.<br>
+                    The Data Consumer returns a success code For detailed documentation see:<br>
+                    http://build.fhir.org/ig/HL7/davinci-ecdx/sending-attachments.html<br>
+                    <ul>
+                        <li>
+                            Example Transaction 1:
+                            <ul>
+                                <li>In a separate transaction, Payer asks for a visit summary for a Payer’s claim using Task using and attachment code</li>
+                                <li>The Provider submits the requested data using $submit-attachment to the Payer.</li>
+                                <li>Association of the attachment to the Claim resource.</li>
+                            </ul>
+                        </li>
+                        <li>
+                            Example Transaction 2:
+                            <ul>
+                                <li>In a separate transaction, Payer asks for a additional data for a Payer’s Home Oxygen Therapy Claim using a FHIR Questionnaire</li>
+                                <li>The Provider submits the completed FHIR QuestionnaireResponse using $submit-attachment to the Payer.</li>
+                                <li>Association of the attachment to the Claim resource.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </span>
+            </a>
         </div>
     </div>
     <div></div>
@@ -115,9 +193,10 @@
         </div>
     </div>
 
-    <div id="attachment-submit-screen" class="card alert-info screen">
+    <div id="attachment-submit-screen" class="card alert-warning screen">
         <div class="card-body">
-            <h3>Patient: <span id="commRes-patient-name">[loading...]</span></h3>
+            <h5><b></strong>Provider side operation</b></h5>
+            <h5>Patient: <span id="commRes-patient-name">[loading...]</span></h5>
             <div>
                 <select class='form-control' id='submit-searchClaim'>
                     <option>-- Select tracking control number --</option>
@@ -278,17 +357,37 @@
 
     <div id="request-provider-attachments" class="card alert-info screen">
         <div class="card-body">
-            <h3>Patient: <span id="commRes-patient-name">[loading...]</span></h3>
+            <h5><b></strong>Payer side operation</b></h5>
+            <h5>Patient: <span id="commRes-patient-name">[loading...]</span></h5>
             <div>
+                <h5><b></strong>Attachment Codes or Questionnaire</b></h5>
+                <p class="text-danger">CDex Attachments are requested in Task.input using either Attachment Codes or
+                    FHIR Questionnaire.</br>Select how CDex Attachments are requested in Task.input</p>
+                <label for="attachment-codes">
+                    <input type="radio" id="attachment-codes" name="attachment" value="attachment" checked="checked">
+                    Attachment Codes
+                </label><br>
+                <label for="questionnaire">
+                    <input type="radio" id="questionnaire" name="attachment" value="questionnaire"> Questionnaire
+                </label><br>
+            </div>
+            <div id="attachment-codes-form">
                 <select class='form-control' id='req-searchClaim'>
                     <option>-- Select a Claim --</option>
                 </select>
+                <div id="questionnaire-form">
+                    <label for="req-questionnaire">Request Questionnaire</label><br>
+                    <select class='form-control' id='req-questionnaire'>
+                        <option value="http://example.org/cdex-questionnaire-example1">Adaptive Home Oxygen Therapy
+                            Order Template (SDC)</option>
+                    </select>
+                </div>
                 <div id='lineItems'>
                 </div>
                 <p>
                 <div id="incloincCodes"><label>Code</label></div>
                 </p>
-                <div>
+                <div id="check-task-signature">
                     <input type='checkbox' id='task-signature' name='signature' value='signed'>
                     <label for='signature'> Signature required </label>
                 </div>
@@ -296,7 +395,7 @@
                     <button type="button" class="btn btn-primary" id="btn-create-task">Create Task</button>
                     <a href="#" class="btn btn-primary" id="btn-restart-task">Cancel</a>
                 </p>
-                <div>
+                <div id="table-task-info">
                     <table class="table table-bordered">
                         <thead>
                             <tr>
@@ -362,12 +461,14 @@
             </div>
         </div>
         <label for="name"><b>Custom provider endpoint: </b></label>
-        <input type="text" id="customProviderEndpoint" name="customProviderEndpoint" required placeholder="https://api.logicahealth.org/DaVinciCDexProvider/open">
+        <input type="text" id="customProviderEndpoint" name="customProviderEndpoint" required
+            placeholder="https://api.logicahealth.org/DaVinciCDexProvider/open">
     </div>
 
-    <div id="submit-payer-attachments" class="card alert-info screen">
+    <div id="submit-payer-attachments" class="card alert-warning screen">
         <div class="card-body">
-            <h3 class="card-title">Attachment(s) requested</h3>
+            <h5 class="card-title">Provider side operation</h5>
+            <h5 class="card-title">Attachment(s) requested</h5>
             <div>
                 <table class="table table-striped">
                     <thead>
@@ -404,12 +505,35 @@
                 </tbody>
             </table>
             <label for="name"><b>Custom payer endpoint: </b></label>
-            <input type="text" id="customPayerEndpoint" name="customPayerEndpoint" required placeholder="https://api.logicahealth.org/DaVinciCDexPayer/open">
+            <input type="text" id="customPayerEndpoint" name="customPayerEndpoint" required
+                placeholder="https://api.logicahealth.org/DaVinciCDexPayer/open">
         </div>
 
         <button type="button" class="btn btn-secondary" id="btn-back-comm-list">Back</button>
         <button type="button" class="btn btn-primary" id="btn-submit-req-attch">Submit</button>
         <input type="hidden" value="1" id="total_attch">
+    </div>
+
+    <div id="attch-questionnaire-screen" class="screen">
+        <h5>Patient <span id="questionnaire-patient-name">[Loading ...]</span></h5>
+        <p>
+        <div id="questionnaireSignature"></div>
+        <label>Please complete and submit questionnaire:</label></br>
+        <img src="../images/favicon.png" alt="Questionnaire">
+        <p class="text-danger"><b>This will launch a simulation of DTR process before submit the requested attachment</b></p>
+        </p>
+        <p class="card-text">Task</p>
+        <p class="card-text"><textarea id="requested-task-payload"></textarea></p>
+        <p class="card-text">Questionnaire</p>
+        <p class="card-text"><textarea id="requested-questionnaire-payload"></textarea></p>
+        <div class="dvt">
+            <label for="name"><b>Custom payer endpoint: </b></label>
+            <input type="text" id="customPayerQuestionnaireEndpoint" name="customPayerQuestionnaireEndpoint" required
+                placeholder="https://api.logicahealth.org/DaVinciCDexPayer/open">
+        </div>
+
+        <button type="button" class="btn btn-secondary" id="btn-back-task-list">Back</button>
+        <button type="button" class="btn btn-primary" id="btn-submit-questionnaire-attch">Launch DTR</button>
     </div>
 
     <div id="attch-req-confirm-screen" class="card alert-info screen">
@@ -424,6 +548,20 @@
             <p class="card-text">
                 <a href="#" class="btn btn-primary" id="req-attch-btn-restart">OK</a>
                 <a href="#" class="btn btn-primary" id="req-download-resources">Download resources</a>
+            </p>
+        </div>
+    </div>
+
+    <div id="questionnaire-req-confirm-screen" class="card alert-warning screen dvt">
+        <div class="card-body">
+            <h5 class="card-title">Created/Updated resources</h5>
+            <p class="card-text">Questionnaire Response</p>
+            <p class="card-text"><textarea id="quest-resp-output"></textarea></p>
+            <p class="card-text">Modified Task</p>
+            <p class="card-text"><textarea id="upd-task-output"></textarea></p>
+            <p class="card-text">
+                <a href="#" class="btn btn-primary" id="quest-btn-submit">Submit Attachment</a>
+                <a href="#" class="btn btn-primary" id="quest-download-resources">Download resources</a>
             </p>
         </div>
     </div>
