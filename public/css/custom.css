@@ -10,19 +10,6 @@ td {
     vertical-align: middle;
 }
 
-#task-intro-screen,
-#query-intro-screen,
-#confirm-screen,
-#dq-confirm-screen,
-#config-screen,
-#query-request-screen,
-#direct-query-request-screen,
-#attachment-submit-screen,
-#attachment-confirm-screen,
-#attachment-requested-screen,
-#request-provider-attachments,
-#submit-payer-attachments,
-#attch-req-confirm-screen,
 .dvt {
     align-self: center;
     width: 1000px;
@@ -77,7 +64,11 @@ img {
 #req-task-output,
 #req-parameter-output,
 #req-operation-output,
-#req-claim-output {
+#req-claim-output,
+#requested-task-payload,
+#requested-questionnaire-payload,
+#quest-resp-output,
+#upd-task-output {
     height: 300px;
     width: 900px;
 }
@@ -92,4 +83,21 @@ img {
 
 table {
     width: 1000px;
+}
+
+a span {
+	display: none;
+}
+
+a:hover span {
+    position: absolute;
+	font-size: 16px;
+    text-align: left;
+	left: 0px;
+	display: block;
+	color: black;
+	background-color: #edf9f2;
+	border: 1px solid black;
+	padding: 5px;
+    bottom: -150%;
 }

@@ -21,9 +21,6 @@ router.post('/', async (req, res) => {
   const privateKeyPath = path.join(__dirname, '../config/private-key.pem')
   const privateKey = fs.readFileSync(privateKeyPath)
 
-  const publicKeyPath = path.join(__dirname, '../config/public-key.pem')
-  const publicKey = fs.readFileSync(publicKeyPath)
-
   const key = await jose.JWK.asKey(privateKey, 'pem')
 
   const { id, meta, ...rest } = req.body
@@ -49,22 +46,22 @@ router.post('/', async (req, res) => {
     },
     data: signature,
   }
-  // Using Hashing Algorithm
-  const algorithm = "SHA256";
+  
+  res.json(sigElement);
+});
 
-  // Converting string to buffer
-  const data = Buffer.from(JSON.stringify(rest));
+router.post('/verify', async (req, res) => {
+  const publicKeyPath = path.join(__dirname, '../config/public-key.pem')
+  const publicKey = fs.readFileSync(publicKeyPath)
 
-  // Sign the data and returned signature in buffer
-  const sign = crypto.sign(algorithm, data, privateKey);
-  console.log(sign);
-
-  // Verifying signature using crypto.verify() function
-  const isVerified = crypto.verify(algorithm, data, publicKey, sign);
-
-  // Printing the result
-  console.log(`Is signature verified: ${isVerified}`);
-  res.json(sigElement)
+  const signature = req.body.signature;//crypto.sign(algorithm, data , privateKey);
+  const key = await jose.JWK.asKey(publicKey, 'pem');
+  const verifier = jose.JWS.createVerify(key);
+  
+  const verified = await verifier.verify(signature).catch(()=>{});
+	const isVerified = !!verified;
+  
+  res.json({isVerified})
 });
 
 module.exports = router

@@ -83,7 +83,7 @@ router.post('/', (req, res) => {
                     let resourceId = resource.id ? resource.id : `CDex-${resource.resourceType}-${attachmentResource}`;
                     return createResource(resource, resourceId).then(value => {
                         return createParameter(req, resourceId).then(value => {
-                            upsertClaim(claimId, memberId, `${resource.resourceType}/${resourceId}`, existingClaim).then(value => {
+                            upsertClaim(claimId, memberId, `${resource.resourceType}/${resourceId}`, existingClaim, value).then(value => {
                                 if (claimExists) {
                                     operationOutcome = {
                                         "resourceType": "OperationOutcome",
@@ -177,6 +177,9 @@ createBinary = async (attch, attachmentResource) => {
 }
 
 createResource = async (attch, attachmentResource) => {
+    if(attch.resourceType === 'Bundle') {
+        return;
+    }
     return new Promise((resolve) => {
         request.put({
             headers: { 'content-type': 'application/fhir+json' },
@@ -208,8 +211,38 @@ patientLookup = async (memberId) => {
     })
 }
 
-upsertClaim = async (claimId, memberId, reference, existingClaim) => {
+upsertClaim = async (claimId, memberId, reference, existingClaim, parameter) => {
     let claimBody = '';
+    let supportingInfo = [];
+    if(reference.includes('Bundle/')) {
+        parameter.parameter.forEach(param => {
+            if(param.name === 'Attachment') {
+                param.part.forEach(parts =>{
+                    if(parts.name === 'Content') {
+                        parts.resource.entry.forEach(entry => {
+                            if(entry.resource.content) {
+                                supportingInfo.push({
+                                    sequence: param.part[0].valueString,
+                                    category: 1,
+                                    valueReference: {
+                                        reference: `${entry.resource.resourceType}/${entry.resource.id}`
+                                    }
+                                })
+                            }
+                        })
+                    }
+                });
+            }
+        });
+    } else {
+        supportingInfo.push({
+            sequence: 1,
+            category: 1,
+            valueReference: {
+                reference: `${reference}`
+            }
+        });
+    }
     if (existingClaim === '') {
         claimBody = {
             "resourceType": "Claim",
@@ -237,25 +270,12 @@ upsertClaim = async (claimId, memberId, reference, existingClaim) => {
                     }
                 }
             ],
-            "supportingInfo": {
-                "sequence": 1,
-                "category": 1,
-                "valueReference": {
-                    "reference": `${reference}`
-                }
-            },
+            "supportingInfo": suportingInfo,
             "total": "1234"
         };
     } else {
         claimBody = existingClaim;
-        claimBody.supportingInfo =
-        {
-            "sequence": 1,
-            "category": 1,
-            "valueReference": {
-                "reference": `${reference}`
-            }
-        }
+        claimBody.supportingInfo = supportingInfo
     }
 
     return new Promise((resolve) => {
