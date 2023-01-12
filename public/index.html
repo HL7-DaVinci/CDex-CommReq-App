@@ -33,7 +33,7 @@
         </div>
     </div>
 
-    <div id="task-intro-screen" class="card alert-info screen">
+    <div id="task-intro-screen" class="card alert-info screen dvt">
         <div class="card-body">
             <h5 class="card-title">CDex Scenarios Description</h5>
             <p class='card-text' id='task-intro'></p>
@@ -124,7 +124,7 @@
     </div>
     <div></div>
 
-    <div id="query-request-screen" class="card alert-info screen">
+    <div id="query-request-screen" class="card alert-info screen dvt">
         <div class="card-body">
             <h5 class="card-title">Direct Query Type</h5>
             <label for="basic-url">Query URI</label>
@@ -179,7 +179,7 @@
             <p>[loading...]</p>
         </div>
     </div>
-    <div id="direct-query-request-screen" class="card alert-info screen">
+    <div id="direct-query-request-screen" class="card alert-info screen dvt">
         <div class="card-body">
             <h3>Patient: <span id="commRes-patient-name">[loading...]</span></h3>
             <select class='form-control' id='search-criteria'>
@@ -193,7 +193,7 @@
         </div>
     </div>
 
-    <div id="attachment-submit-screen" class="card alert-warning screen">
+    <div id="attachment-submit-screen" class="card alert-warning screen dvt">
         <div class="card-body">
             <h5><b></strong>Provider side operation</b></h5>
             <h5>Patient: <span id="commRes-patient-name">[loading...]</span></h5>
@@ -237,7 +237,7 @@
         </div>
     </div>
 
-    <div id="attachment-confirm-screen" class="card alert-info screen">
+    <div id="attachment-confirm-screen" class="card alert-info screen dvt">
         <div class="card-body">
             <h5 class="card-title">Created/Updated resources</h5>
             <p class="card-text">Parameter successfully created</p>
@@ -301,7 +301,7 @@
             <button type="button" class="btn btn-primary" id="btn-submit">Submit</button>
         </div>
     </div>
-    <div id="confirm-screen" class="card alert-info screen">
+    <div id="confirm-screen" class="card alert-info screen dvt">
         <div class="card-body">
             <h5 class="card-title">Confirmation</h5>
             <div id="request-id"></div>
@@ -313,7 +313,7 @@
             <p class="card-text"><a href="#" class="btn btn-primary" id="btn-task-restart">OK</a></p>
         </div>
     </div>
-    <div id="dq-confirm-screen" class="card alert-info screen">
+    <div id="dq-confirm-screen" class="card alert-info screen dvt">
         <div class="card-body">
             <h5 class="card-title">Confirmation</h5>
             <p class="card-text">Direct Query request successfully sent to url: </p>
@@ -322,7 +322,7 @@
             <p class="card-text"><a href="#" class="btn btn-primary" id="dq-btn-restart">OK</a></p>
         </div>
     </div>
-    <div id="config-screen" class="card alert-info screen">
+    <div id="config-screen" class="card alert-info screen dvt">
         <div class="card-body">
             <h5 class="card-title">Provider Endpoint Configuration</h5>
             <p class='card-text'>
@@ -336,18 +336,20 @@
             <a href="#" class="btn btn-primary" id="btn-config">Save configuration</a>
         </div>
     </div>
-    <div id="error-screen" class="card alert-danger screen">
+    <div id="error-screen" class="card alert-danger screen dvt">
         <div class="card-body">
             <h5 class="card-title" id='error-title'>Error</h5>
             <p class='card-text' id='error-message'></p>
         </div>
     </div>
 
-    <div id="attachment-requested-screen" class="card alert-info screen">
+    <div id="attachment-requested-screen" class="card alert-warning screen dvt">
         <div class="card-body">
+            <h5 class="card-title">Provider side operation</h5>
             <h5 class="card-title">Attachment(s) requested</h5>
             <p class="card-text">Task successfully created</p>
             <p class="card-text"><textarea id="req-task-output"></textarea></p>
+            <p><b>Operation outcome:</b><span id="opOutcAttReq"></span></p>
             <p class="card-text">
                 <a href="#" class="btn btn-primary" id="reqattch-btn-restart">OK</a>
                 <a href="#" class="btn btn-primary" id="download-reqattch">Download resources</a>
@@ -355,7 +357,7 @@
         </div>
     </div>
 
-    <div id="request-provider-attachments" class="card alert-info screen">
+    <div id="request-provider-attachments" class="card alert-info screen dvt">
         <div class="card-body">
             <h5><b></strong>Payer side operation</b></h5>
             <h5>Patient: <span id="commRes-patient-name">[loading...]</span></h5>
@@ -465,7 +467,7 @@
             placeholder="https://api.logicahealth.org/DaVinciCDexProvider/open">
     </div>
 
-    <div id="submit-payer-attachments" class="card alert-warning screen">
+    <div id="submit-payer-attachments" class="card alert-warning screen dvt">
         <div class="card-body">
             <h5 class="card-title">Provider side operation</h5>
             <h5 class="card-title">Attachment(s) requested</h5>
@@ -533,10 +535,10 @@
         </div>
 
         <button type="button" class="btn btn-secondary" id="btn-back-task-list">Back</button>
-        <button type="button" class="btn btn-primary" id="btn-submit-questionnaire-attch">Launch DTR</button>
+        <button type="button" class="btn btn-primary" id="btn-submit-questionnaire-attch">Submit Questionnaire</button>
     </div>
 
-    <div id="attch-req-confirm-screen" class="card alert-info screen">
+    <div id="attch-req-confirm-screen" class="card alert-info screen dvt">
         <div class="card-body">
             <h5 class="card-title">Created/Updated resources</h5>
             <p class="card-text">Parameter created</p>
@@ -554,6 +556,7 @@
 
     <div id="questionnaire-req-confirm-screen" class="card alert-warning screen dvt">
         <div class="card-body">
+            <h5 class="card-title">Provider side operation</h5>
             <h5 class="card-title">Created/Updated resources</h5>
             <p class="card-text">Questionnaire Response</p>
             <p class="card-text"><textarea id="quest-resp-output"></textarea></p>

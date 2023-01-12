@@ -10,20 +10,6 @@ td {
     vertical-align: middle;
 }
 
-#task-intro-screen,
-#query-intro-screen,
-#confirm-screen,
-#dq-confirm-screen,
-#config-screen,
-#query-request-screen,
-#direct-query-request-screen,
-#attachment-submit-screen,
-#attachment-confirm-screen,
-#attachment-requested-screen,
-#request-provider-attachments,
-#submit-payer-attachments,
-#attch-req-confirm-screen,
-#questionnaire-req-confirm-screen
 .dvt {
     align-self: center;
     width: 1000px;

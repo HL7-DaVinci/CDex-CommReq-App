@@ -600,10 +600,13 @@ if (!CLAIM) {
 
     CDEX.displayRequestAttachmentScreen = () => {
         $('#questionnaire-form').hide();
+        $('#lineItems').html("");
+        $('#serviceDateCol').html("");
+        $('#dueDateCol').html("");
+        $('#claimIdCol').html("");
         CDEX.searchClaims("req-searchClaim", "<option>-- Select a Claim --</option>").then(() => {
             $("#req-searchClaim").on('change keydown paste input', function () {
                 $('#trackingIdCol').html($('#req-searchClaim').val().toString() + "-T1234");
-                $('#lineItems').html("");
                 if ($('#req-searchClaim').val().toString() !== '-- Select a Claim --') {
                     let configProvider = {
                         type: 'GET',
@@ -835,7 +838,11 @@ if (!CLAIM) {
                     };
                     $.ajax(configProvider).then((res) => {
                         $('#req-task-output').html(JSON.stringify(res, null, 2));
+                        $('#opOutcAttReq').html('<p class="text-success">Status code: 200. Success</p>');
                         CDEX.displayScreen('attachment-requested-screen');
+                    }).catch(function (error) {
+                        $('#req-task-output').html(JSON.stringify(error, null, 2));
+                        $('#opOutcAttReq').html(`<p class="text-danger">Status code: 500. Failed.</p>`);
                     });
                 }
             }
@@ -1384,7 +1391,7 @@ if (!CLAIM) {
     CDEX.getTasks = () => {
         let configProvider = {
             type: 'GET',
-            url: `${CDEX.providerEndpoints[0].url}/Task?_patient=${CDEX.patient.id}`,
+            url: `${CDEX.providerEndpoints[0].url}/Task?_patient=${CDEX.patient.id}?_sort=_lastUpdated`,
             contentType: "application/fhir+json"
         };
         $.ajax(configProvider).then((res) => {
@@ -1635,9 +1642,6 @@ if (!CLAIM) {
                                     });
                                     $('#total_attach').val(current_attch - 1);
                                     $('#btn-submit-req-attch').click(function () {
-                                        let payerEndpoint = $('#customPayerEndpoint').val() !== '' ?
-                                            $('#customPayerEndpoint').val() :
-                                            CDEX.payerEndpoint.url;
                                         const resourcesId = Date.now();
                                         const currentDate = new Date().toISOString().slice(0, 10);
 
@@ -1903,7 +1907,7 @@ if (!CLAIM) {
                                                             CDEX.attachmentRequestedPayload.parameter = parameter;
                                                             configProvider = {
                                                                 type: 'PUT',
-                                                                url: `${payerEndpoint}/Parameters/${CDEX.attachmentRequestedPayload.id}`,
+                                                                url: `${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentRequestedPayload.id}`,
                                                                 data: JSON.stringify(CDEX.attachmentRequestedPayload),
                                                                 contentType: "application/fhir+json"
                                                             };
@@ -1948,17 +1952,18 @@ if (!CLAIM) {
                                             }
                                         }
                                         CDEX.attachmentRequestedPayload.parameter = parameter;
-                                        const customURL = payerEndpoint === CDEX.payerEndpoint.url ?
-                                            `${payerEndpoint}/Parameters/${CDEX.attachmentRequestedPayload.id}` :
-                                            payerEndpoint;
                                         configProvider = {
                                             type: 'PUT',
-                                            url: customURL,
+                                            url: `${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentRequestedPayload.id}`,
                                             data: JSON.stringify(CDEX.attachmentRequestedPayload),
                                             contentType: "application/json"
                                         };
+                                        if($('#customPayerEndpoint').val() !== '') {
+                                            configProvider.url = `${$('#customPayerEndpoint').val()}/$submit-attachment`;
+                                            configProvider.type = 'POST';
+                                        }
                                         $.ajax(configProvider).then(response => {
-                                            $('#req-parameter-output').html(JSON.stringify(response, null, '  '));
+                                            $('#req-parameter-output').html(JSON.stringify(CDEX.attachmentRequestedPayload, null, '  '));
                                             $('#req-operation-output').html(JSON.stringify(operationOutcome, null, '  '));
                                         });
                                         CDEX.displayScreen('attch-req-confirm-screen');
@@ -2449,7 +2454,7 @@ if (!CLAIM) {
                             };
                             let itemAssoc = 0;
                             let supInfoExist = false;
-                            result.supportingInfo.forEach((supInf) => {
+                            results.supportingInfo.forEach((supInf) => {
                                 if (supInf.valueReference.reference === `${jsonContent.resourceType}/${jsonContent.id}`) {
                                     supInfoExist = true;
                                     itemAssoc = supInf.sequence;
@@ -2486,7 +2491,7 @@ if (!CLAIM) {
                         //Parameter creation
                         configProvider = {
                             type: 'PUT',
-                            url: `${payerEndpoint}/Parameters/${CDEX.attachmentPayload.id}`,
+                            url: `${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentPayload.id}`,
                             data: JSON.stringify(CDEX.attachmentPayload),
                             contentType: "application/json"
                         };
