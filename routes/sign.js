@@ -44,7 +44,7 @@ router.post('/', async (req, res) => {
     onBehalfOf: {
       reference: "https://api.logicahealth.org/DaVinciCDexProvider/open/Organization/cdex-example-provider"
     },
-    data: signature,
+    data: base64JWS,
   }
   
   res.json(sigElement);

@@ -1924,11 +1924,11 @@ if (!CLAIM) {
                                                                     }
                                                                 ])
                                                             };
-
+                                                            
                                                             let provider = {
                                                                 type: 'POST',
                                                                 url: `https://cdex-commreq.davinci.hl7.org/api/sign`,
-                                                                data: attachment.part[2].resource,
+                                                                data: JSON.stringify(attachment.part[2].resource),
                                                                 contentType: "application/json"
                                                             };
                                                             $.ajax(provider).then(response => {
@@ -1945,14 +1945,17 @@ if (!CLAIM) {
                                                                     configProvider.url = `${$('#customPayerEndpoint').val()}/$submit-attachment`;
                                                                     configProvider.type = 'POST';
                                                                 }
+                                                                console.log(JSON.stringify(CDEX.attachmentRequestedPayload));
                                                                 $.ajax(configProvider).then(response => {
                                                                     $('#req-parameter-output').html(JSON.stringify(response, null, '  '));
                                                                     $('#req-operation-output').html(JSON.stringify(operationOutcome, null, '  '));
                                                                     requestedSign = false;
+                                                                    CDEX.displayScreen('attch-req-confirm-screen');
                                                                 });
                                                             }).catch(error => {
                                                                 $('#req-parameter-output').html(JSON.stringify(error, null, '  '));
                                                                 $('#req-operation-output').html(JSON.stringify(error, null, '  '));
+                                                                CDEX.displayScreen('attch-req-confirm-screen');
                                                             });
                                                         } else {
                                                             attachment = {
