@@ -85,19 +85,53 @@ table {
     width: 1000px;
 }
 
-a span {
-	display: none;
+a span,
+label span,
+button span,
+p.stayover span {
+    display: none;
 }
 
 a:hover span {
     position: absolute;
-	font-size: 16px;
+    font-size: 16px;
     text-align: left;
-	left: 0px;
-	display: block;
-	color: black;
-	background-color: #edf9f2;
-	border: 1px solid black;
-	padding: 5px;
+    left: 0px;
+    display: block;
+    color: black;
+    background-color: #edf9f2;
+    border: 1px solid black;
+    padding: 5px;
     bottom: -150%;
+}
+
+a.btninfo:hover span,
+label.btninfo:hover span,
+button.btninfo:hover span {
+    position: absolute;
+    font-size: 16px;
+    text-align: left;
+    left: 0px;
+    display: block;
+    color: black;
+    background-color: #edf9f2;
+    border: 1px solid black;
+    padding: 5px;
+    bottom: 0rem;
+}
+
+a.stayover:hover span,
+p.stayover:hover span,
+label.stayover:hover span {
+    position: relative;
+    font-size: 16px;
+    text-align: left;
+    left: 0px;
+    color: black;
+    background-color: #edf9f2;
+    border: 1px solid black;
+    padding: 5px;
+    bottom: 1rm;
+    display: inline-block;
+    cursor: pointer;
 }
