@@ -508,9 +508,18 @@ if (!CLAIM) {
 
     CDEX.displayAttachmentScreen = () => {
         CDEX.searchClaims("submit-searchClaim", "<option>-- Select tracking control number --</option>").then(() => {
-            $('#loincCodes').html("<label>Code</label>");
+            $('#loincCodes').html(`<label>LOINC Attachment Code</label>`);
             $('#loincCodes').append(
                 "<div id='codes'><input id='codeInput' list='codesList'>" +
+                `<a class="btninfo" href="#" data-toggle="tooltip" data-placement="bottom">
+                <i class="fa fa-info"></i>
+                <span>
+                    <b>LOINC Attachment Code:</b><br>
+                    LOINC code to identify the specific kind of information being communicated 
+                    (e.g., a discharge summary or diagnostic imaging report) It SHOULD be present when submitting unsolicited attachments. 
+                    For more information about LOINC attachment codes see https://loinc.org/attachments/
+                </span>
+            </a>` +
                 "<datalist id='codesList'>" +
                 "</datalist></div>"
             );
@@ -604,10 +613,10 @@ if (!CLAIM) {
         $('#serviceDateCol').html("");
         $('#dueDateCol').html("");
         $('#claimIdCol').html("");
-        CDEX.searchClaims("req-searchClaim", "<option>-- Select a Claim --</option>").then(() => {
+        CDEX.searchClaims("req-searchClaim", "<option>-- Select a Claim or Prior Auth --</option>").then(() => {
             $("#req-searchClaim").on('change keydown paste input', function () {
                 $('#trackingIdCol').html($('#req-searchClaim').val().toString() + "-T1234");
-                if ($('#req-searchClaim').val().toString() !== '-- Select a Claim --') {
+                if ($('#req-searchClaim').val().toString() !== '-- Select a Claim or Prior Auth --') {
                     let configProvider = {
                         type: 'GET',
                         url: `${CDEX.payerEndpoint.url}/Claim/${$('#req-searchClaim').val().toString()}`,
@@ -662,7 +671,22 @@ if (!CLAIM) {
             $('#serviceDateCol').html(currentDate.toISOString().slice(0, 10));
             $('#dueDateCol').html(dueDate.toISOString().slice(0, 10));
             $('#memberIdCol').html(`${CDEX.patient.id}`);
-            $('#incloincCodes').html("<label>Code</label>");
+            $('#incloincCodes').html(`<p class="stayover">
+                                        <br>LOINC Attachment Code
+                                        <span>
+                                            <b>LOINC Attachment Code:</b><br>
+                                            Select the LOINC attachment code(s) to communicate the missing data. Typically, these
+                                            concepts represent data in document form (e.g., a PDF or CCDA). For more information about
+                                            LOINC attachment codes see https://loinc.org/attachments/
+                                        </span>
+                                    </p>
+                                    <a class="stayover" href="#" data-toggle="tooltip" data-placement="bottom">
+                                        <i class="fa fa-info"></i>
+                                        <span>
+                                            Can optionally select one or line numbers that refer to line items in the claim or 
+                                            prior authorization and are associated with the selected LOINC attachment code.
+                                        </span>
+                                    </a>`);
             $('#incloincCodes').append(
                 `<div id='codes'><input id='inccodeInput' list='codesList' class='inline-elem'>
                     <datalist id='codesList'></datalist>
@@ -748,7 +772,7 @@ if (!CLAIM) {
 
     CDEX.fillReqAttachmentPayload = () => {
         if ($('#attachment-codes').is(":checked")) {
-            if ($("#req-searchClaim").find(':selected').val() === "-- Select a Claim --") {
+            if ($("#req-searchClaim").find(':selected').val() === "-- Select a Claim or Prior Auth --") {
                 alert(`Please select a valid Claim Id`);
             } else if ($('#inccodeInput').val() === "") {
                 alert(`Please specify all codes for the request`);
@@ -841,13 +865,13 @@ if (!CLAIM) {
                         $('#opOutcAttReq').html('<p class="text-success">Status code: 200. Success</p>');
                         CDEX.displayScreen('attachment-requested-screen');
                     }).catch(function (error) {
-                        $('#req-task-output').html(JSON.stringify(error, null, 2));
+                        $('#req-task-output').html(JSON.stringify(error, null, '  '));
                         $('#opOutcAttReq').html(`<p class="text-danger">Status code: 500. Failed.</p>`);
                     });
                 }
             }
         } else {
-            if ($("#req-searchClaim").find(':selected').val() === "-- Select a Claim --") {
+            if ($("#req-searchClaim").find(':selected').val() === "-- Select a Claim or Prior Auth --") {
                 alert(`Please select a valid Claim Id`);
             } else {
                 //alert(`Submit task with questionnaire ${$('#req-questionnaire option:selected').text()} to ${$('#req-questionnaire option:selected').val()}`);
@@ -1641,11 +1665,10 @@ if (!CLAIM) {
                                         }
                                     });
                                     $('#total_attach').val(current_attch - 1);
-                                    $('#btn-submit-req-attch').click(function () {
+                                    $('#btn-submit-req-attch').click(function () {	
+                                        //Variables
                                         const resourcesId = Date.now();
                                         const currentDate = new Date().toISOString().slice(0, 10);
-
-                                        CDEX.claimPayloadAttachment.patient.reference = `Patient/${CDEX.patient.id}`;
                                         let parameter = [
                                             {
                                                 "name": "AttachTo",
@@ -1676,15 +1699,31 @@ if (!CLAIM) {
                                                 "name": "ServiceDate",
                                                 "valueDate": `${currentDate}`
                                             }
-                                        ]
+                                        ];
+                                        CDEX.claimPayloadAttachment.patient.reference = `Patient/${CDEX.patient.id}`;
+                                                                            
                                         CDEX.attachmentRequestedPayload.id = `CDex-parameter-${resourcesId}`;
-
-                                        //Claim
+                                        const operationOutcome = {
+                                            "resourceType": "OperationOutcome",
+                                            "id": "outcome_ok",
+                                            "issue": [
+                                                {
+                                                    "severity": "informational",
+                                                    "code": "informational",
+                                                    "details": {
+                                                        "text": "Claim found and attachment saved."
+                                                    }
+                                                }
+                                            ]
+                                        };
+                                        
                                         let configProvider = {
                                             type: 'GET',
                                             url: `${CDEX.payerEndpoint.url}/Claim/${$('#currentClaimId').text()}`,
                                             contentType: "application/fhir+json"
                                         };
+                                        
+                                        //Get Claim                                   
                                         $.ajax(configProvider).then((res) => {
                                             res.supportingInfo = [];
                                             let seq = res.supportingInfo.length + 1;
@@ -1727,246 +1766,240 @@ if (!CLAIM) {
                                             }
                                             CLAIM.claimUpsert(res, CDEX.payerEndpoint.url);
                                             $('#req-claim-output').html(JSON.stringify(res, null, '  '));
-                                        });
-
-                                        //Update attachments
-                                        const operationOutcome = {
-                                            "resourceType": "OperationOutcome",
-                                            "id": "outcome_ok",
-                                            "issue": [
-                                                {
-                                                    "severity": "informational",
-                                                    "code": "informational",
-                                                    "details": {
-                                                        "text": "Claim found and attachment saved."
-                                                    }
-                                                }
-                                            ]
-                                        };
-                                        for (let index = 1; index <= current_attch; index++) {
-                                            if ($(`#chk_${index}`).is(':checked')) {
-                                                configProvider = {
-                                                    type: 'GET',
-                                                    url: `${CDEX.payerEndpoint.url}/${$(`#chk_${index}`).val()}`,
-                                                    contentType: "application/fhir+json"
-                                                };
-                                                const selectedValues = $(`#lineItem_${index}`).val();
-                                                let lineItemsAttch = [];
-                                                selectedValues.forEach((value) => {
-                                                    const lineItem = value.split('_')[1];
-                                                    lineItemsAttch.push({
-                                                        "name": "LineItem",
-                                                        "valueString": `${lineItem}`
+                                            
+                                            //Update attachments
+                                            for (let index = 1; index <= current_attch; index++) {
+                                                if ($(`#chk_${index}`).is(':checked')) {
+                                                    configProvider = {
+                                                        type: 'GET',
+                                                        url: `${CDEX.payerEndpoint.url}/${$(`#chk_${index}`).val()}`,
+                                                        contentType: "application/fhir+json"
+                                                    };
+                                                    const selectedValues = $(`#lineItem_${index}`).val();
+                                                    let lineItemsAttch = [];
+                                                    selectedValues.forEach((value) => {
+                                                        const lineItem = value.split('_')[1];
+                                                        lineItemsAttch.push({
+                                                            "name": "LineItem",
+                                                            "valueString": `${lineItem}`
+                                                        });
                                                     });
-                                                });
-
-                                                $.ajax(configProvider).then((resourceRes) => {
-                                                    let attachment = '';
-                                                    $('#req-parameter-output').html('');
-                                                    $('#req-operation-output').html('');
-                                                    let code = "";
-                                                    let display = "";
-                                                    if (resourceRes.resourceType !== 'DocumentReference') {
-                                                        code = resourceRes.code.coding[0].code;
-                                                        display = resourceRes.code.coding[0].display;
-                                                    }
-                                                    if (requestedSign) {
-                                                        const dateNow = Date.now();
-                                                        const dateFormat = (new Date()).toISOString();//.slice(0, 10);
-                                                        attachment = {
-                                                            "name": "Attachment",
-                                                            "part": lineItemsAttch.concat([
-                                                                {
-                                                                    "name": "Code",
-                                                                    "valueCodeableConcept": {
-                                                                        "coding": [
-                                                                            {
-                                                                                "system": "http://loinc.org",
-                                                                                "code": `${code}`,
-                                                                                "display": `${display}`
-                                                                            }
-                                                                        ]
-                                                                    }
-                                                                },
-                                                                {
-                                                                    "name": "Content",
-                                                                    "resource": {
-                                                                        "resourceType": "Bundle",
-                                                                        "id": `Bundle-${dateNow}`,
-                                                                        "identifier": {
-                                                                            "system": "urn:ietf:rfc:3986",
-                                                                            "value": "urn:uuid:c173535e-135e-48e3-ab64-38bacc68dba8"
-                                                                        },
-                                                                        "type": "document",
-                                                                        "timestamp": `${dateFormat}`,
-                                                                        "entry": [
-                                                                            {
-                                                                                "fullUrl": `Composition/Composition-for-Bundle-${dateNow}`,
-                                                                                "resource": {
-                                                                                    "resourceType": "Composition",
-                                                                                    "id": `Composition-for-Bundle-${dateNow}`,
-                                                                                    "status": "final",
-                                                                                    "type": {
-                                                                                        "coding": [
+                                    
+                                                    $.ajax(configProvider).then((resourceRes) => {
+                                                        let attachment = '';
+                                                        $('#req-parameter-output').html('');
+                                                        $('#req-operation-output').html('');
+                                                        let code = "";
+                                                        let display = "";
+                                                        if (resourceRes.resourceType !== 'DocumentReference') {
+                                                            code = resourceRes.code.coding[0].code;
+                                                            display = resourceRes.code.coding[0].display;
+                                                        }
+                                                        if (requestedSign) {
+                                                            const dateNow = Date.now();
+                                                            const dateFormat = (new Date()).toISOString();//.slice(0, 10);
+                                                            attachment = {
+                                                                "name": "Attachment",
+                                                                "part": lineItemsAttch.concat([
+                                                                    {
+                                                                        "name": "Code",
+                                                                        "valueCodeableConcept": {
+                                                                            "coding": [
+                                                                                {
+                                                                                    "system": "http://loinc.org",
+                                                                                    "code": `${code}`,
+                                                                                    "display": `${display}`
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "name": "Content",
+                                                                        "resource": {
+                                                                            "resourceType": "Bundle",
+                                                                            "id": `Bundle-${dateNow}`,
+                                                                            "identifier": {
+                                                                                "system": "urn:ietf:rfc:3986",
+                                                                                "value": "urn:uuid:c173535e-135e-48e3-ab64-38bacc68dba8"
+                                                                            },
+                                                                            "type": "document",
+                                                                            "timestamp": `${dateFormat}`,
+                                                                            "entry": [
+                                                                                {
+                                                                                    "fullUrl": `Composition/Composition-for-Bundle-${dateNow}`,
+                                                                                    "resource": {
+                                                                                        "resourceType": "Composition",
+                                                                                        "id": `Composition-for-Bundle-${dateNow}`,
+                                                                                        "status": "final",
+                                                                                        "type": {
+                                                                                            "coding": [
+                                                                                                {
+                                                                                                    "system": "http://loinc.org",
+                                                                                                    "code": "11503-0"
+                                                                                                }
+                                                                                            ],
+                                                                                            "text": "Medical records"
+                                                                                        },
+                                                                                        "subject": {
+                                                                                            "reference": `Patient/${CDEX.patient.id}`,
+                                                                                            "display": `${CDEX.patient.name[0].family}, ${CDEX.patient.name[0].given[0]}`
+                                                                                        },
+                                                                                        "date": "2021-10-25T20:16:29-07:00",
+                                                                                        "author": [
                                                                                             {
-                                                                                                "system": "http://loinc.org",
-                                                                                                "code": "11503-0"
-                                                                                            }
-                                                                                        ],
-                                                                                        "text": "Medical records"
-                                                                                    },
-                                                                                    "subject": {
-                                                                                        "reference": `Patient/${CDEX.patient.id}`,
-                                                                                        "display": `${CDEX.patient.name[0].family}, ${CDEX.patient.name[0].given[0]}`
-                                                                                    },
-                                                                                    "date": "2021-10-25T20:16:29-07:00",
-                                                                                    "author": [
-                                                                                        {
-                                                                                            "reference": "Practitioner/cdex-example-practitioner",
-                                                                                            "display": "Bone, Ronald"
-                                                                                        }
-                                                                                    ],
-                                                                                    "title": "Requested attachments",
-                                                                                    "attester": [
-                                                                                        {
-                                                                                            "mode": "legal",
-                                                                                            "time": `${dateFormat}`,
-                                                                                            "party": {
                                                                                                 "reference": "Practitioner/cdex-example-practitioner",
                                                                                                 "display": "Bone, Ronald"
                                                                                             }
-                                                                                        }
-                                                                                    ],
-                                                                                    "section": [
-                                                                                        {
-                                                                                            "title": `${resourceRes.content ? resourceRes.content[0].attachment.title : display}`,
-                                                                                            "entry": [
-                                                                                                {
-                                                                                                    "reference": `${resourceRes.resourceType}/${resourceRes.id}`
+                                                                                        ],
+                                                                                        "title": "Requested attachments",
+                                                                                        "attester": [
+                                                                                            {
+                                                                                                "mode": "legal",
+                                                                                                "time": `${dateFormat}`,
+                                                                                                "party": {
+                                                                                                    "reference": "Practitioner/cdex-example-practitioner",
+                                                                                                    "display": "Bone, Ronald"
                                                                                                 }
-                                                                                            ]
-                                                                                        }
-                                                                                    ]
+                                                                                            }
+                                                                                        ],
+                                                                                        "section": [
+                                                                                            {
+                                                                                                "title": `${resourceRes.content ? resourceRes.content[0].attachment.title : display}`,
+                                                                                                "entry": [
+                                                                                                    {
+                                                                                                        "reference": `${resourceRes.resourceType}/${resourceRes.id}`
+                                                                                                    }
+                                                                                                ]
+                                                                                            }
+                                                                                        ]
+                                                                                    }
+                                                                                },
+                                                                                {
+                                                                                    "fullUrl": `Patient/${CDEX.patient.id}`,
+                                                                                    "resource": {
+                                                                                        "resourceType": "Patient",
+                                                                                        "id": `${CDEX.patient.id}`,
+                                                                                        "active": true,
+                                                                                        "name": [
+                                                                                            {
+                                                                                                "text": `${CDEX.patient.id}`,
+                                                                                                "family": `${CDEX.patient.name[0].family}`,
+                                                                                                "given": [
+                                                                                                    `${CDEX.patient.name[0].given}`
+                                                                                                ]
+                                                                                            }
+                                                                                        ]
+                                                                                    }
+                                                                                },
+                                                                                {
+                                                                                    "fullUrl": "Practitioner/cdex-example-practitioner",
+                                                                                    "resource": {
+                                                                                        "resourceType": "Practitioner",
+                                                                                        "id": "cdex-example-practitioner",
+                                                                                        "meta": {
+                                                                                            "lastUpdated": "2013-05-05T16:13:03+00:00"
+                                                                                        },
+                                                                                        "name": [
+                                                                                            {
+                                                                                                "family": "Bone",
+                                                                                                "given": [
+                                                                                                    "Ronald"
+                                                                                                ]
+                                                                                            }
+                                                                                        ]
+                                                                                    }
+                                                                                },
+                                                                                {
+                                                                                    "fullUrl": `${resourceRes.resourceType}/${resourceRes.id}`,
+                                                                                    "resource": resourceRes
                                                                                 }
-                                                                            },
-                                                                            {
-                                                                                "fullUrl": `Patient/${CDEX.patient.id}`,
-                                                                                "resource": {
-                                                                                    "resourceType": "Patient",
-                                                                                    "id": `${CDEX.patient.id}`,
-                                                                                    "active": true,
-                                                                                    "name": [
-                                                                                        {
-                                                                                            "text": `${CDEX.patient.id}`,
-                                                                                            "family": `${CDEX.patient.name[0].family}`,
-                                                                                            "given": [
-                                                                                                `${CDEX.patient.name[0].given}`
-                                                                                            ]
-                                                                                        }
-                                                                                    ]
-                                                                                }
-                                                                            },
-                                                                            {
-                                                                                "fullUrl": "Practitioner/cdex-example-practitioner",
-                                                                                "resource": {
-                                                                                    "resourceType": "Practitioner",
-                                                                                    "id": "cdex-example-practitioner",
-                                                                                    "meta": {
-                                                                                        "lastUpdated": "2013-05-05T16:13:03+00:00"
-                                                                                    },
-                                                                                    "name": [
-                                                                                        {
-                                                                                            "family": "Bone",
-                                                                                            "given": [
-                                                                                                "Ronald"
-                                                                                            ]
-                                                                                        }
-                                                                                    ]
-                                                                                }
-                                                                            },
-                                                                            {
-                                                                                "fullUrl": `${resourceRes.resourceType}/${resourceRes.id}`,
-                                                                                "resource": resourceRes
-                                                                            }
-                                                                        ],
-                                                                        "signature": {}
+                                                                            ],
+                                                                            "signature": {}
+                                                                        }
                                                                     }
+                                                                ])
+                                                            };
+                                    
+                                                            let provider = {
+                                                                type: 'POST',
+                                                                url: `https://cdex-commreq.davinci.hl7.org/api/sign`,
+                                                                data: attachment.part[2].resource,
+                                                                contentType: "application/json",
+                                                                crossDomain: true,
+                                                                dataType: 'jsonp'
+                                                            };
+                                                            $.ajax(provider).then(response => {
+                                                                attachment.part[2].resource.signature = response;
+                                                                parameter.push(attachment);
+                                                                CDEX.attachmentRequestedPayload.parameter = parameter;
+                                                                configProvider = {
+                                                                    type: 'PUT',
+                                                                    url: `${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentRequestedPayload.id}`,
+                                                                    data: JSON.stringify(CDEX.attachmentRequestedPayload),
+                                                                    contentType: "application/fhir+json"
+                                                                };
+                                                                if ($('#customPayerEndpoint').val() !== '') {
+                                                                    configProvider.url = `${$('#customPayerEndpoint').val()}/$submit-attachment`;
+                                                                    configProvider.type = 'POST';
                                                                 }
-                                                            ])
-                                                        };
-
-                                                        let provider = {
-                                                            type: 'POST',
-                                                            url: `https://cdex-commreq.davinci.hl7.org/api/sign`,
-                                                            data: JSON.stringify(resourceRes),
-                                                            contentType: "application/fhir+json"
-                                                        };
-                                                        $.ajax(provider).then(response => {
-                                                            attachment.part[2].resource.signature = response;
+                                                                $.ajax(configProvider).then(response => {
+                                                                    $('#req-parameter-output').html(JSON.stringify(response, null, '  '));
+                                                                    $('#req-operation-output').html(JSON.stringify(operationOutcome, null, '  '));
+                                                                    requestedSign = false;
+                                                                });
+                                                            });
+                                                        } else {
+                                                            attachment = {
+                                                                "name": "Attachment",
+                                                                "part": lineItemsAttch.concat([
+                                                                    {
+                                                                        "name": "LineItem",
+                                                                        "valueString": "1"
+                                                                    },
+                                                                    {
+                                                                        "name": "Code",
+                                                                        "valueCodeableConcept": {
+                                                                            "coding": [
+                                                                                {
+                                                                                    "system": "http://loinc.org",
+                                                                                    "code": `${code}`,
+                                                                                    "display": `${display}`
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "name": "Content",
+                                                                        "resource": resourceRes
+                                                                    }
+                                                                ])
+                                                            };
+                                    
                                                             parameter.push(attachment);
                                                             CDEX.attachmentRequestedPayload.parameter = parameter;
                                                             configProvider = {
                                                                 type: 'PUT',
                                                                 url: `${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentRequestedPayload.id}`,
                                                                 data: JSON.stringify(CDEX.attachmentRequestedPayload),
-                                                                contentType: "application/fhir+json"
+                                                                contentType: "application/json"
                                                             };
+                                                            if ($('#customPayerEndpoint').val() !== '') {
+                                                                configProvider.url = `${$('#customPayerEndpoint').val()}/$submit-attachment`;
+                                                                configProvider.type = 'POST';
+                                                            }
                                                             $.ajax(configProvider).then(response => {
-                                                                $('#req-parameter-output').html(JSON.stringify(response, null, '  '));
+                                                                $('#req-parameter-output').html(JSON.stringify(CDEX.attachmentRequestedPayload, null, '  '));
                                                                 $('#req-operation-output').html(JSON.stringify(operationOutcome, null, '  '));
-                                                                requestedSign = false;
                                                             });
-                                                        });
-                                                    } else {
-                                                        attachment = {
-                                                            "name": "Attachment",
-                                                            "part": lineItemsAttch.concat([
-                                                                {
-                                                                    "name": "LineItem",
-                                                                    "valueString": "1"
-                                                                },
-                                                                {
-                                                                    "name": "Code",
-                                                                    "valueCodeableConcept": {
-                                                                        "coding": [
-                                                                            {
-                                                                                "system": "http://loinc.org",
-                                                                                "code": `${code}`,
-                                                                                "display": `${display}`
-                                                                            }
-                                                                        ]
-                                                                    }
-                                                                },
-                                                                {
-                                                                    "name": "Content",
-                                                                    "resource": resourceRes
-                                                                }
-                                                            ])
-                                                        };
-
-                                                        parameter.push(attachment);
-
-                                                    }
-
-                                                });
+                                                            CDEX.displayScreen('attch-req-confirm-screen');
+                                    
+                                                        }
+                                    
+                                                    });
+                                                }
                                             }
-                                        }
-                                        CDEX.attachmentRequestedPayload.parameter = parameter;
-                                        configProvider = {
-                                            type: 'PUT',
-                                            url: `${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentRequestedPayload.id}`,
-                                            data: JSON.stringify(CDEX.attachmentRequestedPayload),
-                                            contentType: "application/json"
-                                        };
-                                        if($('#customPayerEndpoint').val() !== '') {
-                                            configProvider.url = `${$('#customPayerEndpoint').val()}/$submit-attachment`;
-                                            configProvider.type = 'POST';
-                                        }
-                                        $.ajax(configProvider).then(response => {
-                                            $('#req-parameter-output').html(JSON.stringify(CDEX.attachmentRequestedPayload, null, '  '));
-                                            $('#req-operation-output').html(JSON.stringify(operationOutcome, null, '  '));
                                         });
-                                        CDEX.displayScreen('attch-req-confirm-screen');
+                                        
                                     });
                                 });
                             });
@@ -1993,6 +2026,7 @@ if (!CLAIM) {
         let task = JSON.stringify($('#upd-task-output').text())
 
         CDEX.claimPayloadAttachment.patient.reference = `Patient/${CDEX.patient.id}`;
+        attchRes = JSON.parse($('#quest-resp-output').html())
         let parameter = [
             {
                 name: "AttachTo",
@@ -2032,7 +2066,7 @@ if (!CLAIM) {
                     },
                     {
                         name: 'Content',
-                        resource: JSON.parse($('#quest-resp-output').html())
+                        resource: attchRes
                     }
                 ]
             }
@@ -2054,19 +2088,30 @@ if (!CLAIM) {
                 }
             ]
         };
-        
+
         let configProvider = {
             type: 'PUT',
             url: `${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentRequestedPayload.id}`,
             data: JSON.stringify(CDEX.attachmentRequestedPayload),
             contentType: "application/fhir+json"
         };
-        
+
         $.ajax(configProvider).then(response => {
             $('#req-parameter-output').html(JSON.stringify(response, null, '  '));
             $('#req-operation-output').html(JSON.stringify(operationOutcome, null, '  '));
+            // Claim
+            CLAIM.claimLookupById('CLAIM-CONN-01').then((results) => {
+                results.supportingInfo.push({valueReference: {
+                    reference: `QuestionnaireResponse/${attchRes.id}`
+                }});
+                configProvider.url = `${CDEX.payerEndpoint.url}/Claim/CLAIM-CONN-01`;
+                configProvider.data = JSON.stringify(results);
+                $.ajax(configProvider).then(claimRes => {
+                    $('#req-claim-output').html(JSON.stringify(claimRes, null, '  '));
+                    CDEX.displayScreen('attch-req-confirm-screen');
+                });
+            });
         });
-        CDEX.displayScreen('attch-req-confirm-screen');
     });
 
     $('#btn-back-comm-list').click(function () {
@@ -2375,10 +2420,16 @@ if (!CLAIM) {
                                 data: JSON.stringify(CDEX.attachmentPayload),
                                 contentType: "application/json"
                             };
+                            if ($('#subUnsAttchPayerEndpoint').val() !== '') {
+                                configProvider.url = `${$('#subUnsAttchPayerEndpoint').val()}/$submit-attachment`;
+                                configProvider.type = 'POST';
+                            }
                             $.ajax(configProvider).then(response => {
                                 $('#parameter-output').html(JSON.stringify(response, null, '  '));
                                 $('#operation-output').html(JSON.stringify(operationOutcome, null, '  '));
                                 CDEX.displayScreen('attachment-confirm-screen');
+                            }).catch(function (error) {
+                                $('#parameter-output').html(JSON.stringify(error, null, '  '));
                             });
                         });
                     });
@@ -2505,6 +2556,9 @@ if (!CLAIM) {
                     $('#parameter-output').html(JSON.stringify(response));
                     $('#operation-output').html(JSON.stringify(operationOutcome));
                     CDEX.displayScreen('attachment-confirm-screen');
+                }).catch(error => {
+                    $('#Resource').html(`${jsonContent.resourceType} resource not created.`);
+                    $('#binary-output').html(JSON.stringify(error, null, '  '));
                 });
             }
         }

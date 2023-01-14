@@ -41,15 +41,20 @@
                 Task Based Approach
                 <span>
                     <b>Task Based Approach:</b><br>
-                    A system that needs information about a patient/member and which can solicit that information using the asynchronous CDEX Task based approach.<br>
-                    For detailed documentation see: http://build.fhir.org/ig/HL7/davinci-ecdx/task-based-approach.html<br>
+                    A system that needs information about a patient/member and which can solicit that information using
+                    the asynchronous CDEX Task based approach.<br>
+                    For detailed documentation see:
+                    http://build.fhir.org/ig/HL7/davinci-ecdx/task-based-approach.html<br>
                     <ul>
                         <li>
                             Example Transaction:
                             <ul>
-                                <li>Data Consumer creates a Task on the Data Source’s system soliciting a patient’s knee surgery report and then polls for updates to the Task.</li>
-                                <li>Data Source completes the data request and updates the Task with the requested information and the status to “completed”.</li>
-                                <li>The Data Consumer fetches the completed Task and the documents referenced in it.</li>
+                                <li>Data Consumer creates a Task on the Data Source’s system soliciting a patient’s knee
+                                    surgery report and then polls for updates to the Task.</li>
+                                <li>Data Source completes the data request and updates the Task with the requested
+                                    information and the status to “completed”.</li>
+                                <li>The Data Consumer fetches the completed Task and the documents referenced in it.
+                                </li>
                             </ul>
                         </li>
                     </ul>
@@ -58,53 +63,76 @@
             <a href="#" class="btn btn-primary" id="btn-query" data-toggle="tooltip" data-placement="top">Direct Query
                 <span>
                     <b>Direct Query:</b><br>
-                    A system that needs information about a patient/member and which can solicit that information using standard FHIR RESTful queries.<br>
+                    A system that needs information about a patient/member and which can solicit that information using
+                    standard FHIR RESTful queries.<br>
                     For detailed documentation see: http://build.fhir.org/ig/HL7/davinci-ecdx/direct-query.html<br>
                     <ul>
-                        <li>Example Transaction: Action: Synchronous Data Consumer executes a RESTful search the Synchronous Data Source’s system that will return the patient’s active medication orders</li>
+                        <li>Example Transaction: Action: Synchronous Data Consumer executes a RESTful search the
+                            Synchronous Data Source’s system that will return the patient’s active medication orders
+                        </li>
                     </ul>
                 </span>
             </a>
-            <a href="#" class="btn btn-primary" id="btn-attach" data-toggle="tooltip" data-placement="top">Submit Attachment
+            <a href="#" class="btn btn-primary" id="btn-attach" data-toggle="tooltip" data-placement="top">Submit
+                Unsolicited Attachment
                 <span><b>Submit unsolicited attachment:<br></b>
-                Provider invokes the ‘$submit-attachment’ operation on the Payer’s endpoint to attach a document to an existing Claim or Prior Authorization.
-                <br>The Data Consumer returns a success code For detailed documentation see: http://build.fhir.org/ig/HL7/davinci-ecdx/sending-attachments.html
-                <br>Example Transaction:
-                <br><ul><li>Provider submits a visit summary for a claim they are submitting to the Payer using $submit-attachment.</li>
-                <li>The Data Consumer returns a success code indicating that the $submit-attachment payload was recieved.</li>
-                <li>Association of the attachment to the Claim resource.</li></ul></span></a>
-            <a href="#" class="btn btn-primary" id="btn-request-attach" data-toggle="tooltip" data-placement="top">Request Attachment
+                    Provider invokes the ‘$submit-attachment’ operation on the Payer’s endpoint to attach a document to
+                    an existing Claim or Prior Authorization.
+                    <br>The Data Consumer returns a success code For detailed documentation see:
+                    http://build.fhir.org/ig/HL7/davinci-ecdx/sending-attachments.html
+                    <br>Example Transaction:
+                    <br>
+                    <ul>
+                        <li>Provider submits a visit summary for a claim they are submitting to the Payer using
+                            $submit-attachment.</li>
+                        <li>The Data Consumer returns a success code indicating that the $submit-attachment payload was
+                            recieved.</li>
+                        <li>Association of the attachment to the Claim resource.</li>
+                    </ul>
+                </span></a>
+            <a href="#" class="btn btn-primary" id="btn-request-attach" data-toggle="tooltip"
+                data-placement="top">Request Attachment
                 <span><b>Requesting Attachments:<br></b>
-                Payer solicits additional information for a claim or prior authorization using the asynchronous CDEX Task based approach.<br>
-                The actual data requested uses “attachments codes” or a FHIR Questinnaire. For detailed documentation see:<br>
-                http://build.fhir.org/ig/HL7/davinci-ecdx/requesting-attachments-code.html and http://build.fhir.org/ig/HL7/davinci-ecdx/requesting-attachments-code.html.<br>
-                <ul>
-                    <li>
-                        Example Transaction 1:
-                        <ul>
-                            <li>Payer asks for a visit summary for a Payer’s claim using Task using and attachment code</li>
-                            <li>In a separate transaction the Provider submits the requested data using $submit-attachment to the Payer.</li>
-                        </ul>
-                    </li>
-                    <li>
-                        Example Transaction 2:
-                        <ul>
-                            <li>Payer asks for a additional data for a Payer’s Home Oxygen Therapy Claim using a FHIR Questionnaire</li>
-                            <li>In a separate transaction the Provider submits the completed FHIR QuestionnaireResponse using $submit-attachment to the Payer.</li>
-                        </ul>
-                    </li>
-                </ul>
-            </span></a>
-            <a href="#" class="btn btn-primary" id="btn-submit-attach" data-toggle="tooltip" data-placement="top">Submit Solicited Attachments
+                    Payer solicits additional information for a claim or prior authorization using the asynchronous CDEX
+                    Task based approach.<br>
+                    The actual data requested uses “attachments codes” or a FHIR Questinnaire. For detailed
+                    documentation see:<br>
+                    http://build.fhir.org/ig/HL7/davinci-ecdx/requesting-attachments-code.html and
+                    http://build.fhir.org/ig/HL7/davinci-ecdx/requesting-attachments-code.html.<br>
+                    <ul>
+                        <li>
+                            Example Transaction 1:
+                            <ul>
+                                <li>Payer asks for a visit summary for a Payer’s claim using Task using and attachment
+                                    code</li>
+                                <li>In a separate transaction the Provider submits the requested data using
+                                    $submit-attachment to the Payer.</li>
+                            </ul>
+                        </li>
+                        <li>
+                            Example Transaction 2:
+                            <ul>
+                                <li>Payer asks for a additional data for a Payer’s Home Oxygen Therapy Claim using a
+                                    FHIR Questionnaire</li>
+                                <li>In a separate transaction the Provider submits the completed FHIR
+                                    QuestionnaireResponse using $submit-attachment to the Payer.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </span></a>
+            <a href="#" class="btn btn-primary" id="btn-submit-attach" data-toggle="tooltip" data-placement="top">Submit
+                Solicited Attachments
                 <span><b>Submit Solicited (Requested) Attachment:<br></b>
-                    Provider invokes the ‘$submit-attachment’ operation on the Payer’s endpoint to attach a document or QuestionnaireResponse to an existing Claim or Prior Authorization.<br>
+                    Provider invokes the ‘$submit-attachment’ operation on the Payer’s endpoint to attach a document or
+                    QuestionnaireResponse to an existing Claim or Prior Authorization.<br>
                     The Data Consumer returns a success code For detailed documentation see:<br>
                     http://build.fhir.org/ig/HL7/davinci-ecdx/sending-attachments.html<br>
                     <ul>
                         <li>
                             Example Transaction 1:
                             <ul>
-                                <li>In a separate transaction, Payer asks for a visit summary for a Payer’s claim using Task using and attachment code</li>
+                                <li>In a separate transaction, Payer asks for a visit summary for a Payer’s claim using
+                                    Task using and attachment code</li>
                                 <li>The Provider submits the requested data using $submit-attachment to the Payer.</li>
                                 <li>Association of the attachment to the Claim resource.</li>
                             </ul>
@@ -112,8 +140,10 @@
                         <li>
                             Example Transaction 2:
                             <ul>
-                                <li>In a separate transaction, Payer asks for a additional data for a Payer’s Home Oxygen Therapy Claim using a FHIR Questionnaire</li>
-                                <li>The Provider submits the completed FHIR QuestionnaireResponse using $submit-attachment to the Payer.</li>
+                                <li>In a separate transaction, Payer asks for a additional data for a Payer’s Home
+                                    Oxygen Therapy Claim using a FHIR Questionnaire</li>
+                                <li>The Provider submits the completed FHIR QuestionnaireResponse using
+                                    $submit-attachment to the Payer.</li>
                                 <li>Association of the attachment to the Claim resource.</li>
                             </ul>
                         </li>
@@ -195,17 +225,44 @@
 
     <div id="attachment-submit-screen" class="card alert-warning screen dvt">
         <div class="card-body">
-            <h5><b></strong>Provider side operation</b></h5>
+            <h5><b></strong>CDEX: Provider Unsolicited Attachment Transaction</b></h5>
             <h5>Patient: <span id="commRes-patient-name">[loading...]</span></h5>
             <div>
+                <a class="btninfo" href="#" data-toggle="tooltip" data-placement="bottom">
+                    <i class="fa fa-info"></i>
+                    <span>
+                        <b>Tracking control number:</b><br>
+                        Select a pre-existing tracking control number for this patient
+                        (if the list is empty it probably means the patient does not have any pre-existing claims or
+                        prior authorizations.
+                        You can make up your own custom tracking control number using the checkbox below or select
+                        another patient)
+                    </span>
+                </a>
                 <select class='form-control' id='submit-searchClaim'>
                     <option>-- Select tracking control number --</option>
                 </select>
                 <div>
                     <input type='checkbox' id='type-claim' name='type-claim' value='typed'>
-                    <label for='type-claim'>Tracking Control Number</label>
+                    <label class="btninfo" for='type-claim' data-toggle="tooltip" data-placement="bottom">
+                        Tracking Control Number
+                        <span>
+                            <b>Custom tracking control number:</b><br>
+                            Check this box to submit your own custom tracking control number for a claim or prior
+                            authorization
+                            instead of using the control number picker
+                        </span>
+                    </label>
                 </div>
                 <input type='text' id='claimid' name='claimid' disabled="disabled" value="">
+                <a class="btninfo" href="#" data-toggle="tooltip" data-placement="bottom">
+                    <i class="fa fa-info"></i>
+                    <span>
+                        <b>Custom tracking control number:</b><br>
+                        When the Tracking Control Number check box is selected, you can add your own custom tracking
+                        control number.
+                    </span>
+                </a>
             </div>
             <div class="form-check form-check-inline">
                 <label for="radio-claim">
@@ -218,39 +275,152 @@
                     <input type="radio" id="radio-auth" name="code" value="prior-authorization"
                         disabled="disabled">Prior Authorization
                 </label><br>
-            </div><br>
+            </div>
+            <a class="btninfo" href="#" data-toggle="tooltip" data-placement="bottom">
+                <i class="fa fa-info"></i>
+                <span>
+                    <b>Custom tracking control number type:</b><br>
+                    When the Tracking Control Number check box is selected,
+                    you can select whether your own custom tracking control number is for a claim or prior
+                    authorization.
+                </span>
+            </a>
+            <br>
             <div>
                 <label for="serviceDate">Service date</label><br>
                 <input type="date" id="serviceDate" name="serviceDate">
+                <a class="btninfo" href="#" data-toggle="tooltip" data-placement="bottom">
+                    <i class="fa fa-info"></i>
+                    <span>
+                        <b>Custom tracking control number type:</b><br>
+                        Enter date of service or starting date of the service for the claim or prior authorization.
+                        It is optional if the attachment is for a prior authorization.
+                    </span>
+                </a>
+
             </div><br>
-            <div id="loincCodes"><label>Code</label></div><br>
-            <input type="file" name="attachments" id="select-attch">
+            <div id="loincCodes">
+                <label>LOINC Attachment Code</label>
+            </div><br>
+            <label for="select-attch" class="btn btn-success btninfo" data-toggle="tooltip" data-placement="bottom">
+                Select Attachments to submit
+                <span><b>Select Attachments to submit:</b><br>
+                    Select the attachments to submit from your local folder,
+                    The supported types of files are PDF, CCDA(xml), and FHIR(json)
+                </span>
+            </label>
+            <input type="file" name="attachments" id="select-attch" style="visibility:hidden;">
             <div id="selected-attch" class="subsearch"></div>
             <div>
+                <br>
                 <input type='checkbox' id='signature' name='signature' value='signed'>
-                <label for='signature'> Signature required </label>
+                <label for='signature' class="btninfo" data-toggle="tooltip" data-placement="bottom">
+                    Signature required
+                    <span><b>Signature required:</b><br>
+                        Check this box to indicate that the PAYER requires a digital signature for this transaction.
+                        If selected, it will trigger the Payer to verify any attachments that are FHIR resources are a
+                        signed FHIR bundle
+                        (PDF and CCDA(xml) are assumed to be natively signed).
+                    </span>
+                </label>
+                <br>
             </div>
             <p>
-                <button type="button" class="btn btn-primary" id="btn-attch-submit">Submit Attachment(s)</button>
+                <br>
+                <button type="button" class="btn btn-primary" id="btn-attch-submit">
+                    Submit Attachment(s)
+                </button>
                 <a href="#" class="btn btn-primary" id="btn-restart-attachment">Cancel</a>
+                <a class="btninfo" href="#" data-toggle="tooltip" data-placement="bottom">
+                    <i class="fa fa-info"></i>
+                    <span>
+                        <b>Submit unsolicited attachment(s):</b><br>
+                        Click on Submit Attachment(s) button to invoke the $submit-attachment operation to submit
+                        unsolicited attachments<br>
+                        and the necessary information to associate them with the claim or prior authorization for
+                        claims<br>
+                        or prior authorization to Payer. The Payer will return an HTTP response”<br>
+                        (NOTE: Use this same label and text for the solicited attachments flow )
+                    </span>
+                </a>
             </p>
+            <label for="name"><b>Custom payer endpoint: </b></label>
+            <input type="text" id="subUnsAttchPayerEndpoint" name="customPayerEndpoint" required
+                placeholder="https://api.logicahealth.org/DaVinciCDexPayer/open"><br>
         </div>
     </div>
 
     <div id="attachment-confirm-screen" class="card alert-info screen dvt">
         <div class="card-body">
-            <h5 class="card-title">Created/Updated resources</h5>
-            <p class="card-text">Parameter successfully created</p>
+            <h5 class="card-title">CDEX: Payer Response to Unsolicited Attachments Transaction</h5>
+            <p class="card-text stayover">
+                Parameter successfully created
+                <span>
+                    <b>Parameter:</b><br>
+                    Payer Receives Body $submit-attachments operation Transaction which is a
+                    Parameters resource containing One or more attachments as FHIR Resources and
+                    Data elements for the association to the claim/prior authorization.
+                </span>
+            </p>
             <p class="card-text"><textarea id="parameter-output"></textarea></p>
-            <p class="card-text">Operation outcome</p>
-            <p class="card-text"><textarea id="operation-output"></textarea></p>
-            <p class="card-text" id="claimCreateUpdate"></p>
-            <p class="card-text"><textarea id="claim-output"></textarea></p>
-            <p class="card-text" id="Resource">Binary successfully created. </p>
+            <p class="card-text stayover">
+                <label id="Resource"></label>
+                <span>
+                    <b>Attachment as a FHIR resource.</b><br>
+                    Non-FHIR attachment data is conveyed using the DocumentReference.
+                    Servers SHALL support the DocumentReference resource type and SHOULD support other types.
+                </span>
+            </p>
             <p class="card-text"><textarea id="binary-output"></textarea></p>
+            <p class="card-text stayover">
+                Operation outcome
+                <span>
+                    <b>Status codes:<br></b>
+                    When processing the operation, a server may return one of several status codes:<br>
+                    200 OK: Indicates that the server has accepted the clinical attachments.<br>
+                    If the attachments can not be associated with an existing claim or member, the server SHOULD return
+                    an OperationOutcome to inform the Data Source that the attachments are being held for a subsequent
+                    association to a claim or prior authorization.<br>
+                    4xx: Indicates some error in the submission. The client SHOULD interpret a 4xx response to indicate
+                    that there is no point in resubmitting the unaltered operation,<br>
+                    5xx: Indicates some system error. The client SHOULD interpret a 5xx response to indicate an
+                    unexpected error occurred on the part of the server, with the implication that it may be appropriate
+                    to resubmit the original operation.<br>
+                    The server SHOULD return an OperationOutcome with additional error information if the response code
+                    is 400 or greater. For example, if the payer does not know the claim or prior authorization, the
+                    OperationOutcome can alert the submitter to check whether they sent it to the wrong payer.<br>
+                </span>
+            </p>
+            <p class="card-text"><textarea id="operation-output"></textarea></p>
+            <p class="card-text stayover">
+                <label id="claimCreateUpdate"></label>
+                <span>
+                    <b>Claim:<br></b>
+                    The Payer associates the attachments to the claim or prior authorization, and processes the claim.
+                    <br>
+                    This is not part of CDEx. It is shown here to demonstrate one possible Payer scenario using the FHIR
+                    Claim resource. <br>
+                    Payer records it on their Claim resource like this…<br><br>
+                    1.- Attachment data from Submit Attachment Operation–> Claim.supportingInfo.valueAttachment<br>
+                    2.- Assign id for this attachment within the Claim resource --> Claim.supportingInfo.sequence
+                    Claim.item.sequence matched to —> line item data from Submit Attachment Operation<br>
+                    3.- Claim.item.informationSequence refers to Claim.supportingInfo.sequence (id for attachment within
+                    the Claim resource from above)
+                </span>
+            </p>
+            <p class="card-text"><textarea id="claim-output"></textarea></p>
             <p class="card-text">
                 <a href="#" class="btn btn-primary" id="attch-btn-restart">OK</a>
-                <a href="#" class="btn btn-primary" id="download-resources">Download resources</a>
+                <a href="#" class="btn btn-primary" id="download-resources">
+                    Download
+                </a>
+                <a class="btninfo" href="#" data-toggle="tooltip" data-placement="bottom">
+                    <i class="fa fa-info"></i>
+                    <span>
+                        <b>Download resources:</b><br>
+                        Click on this button download a zip file containing all the content in the Text boxes above
+                    </span>
+                </a>
             </p>
         </div>
     </div>
@@ -345,26 +515,39 @@
 
     <div id="attachment-requested-screen" class="card alert-warning screen dvt">
         <div class="card-body">
-            <h5 class="card-title">Provider side operation</h5>
+            <h5 class="card-title">CDEX: Provider Response to a CDex Task Posted by a Payer</h5>
             <h5 class="card-title">Attachment(s) requested</h5>
-            <p class="card-text">Task successfully created</p>
+            <p class="card-text stayover">
+                Provider response
+                <span>If the Task was successfully created, The user can complete the request by clicking the “OK”
+                    button below and the “Submit Solicited Attachments” button on the CDex Dashboard</span>
+            </p>
             <p class="card-text"><textarea id="req-task-output"></textarea></p>
             <p><b>Operation outcome:</b><span id="opOutcAttReq"></span></p>
             <p class="card-text">
                 <a href="#" class="btn btn-primary" id="reqattch-btn-restart">OK</a>
-                <a href="#" class="btn btn-primary" id="download-reqattch">Download resources</a>
+                <a href="#" class="btn btn-primary" id="download-reqattch">Download</a>
+                <a class="btninfo" href="#" data-toggle="tooltip" data-placement="bottom">
+                    <i class="fa fa-info"></i>
+                    <span>
+                        <b>Download resources:</b><br>
+                        Click on this button download a zip file containing all the content in the Text boxes above
+                    </span>
+                </a>
             </p>
         </div>
     </div>
 
     <div id="request-provider-attachments" class="card alert-info screen dvt">
         <div class="card-body">
-            <h5><b></strong>Payer side operation</b></h5>
+            <h5><b></strong>CDEX: Payer Requesting Attachments or Additional Data for a Claim or Prior Authorization</b>
+            </h5>
             <h5>Patient: <span id="commRes-patient-name">[loading...]</span></h5>
             <div>
                 <h5><b></strong>Attachment Codes or Questionnaire</b></h5>
                 <p class="text-danger">CDex Attachments are requested in Task.input using either Attachment Codes or
-                    FHIR Questionnaire.</br>Select how CDex Attachments are requested in Task.input</p>
+                    FHIR Questionnaire.</br>Select how CDex Attachments are requested in Task.input using the radio
+                    buttons below</p>
                 <label for="attachment-codes">
                     <input type="radio" id="attachment-codes" name="attachment" value="attachment" checked="checked">
                     Attachment Codes
@@ -374,11 +557,27 @@
                 </label><br>
             </div>
             <div id="attachment-codes-form">
+                <a class="stayover" href="#" data-toggle="tooltip" data-placement="bottom">
+                    <i class="fa fa-info"></i>
+                    <span>
+                        <b>Select a Claim or Prior Auth:</b><br>
+                        Select a pre-existing claim or prior-authorization for this patient. (if the list is empty it
+                        probably means the patient does not have any pre-existing claims or prior authorizations. You
+                        can create a new claim for this patient or select another patient)
+                    </span>
+                </a>
                 <select class='form-control' id='req-searchClaim'>
-                    <option>-- Select a Claim --</option>
+                    <option>-- Select a Claim or Prior Auth --</option>
                 </select>
                 <div id="questionnaire-form">
-                    <label for="req-questionnaire">Request Questionnaire</label><br>
+                    <p class="stayover">
+                        Request Questionnaire
+                        <span>
+                            <b>Request Questionnaire:</b><br>
+                            Select from existing Questionnaires to communicate the missing data. Currently there is only
+                            a single option.
+                        </span>
+                    </p>
                     <select class='form-control' id='req-questionnaire'>
                         <option value="http://example.org/cdex-questionnaire-example1">Adaptive Home Oxygen Therapy
                             Order Template (SDC)</option>
@@ -386,14 +585,40 @@
                 </div>
                 <div id='lineItems'>
                 </div>
-                <p>
-                <div id="incloincCodes"><label>Code</label></div>
-                </p>
+                <div id="incloincCodes">
+                    <p class="stayover">
+                        LOINC Attachment Code
+                        <span>
+                            <b>LOINC Attachment Code:</b><br>
+                            Select the LOINC attachment code(s) to communicate the missing data. Typically, these
+                            concepts represent data in document form (e.g., a PDF or CCDA). For more information about
+                            LOINC attachment codes see https://loinc.org/attachments/
+                        </span>
+                    </p>
+                </div>
                 <div id="check-task-signature">
-                    <input type='checkbox' id='task-signature' name='signature' value='signed'>
-                    <label for='signature'> Signature required </label>
+                    <p class="stayover"><br>
+                        <input type='checkbox' id='task-signature' name='signature' value='signed'>
+                        <label for='task-signature'>
+                            Signature required
+                        </label>
+                        <span><b>Signature required:</b><br>
+                            Check this box to indicate that the PAYER requires a digital signature for this transaction.
+                            If selected, it will trigger the Payer to verify any attachments that are FHIR resources are
+                            a
+                            signed FHIR bundle
+                            (PDF and CCDA(xml) are assumed to be natively signed).
+                        </span>
+                    </p>
                 </div>
                 <p>
+                    <a class="stayover" href="#" data-toggle="tooltip" data-placement="bottom">
+                        <i class="fa fa-info"></i>
+                        <span>
+                            <b>Create task:</b><br>
+                            POST CDex Task to Provider's FHIR Server to solicit attachments.
+                        </span>
+                    </a><br>
                     <button type="button" class="btn btn-primary" id="btn-create-task">Create Task</button>
                     <a href="#" class="btn btn-primary" id="btn-restart-task">Cancel</a>
                 </p>
@@ -401,13 +626,19 @@
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th scope="col" colspan="2" class="table-warning">Data Element</th>
+                                <th scope="col" colspan="2" class="table-warning">The Table below shows the data
+                                    elements used to create the CDex Task for requesting attachments or additional data
+                                    for a claim or prior authorization.</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <th>Tracking ID (Provider or Payer Assigned)</th>
                                 <td id="trackingIdCol"></td>
+                            </tr>
+                            <tr>
+                                <th>Task.code</th>
+                                <td>data-request</td>
                             </tr>
                             <tr>
                                 <th>Use</th>
@@ -465,6 +696,13 @@
         <label for="name"><b>Custom provider endpoint: </b></label>
         <input type="text" id="customProviderEndpoint" name="customProviderEndpoint" required
             placeholder="https://api.logicahealth.org/DaVinciCDexProvider/open">
+        <a class="btninfo" href="#" data-toggle="tooltip" data-placement="bottom">
+            <i class="fa fa-info"></i>
+            <span>
+                <b>Custom payer endpoint:</b><br>
+                A "3rd party" endpoint where the the CDEX Task will be posted instead of the default RI FHIR Server.
+            </span>
+        </a>
     </div>
 
     <div id="submit-payer-attachments" class="card alert-warning screen dvt">
@@ -522,7 +760,8 @@
         <div id="questionnaireSignature"></div>
         <label>Please complete and submit questionnaire:</label></br>
         <img src="../images/favicon.png" alt="Questionnaire">
-        <p class="text-danger"><b>This will launch a simulation of DTR process before submit the requested attachment</b></p>
+        <p class="text-danger"><b>This will launch a simulation of DTR process before submit the requested
+                attachment</b></p>
         </p>
         <p class="card-text">Task</p>
         <p class="card-text"><textarea id="requested-task-payload"></textarea></p>
@@ -545,7 +784,7 @@
             <p class="card-text"><textarea id="req-parameter-output"></textarea></p>
             <p class="card-text">Operation outcome</p>
             <p class="card-text"><textarea id="req-operation-output"></textarea></p>
-            <p class="card-text">Claim updated</p>
+            <p class="card-text" id="claimLabel">Claim updated</p>
             <p class="card-text"><textarea id="req-claim-output"></textarea></p>
             <p class="card-text">
                 <a href="#" class="btn btn-primary" id="req-attch-btn-restart">OK</a>
