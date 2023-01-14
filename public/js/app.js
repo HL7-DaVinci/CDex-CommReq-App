@@ -1929,9 +1929,7 @@ if (!CLAIM) {
                                                                 type: 'POST',
                                                                 url: `https://cdex-commreq.davinci.hl7.org/api/sign`,
                                                                 data: attachment.part[2].resource,
-                                                                contentType: "application/json",
-                                                                crossDomain: true,
-                                                                dataType: 'jsonp'
+                                                                contentType: "application/json"
                                                             };
                                                             $.ajax(provider).then(response => {
                                                                 attachment.part[2].resource.signature = response;
@@ -1952,6 +1950,9 @@ if (!CLAIM) {
                                                                     $('#req-operation-output').html(JSON.stringify(operationOutcome, null, '  '));
                                                                     requestedSign = false;
                                                                 });
+                                                            }).catch(error => {
+                                                                $('#req-parameter-output').html(JSON.stringify(error, null, '  '));
+                                                                $('#req-operation-output').html(JSON.stringify(error, null, '  '));
                                                             });
                                                         } else {
                                                             attachment = {
