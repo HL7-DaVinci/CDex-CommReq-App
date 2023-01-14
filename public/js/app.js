@@ -1501,8 +1501,8 @@ if (!CLAIM) {
                             $('#attch-request-list').html("");
                             $('#req-patient-name').html(`${CDEX.patient.name[0].given[0]} ${CDEX.patient.name[0].family}`);
                             $('#attch-request-list').append(`<p><b>Task: </b>${task.resource.id}</p>`);
-                            let claimForTask = task.resource.id.split("-T");
-                            $('#attch-request-list').append(`<p><b>Claim: </b><span id="currentClaimId">${claimForTask[0]}</span></p><p><b>Requested attachments: </b></p>`);
+                            let claimForTask = task.resource.reasonReference.identifier.value;
+                            $('#attch-request-list').append(`<p><b>Claim: </b><span id="currentClaimId">${claimForTask}</span></p><p><b>Requested attachments: </b></p>`);
                             let provider = {
                                 type: 'GET',
                                 url: `https://api.logicahealth.org/DaVinciCDexProvider/open/Task/${task.resource.id}`,
@@ -1535,7 +1535,7 @@ if (!CLAIM) {
                                 }
                             });
 
-                            CLAIM.claimLookupById(claimForTask[0]).then(claim => {
+                            CLAIM.claimLookupById(claimForTask).then(claim => {
                                 let optionValues = '<option value="li_1"></option>';
                                 if (claim.item) {
                                     claim.item.forEach(value => {
@@ -1663,7 +1663,7 @@ if (!CLAIM) {
                                         }
                                     });
                                     $('#total_attach').val(current_attch - 1);
-                                    $('#btn-submit-req-attch').click(function () {	
+                                    $('#btn-submit-req-attch').click(function () {
                                         //Variables
                                         const resourcesId = Date.now();
                                         const currentDate = new Date().toISOString().slice(0, 10);
@@ -1677,6 +1677,13 @@ if (!CLAIM) {
                                                 "valueIdentifier": {
                                                     "system": "http://example.org/provider",
                                                     "value": `${task.resource.id}`
+                                                }
+                                            },
+                                            {
+                                                "name": "OrganizationId",
+                                                "valueIdentifier": {
+                                                    "system": "http://hl7.org/fhir/sid/us-npi",
+                                                    "value": "CDex-Test-Organization"
                                                 }
                                             },
                                             {
@@ -1699,7 +1706,7 @@ if (!CLAIM) {
                                             }
                                         ];
                                         CDEX.claimPayloadAttachment.patient.reference = `Patient/${CDEX.patient.id}`;
-                                                                            
+
                                         CDEX.attachmentRequestedPayload.id = `CDex-parameter-${resourcesId}`;
                                         const operationOutcome = {
                                             "resourceType": "OperationOutcome",
@@ -1714,13 +1721,13 @@ if (!CLAIM) {
                                                 }
                                             ]
                                         };
-                                        
+
                                         let configProvider = {
                                             type: 'GET',
                                             url: `${CDEX.payerEndpoint.url}/Claim/${$('#currentClaimId').text()}`,
                                             contentType: "application/fhir+json"
                                         };
-                                        
+
                                         //Get Claim                                   
                                         $.ajax(configProvider).then((res) => {
                                             res.supportingInfo = [];
@@ -1764,7 +1771,7 @@ if (!CLAIM) {
                                             }
                                             CLAIM.claimUpsert(res, CDEX.payerEndpoint.url);
                                             $('#req-claim-output').html(JSON.stringify(res, null, '  '));
-                                            
+
                                             //Update attachments
                                             for (let index = 1; index <= current_attch; index++) {
                                                 if ($(`#chk_${index}`).is(':checked')) {
@@ -1782,7 +1789,7 @@ if (!CLAIM) {
                                                             "valueString": `${lineItem}`
                                                         });
                                                     });
-                                    
+
                                                     $.ajax(configProvider).then((resourceRes) => {
                                                         let attachment = '';
                                                         $('#req-parameter-output').html('');
@@ -1917,7 +1924,7 @@ if (!CLAIM) {
                                                                     }
                                                                 ])
                                                             };
-                                    
+
                                                             let provider = {
                                                                 type: 'POST',
                                                                 url: `https://cdex-commreq.davinci.hl7.org/api/sign`,
@@ -1972,7 +1979,7 @@ if (!CLAIM) {
                                                                     }
                                                                 ])
                                                             };
-                                    
+
                                                             parameter.push(attachment);
                                                             CDEX.attachmentRequestedPayload.parameter = parameter;
                                                             configProvider = {
@@ -1990,14 +1997,14 @@ if (!CLAIM) {
                                                                 $('#req-operation-output').html(JSON.stringify(operationOutcome, null, '  '));
                                                             });
                                                             CDEX.displayScreen('attch-req-confirm-screen');
-                                    
+
                                                         }
-                                    
+
                                                     });
                                                 }
                                             }
                                         });
-                                        
+
                                     });
                                 });
                             });
@@ -2100,9 +2107,11 @@ if (!CLAIM) {
             $('#req-operation-output').html(JSON.stringify(operationOutcome, null, '  '));
             // Claim
             CLAIM.claimLookupById(taskReq.reasonReference.identifier.value).then((results) => {
-                results.supportingInfo.push({valueReference: {
-                    reference: `QuestionnaireResponse/${attchRes.id}`
-                }});
+                results.supportingInfo.push({
+                    valueReference: {
+                        reference: `QuestionnaireResponse/${attchRes.id}`
+                    }
+                });
                 configProvider.url = `${CDEX.payerEndpoint.url}/Claim/${taskReq.reasonReference.identifier.value}`;
                 configProvider.data = JSON.stringify(results);
                 $.ajax(configProvider).then(claimRes => {
