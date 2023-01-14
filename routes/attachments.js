@@ -9,15 +9,9 @@ const axios = require('axios');
 
 const baseurl = "https://api.logicahealth.org/DaVinciCDexPayer/open";
 
-//Movies
-router.get('/', (req, res) => {
-    res.json(data);
-});
-
 router.post('/', (req, res) => {
     req.headers['accept'] = 'application/fhir+json;charset=UTF-8';
     req.headers['content-type'] = 'application/fhir+json;charset=UTF-8';
-    console.log(JSON.stringify(req.headers));
     const { resourceType, parameter } = req.body;
     let operationOutcome = {
         "resourceType": "OperationOutcome",
@@ -36,7 +30,6 @@ router.post('/', (req, res) => {
     let claimExists = true;
     let memberId = '';
     let claimId = '';
-    let attch;
     let attchId = '';
     let attchType = '';
     let resource = '';
@@ -110,35 +103,6 @@ router.post('/', (req, res) => {
 
 
     }
-});
-
-router.put('/:id', (req, res) => {
-    const { id } = req.params;
-    const { title, director, year, rating } = req.body;
-    if (title && director && year && rating) {
-        _.each(data, (movie, i) => {
-            if (movie.id == id) {
-                movie.title = title;
-                movie.director = director;
-                movie.year = year;
-                movie.rating = rating;
-            }
-        });
-        res.json(data);
-    }
-    else {
-        res.status(500).json({ "error": "There was an error." });
-    }
-});
-
-router.delete('/:id', (req, res) => {
-    const { id } = req.params;
-    _.each(data, (movie, i) => {
-        if (movie.id == id) {
-            data.splice(i, 1);
-        }
-    });
-    res.send(data);
 });
 
 createParameter = async (req, attachmentResource) => {
@@ -270,7 +234,7 @@ upsertClaim = async (claimId, memberId, reference, existingClaim, parameter) => 
                     }
                 }
             ],
-            "supportingInfo": suportingInfo,
+            "supportingInfo": supportingInfo,
             "total": "1234"
         };
     } else {
