@@ -862,11 +862,9 @@ if (!CLAIM) {
                     };
                     $.ajax(configProvider).then((res) => {
                         $('#req-task-output').html(JSON.stringify(res, null, 2));
-                        $('#opOutcAttReq').html('<p class="text-success">Status code: 200. Success</p>');
                         CDEX.displayScreen('attachment-requested-screen');
                     }).catch(function (error) {
                         $('#req-task-output').html(JSON.stringify(error, null, '  '));
-                        $('#opOutcAttReq').html(`<p class="text-danger">Status code: 500. Failed.</p>`);
                     });
                 }
             }
@@ -2027,6 +2025,7 @@ if (!CLAIM) {
 
         CDEX.claimPayloadAttachment.patient.reference = `Patient/${CDEX.patient.id}`;
         attchRes = JSON.parse($('#quest-resp-output').html())
+        taskReq = JSON.parse($('#requested-task-payload').html());
         let parameter = [
             {
                 name: "AttachTo",
@@ -2100,11 +2099,11 @@ if (!CLAIM) {
             $('#req-parameter-output').html(JSON.stringify(response, null, '  '));
             $('#req-operation-output').html(JSON.stringify(operationOutcome, null, '  '));
             // Claim
-            CLAIM.claimLookupById('CLAIM-CONN-01').then((results) => {
+            CLAIM.claimLookupById(taskReq.reasonReference.identifier.value).then((results) => {
                 results.supportingInfo.push({valueReference: {
                     reference: `QuestionnaireResponse/${attchRes.id}`
                 }});
-                configProvider.url = `${CDEX.payerEndpoint.url}/Claim/CLAIM-CONN-01`;
+                configProvider.url = `${CDEX.payerEndpoint.url}/Claim/${taskReq.reasonReference.identifier.value}`;
                 configProvider.data = JSON.stringify(results);
                 $.ajax(configProvider).then(claimRes => {
                     $('#req-claim-output').html(JSON.stringify(claimRes, null, '  '));
