@@ -43,9 +43,9 @@ router.post('/', (req, res) => {
             } else if (element.name === 'TrackingId') {
                 claimId = element.valueString;
             } else if (element.name === 'Attachment') {
-                attchId = element.part[2].resource.id;
-                resource = element.part[2].resource;
-                attchType = element.part[2].resource.resourceType;
+                attchId = element.part[3].resource.id;
+                resource = element.part[3].resource;
+                attchType = element.part[3].resource.resourceType;
             }
         });
         return patientLookup(memberId).then(value => {
