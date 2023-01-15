@@ -1413,7 +1413,7 @@ if (!CLAIM) {
     CDEX.getTasks = () => {
         let configProvider = {
             type: 'GET',
-            url: `${CDEX.providerEndpoints[0].url}/Task?_patient=${CDEX.patient.id}?_sort=_lastUpdated`,
+            url: `${CDEX.providerEndpoints[0].url}/Task?_sort=-_lastUpdated&_patient=${CDEX.patient.id}`,
             contentType: "application/fhir+json"
         };
         $.ajax(configProvider).then((res) => {
@@ -1421,13 +1421,13 @@ if (!CLAIM) {
             if (res.total > 0) {
                 res.entry.forEach(task => {
                     $('#tasks-list').append(`<tr>
+                    <td><a href="#" id="btn-${task.resource.id}">${task.resource.id}</a></td>
+                    <td>${task.resource.meta.lastUpdated}</td>
                     <td>
                         <a href="https://api.logicahealth.org/DaVinciCDexProvider/open/Task/${task.resource.id}">
-                            ${task.resource.id}
+                            Download
                         </a>
                     </td>
-                    <td>${task.resource.authoredOn}</td>
-                    <td><a href="#" id="btn-${task.resource.id}">View</a></td>
                     <td>${task.resource.status}</td>
                 </tr>`);
                     $(`#btn-${task.resource.id}`).on('click', () => {
