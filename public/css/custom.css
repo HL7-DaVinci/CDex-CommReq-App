@@ -135,3 +135,10 @@ label.stayover:hover span {
     display: inline-block;
     cursor: pointer;
 }
+
+.bg-custom {
+    color: black;
+    background-color: #d8fde7;
+    border: 1px solid black;
+    width: 900px;
+}

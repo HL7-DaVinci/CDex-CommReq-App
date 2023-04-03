@@ -515,10 +515,9 @@
     <div id="attachment-requested-screen" class="card alert-warning screen dvt">
         <div class="card-body">
             <h5 class="card-title">CDEX: Provider Response to a CDex Task Posted by a Payer</h5>
-            <h5 class="card-title">Attachment(s) requested</h5>
-            <p class="card-text stayover">
-                Provider response
-                <span>If the Task was successfully created, The user can complete the request by clicking the “OK”
+            <p class="card-title stayover" id="task-created-header">Task created on Provider FHIR server                
+                <span class="bg-custom"><b>Task created</b><br>
+                    If the Task was successfully created, The user can complete the request by clicking the “OK”
                     button below and the “Submit Solicited Attachments” button on the CDex Dashboard</span>
             </p>
             <p class="card-text"><textarea id="req-task-output"></textarea></p>
@@ -705,19 +704,32 @@
 
     <div id="submit-payer-attachments" class="card alert-warning screen dvt">
         <div class="card-body">
-            <h5 class="card-title">Provider side operation</h5>
-            <h5 class="card-title">Attachment(s) requested</h5>
+            <h5 class="card-title">CDEX: Provider Submitting Solicited Attachments - Select Task</h5>
+            <h5 class="card-title">Select task below to complete the request for attachments.</h5>
             <div>
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th scope="col">Task</th>
-                            <th scope="col">Date</th>
+                            <th scope="col">Tracking control number</th>
+                            <th scope="col">Last modified</th>
                             <th scope="col"></th>
                             <th scope="col">Status</th>
                         </tr>
                     </thead>
                     <tbody id="tasks-list"></tbody>
+                </table>
+            </div>
+            <div>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Tracking control number</th>
+                            <th scope="col">Last modified</th>
+                            <th scope="col"></th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="questionnaire-list"></tbody>
                 </table>
             </div>
             <p></p>
