@@ -1,55 +1,78 @@
 var CLAIM;
 if (!CLAIM) {
-    CLAIM = {};
+  CLAIM = {};
 }
 
 var PATIENT;
 if (!PATIENT) {
-    PATIENT = {};
+  PATIENT = {};
 }
 
 var CDEX;
 if (!CDEX) {
-    CDEX = {};
+  CDEX = {};
 }
 
 (function () {
-
-    CLAIM.claimLookupByPatient = async (patientId) => {
-        let url = `${CDEX.payerEndpoint.url}/Claim?patient=${patientId}`;
-        const claims = await $.ajax(url).then((res) => {
-            return res;
-        }).catch((error) => {
-            console.log(error);
-            return error;
-        });
-
-        return claims;
+  CLAIM.claimLookupByPatient = async (patientId) => {
+    let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
+    let configProvider = {
+      type: "GET",
+      url: `${CDEX.payerEndpoint.url}/Claim?patient=${patientId}`,
+      contentType: "application/json",
+      headers: {
+        authorization: `${accessToken.token_type} ${accessToken.access_token}`,
+      },
     };
+    const claims = await $.ajax(configProvider)
+      .then((res) => {
+        return res;
+      })
+      .catch((error) => {
+        console.log(error);
+        return error;
+      });
 
-    CLAIM.claimLookupById = async (claim) => {
-        let url = `${CDEX.payerEndpoint.url}/Claim/${claim}`;
-        let existingClaim = await $.ajax(url).then((res) => {
-            return res;
-        }).catch((error) => {
-            console.log(error);
-            return {};
-        });
+    return claims;
+  };
 
-        return existingClaim;
+  CLAIM.claimLookupById = async (claim) => {
+    let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
+    let configProvider = {
+      type: "GET",
+      url: `${CDEX.payerEndpoint.url}/Claim/${claim}`,
+      contentType: "application/json",
+      headers: {
+        authorization: `${accessToken.token_type} ${accessToken.access_token}`,
+      },
     };
+    let existingClaim = await $.ajax(configProvider)
+      .then((res) => {
+        return res;
+      })
+      .catch((error) => {
+        console.log(error);
+        return {};
+      });
 
-    CLAIM.claimUpsert = async (claim, endpoint) => {
-        let configProvider = {
-            type: 'PUT',
-            url: `${endpoint}/Claim/${claim.id}?upsert=true`,
-            data: JSON.stringify(claim),
-            contentType: "application/json"
-        };
-        const createdClaim = $.ajax(configProvider).then(response => {
-            console.dir(response);
-            return response;
-        });
-        return createdClaim;
+    return existingClaim;
+  };
+
+  CLAIM.claimUpsert = async (claim, endpoint) => {
+    let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
+    let configProvider = {
+      type: "PUT",
+      url: `${endpoint}/Claim/${claim.id}?upsert=true`,
+      data: JSON.stringify(claim),
+      contentType: "application/json",
+      headers: {
+        authorization: `${accessToken.token_type} ${accessToken.access_token}`,
+      },
     };
-}());
+    const createdClaim = $.ajax(configProvider).then((response) => {
+      console.dir(response);
+      return response;
+    });
+    return createdClaim;
+  };
+})();
