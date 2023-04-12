@@ -1,57 +1,57 @@
 body {
-    margin-left: 20px;
+  margin-left: 20px;
 }
 
 .medtd {
-    width: 350px;
+  width: 350px;
 }
 
 td {
-    vertical-align: middle;
+  vertical-align: middle;
 }
 
 .dvt {
-    align-self: center;
-    width: 1000px;
-    margin-bottom: 1rem;
+  align-self: center;
+  width: 1000px;
+  margin-bottom: 1rem;
 }
 
 .screen,
 #medrec-meds {
-    display: none;
+  display: none;
 }
 
 #config-text {
-    width: 660px;
-    height: 200px;
+  width: 660px;
+  height: 200px;
 }
 
 img {
-    margin-right: 10px;
-    width: 66px;
+  margin-right: 10px;
+  width: 66px;
 }
 
 .wine-row {
-    display: flex;
-    flex-direction: row;
-    height: 80px;
+  display: flex;
+  flex-direction: row;
+  height: 80px;
 }
 
 .wine-text-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 #selection-query-list div.card,
 #search-criteria,
 #subsearch {
-    margin-bottom: 5px;
+  margin-bottom: 5px;
 }
 
 #review-lists,
 #review-workflow {
-    width: 700px;
+  width: 700px;
 }
 
 #text-output,
@@ -69,76 +69,83 @@ img {
 #requested-questionnaire-payload,
 #quest-resp-output,
 #upd-task-output {
-    height: 300px;
-    width: 900px;
+  height: 300px;
+  width: 900px;
 }
 
 .sub-inline {
-    display: inline-block;
+  display: inline-block;
 }
 
 .inline-elem {
-    margin-inline: 5px;
+  margin-inline: 5px;
 }
 
 table {
-    width: 1000px;
+  width: 1000px;
 }
 
 a span,
 label span,
 button span,
 p.stayover span {
-    display: none;
+  display: none;
 }
 
 a:hover span {
-    position: absolute;
-    font-size: 16px;
-    text-align: left;
-    left: 0px;
-    display: block;
-    color: black;
-    background-color: #edf9f2;
-    border: 1px solid black;
-    padding: 5px;
-    bottom: -150%;
+  position: absolute;
+  font-size: 16px;
+  text-align: left;
+  left: 0px;
+  display: block;
+  color: black;
+  background-color: #edf9f2;
+  border: 1px solid black;
+  padding: 5px;
+  bottom: -150%;
 }
 
 a.btninfo:hover span,
 label.btninfo:hover span,
 button.btninfo:hover span {
-    position: absolute;
-    font-size: 16px;
-    text-align: left;
-    left: 0px;
-    display: block;
-    color: black;
-    background-color: #edf9f2;
-    border: 1px solid black;
-    padding: 5px;
-    bottom: 0rem;
+  position: absolute;
+  font-size: 16px;
+  text-align: left;
+  left: 0px;
+  display: block;
+  color: black;
+  background-color: #edf9f2;
+  border: 1px solid black;
+  padding: 5px;
+  bottom: 0rem;
 }
 
 a.stayover:hover span,
 p.stayover:hover span,
 label.stayover:hover span {
-    position: relative;
-    font-size: 16px;
-    text-align: left;
-    left: 0px;
-    color: black;
-    background-color: #edf9f2;
-    border: 1px solid black;
-    padding: 5px;
-    bottom: 1rm;
-    display: inline-block;
-    cursor: pointer;
+  position: relative;
+  font-size: 16px;
+  text-align: left;
+  left: 0px;
+  color: black;
+  background-color: #edf9f2;
+  border: 1px solid black;
+  padding: 5px;
+  bottom: 1rm;
+  display: inline-block;
+  cursor: pointer;
 }
 
 .bg-custom {
-    color: black;
-    background-color: #d8fde7;
-    border: 1px solid black;
-    width: 900px;
+  color: black;
+  background-color: #d8fde7;
+  border: 1px solid black;
+  width: 900px;
+}
+
+.bg-success-custom {
+  color: black;
+  background-color: #d8fde7;
+  border: 1px solid black;
+  width: 900px;
 }

@@ -1929,8 +1929,11 @@ if (!CLAIM) {
                 $("#req-patient-name").html(
                   `${CDEX.patient.name[0].given[0]} ${CDEX.patient.name[0].family}`
                 );
-                $("#attch-request-list").append(
-                  `<p><b>Task: </b>${task.resource.id}</p>`
+                $("#attch-request-data").html("");
+                $("#attch-request-data").append(
+                  `<p><b>Traking ID: </b>${task.resource.id}</p>
+                  <p><b>Use: </b>${task.resource.reasonCode.coding[0].display}</p>
+                  <p><b>Payer URL: </b>${task.resource.identifier[0].system}</p>`
                 );
                 let claimForTask =
                   task.resource.reasonReference.identifier.value;
@@ -1985,6 +1988,30 @@ if (!CLAIM) {
                 });
 
                 CLAIM.claimLookupById(claimForTask).then((claim) => {
+                  if (claim.item) {
+                    let serviceDate = res.created;
+                    $("#attch-request-list").append(`<br><h5>Line items</h5>
+                                                    <table class='table'>
+                                                        <thead>
+                                                            <tr>
+                                                                <th scope="col">Sequence</th>
+                                                                <th scope="col">Code</th>
+                                                                <th scope="col">Description</th>
+                                                                <th scope="col">Service date</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id='lineItemsList'>
+                                                        </tbody>
+                                                    </table>`);
+                    claim.item.forEach((item) => {
+                      $("#lineItemsList").append(`<tr>
+                                                                <td>${item.sequence}</td>
+                                                                <td>${item.productOrService.coding[0].code}</td>
+                                                                <td>${item.productOrService.coding[0].display}</td>
+                                                                <td id='lineDate_${item.sequence}'>${item.servicedDate}</td>
+                                                            </tr>`);
+                    });
+                  }
                   let optionValues = '<option value="li_1"></option>';
                   if (claim.item) {
                     claim.item.forEach((value) => {
@@ -1992,6 +2019,7 @@ if (!CLAIM) {
                         `<option value='li_${value.sequence}'>LineItem ${value.sequence} (${value.productOrService.coding[0].code})</option>`
                       );
                     });
+                    $("#lineItem_solicitedAttch").html(optionValues);
                   }
                   let accessToken = JSON.parse(
                     sessionStorage.getItem("tokenResponse")
@@ -2127,7 +2155,22 @@ if (!CLAIM) {
                           current_attch++;
                         });
                       }
+                      configProvider = {
+                        type: "GET",
+                        url: `${CDEX.payerEndpoint.url}/${claim.provider.reference}`,
+                        contentType: "application/fhir+json",
+                        headers: {
+                          authorization: `${accessToken.token_type} ${accessToken.access_token}`,
+                        },
+                      };
+                      $.ajax(configProvider).then((org) => {
+                        $("#attch-request-data").append(
+                          `<p><b>Organization ID: </b>${claim.provider.reference} (${org.name})</p>
+                          <p><b>Provider ID: </b> ${claim.careTeam[0].provider.reference}</p>`
+                        );
+                      });
                     });
+
                     $("#total_attach").val(current_attch - 1);
                     $("#btn-submit-req-attch").click(function () {
                       //Variables
@@ -2259,6 +2302,7 @@ if (!CLAIM) {
                             seq++;
                           }
                         }
+
                         CLAIM.claimUpsert(res, CDEX.payerEndpoint.url);
                         $("#req-claim-output").html(
                           JSON.stringify(res, null, "  ")
@@ -2812,6 +2856,15 @@ if (!CLAIM) {
     var fsize = $("#select-attch").get(0).files[0].size;
 
     $("#selected-attch").html(fname + " (<b>" + fsize + "</b> bytes)<br />");
+  });
+
+  $("#select-solicited-attch").change(function () {
+    let fname = $("#select-solicited-attch").get(0).files[0].name;
+    var fsize = $("#select-solicited-attch").get(0).files[0].size;
+
+    $("#selected-solicited-attch").html(
+      fname + " (<b>" + fsize + "</b> bytes)<br />"
+    );
   });
 
   $("#btn-task-request").click(function () {
