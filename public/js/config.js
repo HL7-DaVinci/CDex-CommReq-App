@@ -17,7 +17,7 @@ if (!CDEX) {
     {
       name: "DaVinci CDex Provider (Open)",
       display: "open",
-      url: "https://api.logicahealth.org/DaVinciCDexProvider/data", ///open"
+      url: "https://api.logicahealth.org/DaVinciCDexProvider/data",
     },
     {
       name: "DaVinci CDex Provider (Data)",
@@ -30,7 +30,7 @@ if (!CDEX) {
   CDEX.payerEndpoint = {
     name: "DaVinci CDex Payer (Open)",
     display: "open",
-    url: "https://api.logicahealth.org/DaVinciCDexPayer/data", ///open"
+    url: "https://api.logicahealth.org/DaVinciCDexPayer/data",
   };
 
   // default configuration
