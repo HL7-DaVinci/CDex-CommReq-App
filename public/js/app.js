@@ -2599,18 +2599,26 @@ if (!CLAIM) {
                                   ).val()}/$submit-attachment`;
                                   configProvider.type = "POST";
                                 }
-                                $.ajax(configProvider).then((response) => {
-                                  $("#req-parameter-output").html(
-                                    JSON.stringify(
-                                      CDEX.attachmentRequestedPayload,
-                                      null,
-                                      "  "
-                                    )
-                                  );
-                                  $("#req-operation-output").html(
-                                    JSON.stringify(operationOutcome, null, "  ")
-                                  );
-                                });
+                                $.ajax(configProvider)
+                                  .then((response) => {
+                                    $("#req-parameter-output").html(
+                                      JSON.stringify(
+                                        CDEX.attachmentRequestedPayload,
+                                        null,
+                                        "  "
+                                      )
+                                    );
+                                    $("#req-operation-output").html(
+                                      JSON.stringify(
+                                        response, //operationOutcome,
+                                        null,
+                                        "  "
+                                      )
+                                    );
+                                  })
+                                  .catch((error) => {
+                                    console.log(JSON.stringify(error));
+                                  });
                                 CDEX.displayScreen("attch-req-confirm-screen");
                               }
                             });
