@@ -127,6 +127,7 @@ router.post("/", (req, res) => {
 createParameter = async (req, attachmentResource) => {
   return new Promise((resolve) => {
     req.headers["content-type"] = "application/fhir+json";
+    req.headers["Accept"] = "application/fhir+json";
     request.put(
       {
         headers: { "content-type": "application/fhir+json" },

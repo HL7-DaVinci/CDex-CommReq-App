@@ -2341,8 +2341,8 @@ if (!CLAIM) {
                               let attachment = "";
                               $("#req-parameter-output").html("");
                               $("#req-operation-output").html("");
-                              let code = "";
-                              let display = "";
+                              let code = "1200";
+                              let display = "undefined";
                               if (
                                 resourceRes.resourceType !== "DocumentReference"
                               ) {
