@@ -134,7 +134,7 @@ createParameter = async (req, attachmentResource) => {
     req.headers["Accept"] = "application/fhir+json";
     request.put(
       {
-        headers: { "content-type": "application/fhir+json" },
+        headers: { ...req.headers, "content-type": "application/fhir+json" },
         url: `${baseurl}/Parameters/${
           req.body.id ? req.body.id : `Parameter-with-${attachmentResource}`
         }`,
