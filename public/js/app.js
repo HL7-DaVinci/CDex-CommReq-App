@@ -2583,7 +2583,7 @@ if (!CLAIM) {
                                 CDEX.attachmentRequestedPayload.parameter =
                                   parameter;
                                 configProvider = {
-                                  type: "PUT",
+                                  type: "POST",
                                   url: `https://cdex-commreq.davinci.hl7.org/$submit-attachment`, //`${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentRequestedPayload.id}`,
                                   data: JSON.stringify(
                                     CDEX.attachmentRequestedPayload
@@ -2723,7 +2723,7 @@ if (!CLAIM) {
 
     let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
     let configProvider = {
-      type: "PUT",
+      type: "POST",
       url: `https://cdex-commreq.davinci.hl7.org/$submit-attachment`, //`${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentRequestedPayload.id}`,
       data: JSON.stringify(CDEX.attachmentRequestedPayload),
       contentType: "application/fhir+json",
@@ -3112,7 +3112,7 @@ if (!CLAIM) {
               }
               //Parameter creation
               configProvider = {
-                type: "PUT",
+                type: "POST",
                 url: `https://cdex-commreq.davinci.hl7.org/$submit-attachment`, //`${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentPayload.id}`,
                 data: JSON.stringify(CDEX.attachmentPayload),
                 contentType: "application/json",
@@ -3273,7 +3273,7 @@ if (!CLAIM) {
               }
               //Parameter creation
               configProvider = {
-                type: "PUT",
+                type: "POST",
                 url: `https://cdex-commreq.davinci.hl7.org/$submit-attachment`, //`${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentPayload.id}`,
                 data: JSON.stringify(CDEX.attachmentPayload),
                 contentType: "application/json",
