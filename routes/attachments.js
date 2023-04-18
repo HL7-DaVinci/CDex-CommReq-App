@@ -43,19 +43,23 @@ router.post("/", (req, res) => {
       } else if (element.name === "TrackingId") {
         claimId = element.valueString;
       } else if (element.name === "Attachment") {
-        if (element.part[2].resource.resourceType === "Bundle") {
-          attchId = element.part[2].resource.entry[3].resource.id;
-          resource = element.part[2].resource.entry[3].resource;
-          attchType = element.part[2].resource.entry[3].resource.resourceType;
-        } else {
-          attchId = element.part[3].resource.id;
-          resource = element.part[3].resource;
-          attchType = element.part[3].resource.resourceType;
-        }
+        element.part.forEach((part) => {
+          if (part.name === "Content") {
+            if (part.resource.resourceType === "Bundle") {
+              attchId = part.resource.entry[3].resource.id;
+              resource = part.resource.entry[3].resource;
+              attchType = part.resource.entry[3].resource.resourceType;
+            } else {
+              attchId = element.part[3].resource.id;
+              resource = element.part[3].resource;
+              attchType = element.part[3].resource.resourceType;
+            }
+          }
+        });
       }
     });
     //*******************
-    patientLookup(memberId).then((value) => {
+    /*patientLookup(memberId).then((value) => {
       if (value.resourceType != "Patient") {
         res.send(value); //operationOutcome
       } else {
@@ -113,7 +117,7 @@ router.post("/", (req, res) => {
           });
         });
       }
-    });
+    });*/
     //*******************
     let resourceId = resource.id
       ? resource.id
