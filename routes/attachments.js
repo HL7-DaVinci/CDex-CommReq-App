@@ -59,7 +59,7 @@ router.post("/", (req, res) => {
       }
     });
     //*******************
-    /*patientLookup(memberId).then((value) => {
+    patientLookup(memberId).then((value) => {
       if (value.resourceType != "Patient") {
         res.send(value); //operationOutcome
       } else {
@@ -117,7 +117,7 @@ router.post("/", (req, res) => {
           });
         });
       }
-    });*/
+    });
     //*******************
     let resourceId = resource.id
       ? resource.id
