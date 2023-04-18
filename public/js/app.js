@@ -2501,8 +2501,8 @@ if (!CLAIM) {
                                     CDEX.attachmentRequestedPayload.parameter =
                                       parameter;
                                     configProvider = {
-                                      type: "PUT",
-                                      url: `${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentRequestedPayload.id}`,
+                                      type: "POST",
+                                      url: `https://cdex-commreq.davinci.hl7.org/$submit-attachment`, //`${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentRequestedPayload.id}`,
                                       data: JSON.stringify(
                                         CDEX.attachmentRequestedPayload
                                       ),
@@ -2584,7 +2584,7 @@ if (!CLAIM) {
                                   parameter;
                                 configProvider = {
                                   type: "PUT",
-                                  url: `${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentRequestedPayload.id}`,
+                                  url: `https://cdex-commreq.davinci.hl7.org/$submit-attachment`, //`${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentRequestedPayload.id}`,
                                   data: JSON.stringify(
                                     CDEX.attachmentRequestedPayload
                                   ),
@@ -2724,7 +2724,7 @@ if (!CLAIM) {
     let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
     let configProvider = {
       type: "PUT",
-      url: `${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentRequestedPayload.id}`,
+      url: `https://cdex-commreq.davinci.hl7.org/$submit-attachment`, //`${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentRequestedPayload.id}`,
       data: JSON.stringify(CDEX.attachmentRequestedPayload),
       contentType: "application/fhir+json",
       headers: {
@@ -3113,7 +3113,7 @@ if (!CLAIM) {
               //Parameter creation
               configProvider = {
                 type: "PUT",
-                url: `${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentPayload.id}`,
+                url: `https://cdex-commreq.davinci.hl7.org/$submit-attachment`, //`${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentPayload.id}`,
                 data: JSON.stringify(CDEX.attachmentPayload),
                 contentType: "application/json",
                 headers: {
@@ -3274,7 +3274,7 @@ if (!CLAIM) {
               //Parameter creation
               configProvider = {
                 type: "PUT",
-                url: `${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentPayload.id}`,
+                url: `https://cdex-commreq.davinci.hl7.org/$submit-attachment`, //`${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentPayload.id}`,
                 data: JSON.stringify(CDEX.attachmentPayload),
                 contentType: "application/json",
                 headers: {
