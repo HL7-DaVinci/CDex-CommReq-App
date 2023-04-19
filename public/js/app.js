@@ -2519,11 +2519,6 @@ if (!CLAIM) {
                                       ).val()}/$submit-attachment`;
                                       configProvider.type = "POST";
                                     }
-                                    console.log(
-                                      JSON.stringify(
-                                        CDEX.attachmentRequestedPayload
-                                      )
-                                    );
                                     $.ajax(configProvider).then((response) => {
                                       $("#req-parameter-output").html(
                                         JSON.stringify(response, null, "  ")

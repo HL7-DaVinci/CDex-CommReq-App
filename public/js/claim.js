@@ -70,7 +70,6 @@ if (!CDEX) {
       },
     };
     const createdClaim = $.ajax(configProvider).then((response) => {
-      console.dir(response);
       return response;
     });
     return createdClaim;
