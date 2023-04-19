@@ -59,11 +59,11 @@ router.post("/", (req, res) => {
       }
     });
     //*******************
-    patientLookup(memberId).then((value) => {
+    patientLookup(memberId, req.headers).then((value) => {
       if (value.resourceType != "Patient") {
         res.send(value); //operationOutcome
       } else {
-        claimLookup(claimId).then((value) => {
+        claimLookup(claimId, req.headers).then((value) => {
           if (value.resourceType !== "Claim") {
             existingClaim = "";
             claimExists = false;
@@ -87,14 +87,15 @@ router.post("/", (req, res) => {
           let resourceId = resource.id
             ? resource.id
             : `CDex-${resource.resourceType}-${attachmentResource}`;
-          createResource(resource, resourceId).then((value) => {
-            createParameter(req, resourceId).then((value) => {
+          createResource(resource, resourceId, req.headers).then((value) => {
+            createParameter(resourceId, req.headers).then((value) => {
               upsertClaim(
                 claimId,
                 memberId,
                 `${resource.resourceType}/${resourceId}`,
                 existingClaim,
-                value
+                value,
+                req.headers
               ).then((value) => {
                 if (claimExists) {
                   operationOutcome = {
@@ -119,22 +120,22 @@ router.post("/", (req, res) => {
       }
     });
     //*******************
-    let resourceId = resource.id
+    /*let resourceId = resource.id
       ? resource.id
       : `CDex-${resource.resourceType}-${attachmentResource}`;
-    return createParameter(req, resourceId).then((value) => {
+    return createParameter(resourceId, req.headers).then((value) => {
       res.send(value); //Operation outcome should be the response
-    });
+    });*/
   }
 });
 
-createParameter = async (req, attachmentResource) => {
+createParameter = async (attachmentResource, headers) => {
   return new Promise((resolve) => {
     req.headers["content-type"] = "application/fhir+json";
     req.headers["Accept"] = "application/fhir+json";
     request.put(
       {
-        headers: { ...req.headers, "content-type": "application/fhir+json" },
+        headers: { headers, "content-type": "application/fhir+json" },
         url: `${baseurl}/Parameters/${
           req.body.id ? req.body.id : `Parameter-with-${attachmentResource}`
         }`,
@@ -143,12 +144,15 @@ createParameter = async (req, attachmentResource) => {
       },
       function (parerr, parresp, parbody) {
         if (!parerr) resolve(parbody);
+        else {
+          resolve(`Create parameter failed: ${parerr}`);
+        }
       }
     );
   });
 };
 
-createBinary = async (attch, attachmentResource) => {
+createBinary = async (attch, attachmentResource, headers) => {
   return new Promise((resolve) => {
     const binaryBody = {
       resourceType: "Binary",
@@ -159,7 +163,7 @@ createBinary = async (attch, attachmentResource) => {
     request.put(
       {
         headers: {
-          ...req.headers,
+          headers,
           "content-type": "application/fhir+json",
           Accept: "application/fhir+json",
         },
@@ -169,12 +173,15 @@ createBinary = async (attch, attachmentResource) => {
       },
       function (binerr, binresp, binbody) {
         if (!binerr) resolve(binbody);
+        else {
+          resolve(`Create binary failed: ${binerr}`);
+        }
       }
     );
   });
 };
 
-createResource = async (attch, attachmentResource) => {
+createResource = async (attch, attachmentResource, headers) => {
   if (attch.resourceType === "Bundle") {
     return;
   }
@@ -182,7 +189,7 @@ createResource = async (attch, attachmentResource) => {
     request.put(
       {
         headers: {
-          ...req.headers,
+          headers,
           "content-type": "application/fhir+json",
           Accept: "application/fhir+json",
         },
@@ -192,30 +199,39 @@ createResource = async (attch, attachmentResource) => {
       },
       function (binerr, binresp, binbody) {
         if (!binerr) resolve(binbody);
+        else {
+          resolve(`Create resource failed: ${binerr}`);
+        }
       }
     );
   });
 };
 
-claimLookup = async (claimId) => {
+claimLookup = async (claimId, headers) => {
   return new Promise((resolve, reject) => {
     request(
       `${baseurl}/Claim/${claimId}`,
-      { json: true, headers: { ...req.headers } },
+      { json: true, headers: { headers } },
       function (claimerror, claimresp, claimbody) {
         if (!claimerror) resolve(claimbody);
+        else {
+          resolve(`Claim lookup failed: ${claimerror}`);
+        }
       }
     );
   });
 };
 
-patientLookup = async (memberId) => {
+patientLookup = async (memberId, headers) => {
   return new Promise((resolve) => {
     request(
       `${baseurl}/Patient/${memberId}`,
-      { json: true, headers: { ...req.headers } },
+      { json: true, headers: headers },
       (err, resp, body) => {
         if (!err) resolve(body);
+        else {
+          resolve(`Patient lookup failed: ${err}`);
+        }
       }
     );
   });
@@ -226,7 +242,8 @@ upsertClaim = async (
   memberId,
   reference,
   existingClaim,
-  parameter
+  parameter,
+  headers
 ) => {
   let claimBody = "";
   let supportingInfo = [];
@@ -297,7 +314,7 @@ upsertClaim = async (
   return new Promise((resolve) => {
     request.put(
       {
-        headers: { "content-type": "application/fhir+json" },
+        headers: { headers, "content-type": "application/fhir+json" },
         url: `${baseurl}/Claim/${claimId}?upsert=true`,
         body: claimBody,
         json: true,
@@ -306,7 +323,7 @@ upsertClaim = async (
         if (!claimerr) {
           resolve(claimbody);
         } else {
-          console.dir(claimerr);
+          resolve(`Claim update failed: ${claimerr}`);
         }
       }
     );
