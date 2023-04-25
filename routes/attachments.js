@@ -7,7 +7,7 @@ const data = require("../attachments.json");
 
 const axios = require("axios");
 
-const baseurl = "https://api.logicahealth.org/DaVinciCDexPayer/data";
+const baseurl = "https://api.logicahealth.org/DaVinciCDexPayer/open";
 
 router.post("/", (req, res) => {
   req.headers["accept"] = "application/fhir+json;charset=UTF-8";
