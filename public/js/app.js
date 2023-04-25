@@ -1811,7 +1811,7 @@ if (!CLAIM) {
                             <td><a href="#" id="btn-${task.resource.id}">${task.resource.id}</a></td>
                             <td>${task.resource.meta.lastUpdated}</td>
                             <td>
-                                <a href="https://api.logicahealth.org/DaVinciCDexProvider/data/Task/${task.resource.id}">
+                                <a href="https://api.logicahealth.org/DaVinciCDexProvider/open/Task/${task.resource.id}">
                                     Download
                                 </a>
                             </td>
@@ -1831,7 +1831,7 @@ if (!CLAIM) {
                   );
                   let payerConfig = {
                     type: "POST",
-                    url: `https://api.logicahealth.org/DaVinciCDexProvider/data/QuestionnaireResponse`,
+                    url: `https://api.logicahealth.org/DaVinciCDexProvider/open/QuestionnaireResponse`,
                     data: JSON.stringify(questionnaireResponse),
                     contentType: "application/fhir+json",
                     headers: {
@@ -1856,7 +1856,7 @@ if (!CLAIM) {
                       },
                     });
                     payerConfig.type = "PUT";
-                    payerConfig.url = `https://api.logicahealth.org/DaVinciCDexProvider/data/Task/${task.resource.id}`;
+                    payerConfig.url = `https://api.logicahealth.org/DaVinciCDexProvider/open/Task/${task.resource.id}`;
                     payerConfig.data = JSON.stringify(task.resource);
                     $.ajax(payerConfig).then((taskResponse) => {
                       $("#quest-resp-output").html(
@@ -1877,7 +1877,7 @@ if (!CLAIM) {
 
                 let provider = {
                   type: "GET",
-                  url: `https://api.logicahealth.org/DaVinciCDexProvider/data/Task/${task.resource.id}`,
+                  url: `https://api.logicahealth.org/DaVinciCDexProvider/open/Task/${task.resource.id}`,
                   contentType: "application/fhir+json",
                   headers: {
                     authorization: `${accessToken.token_type} ${accessToken.access_token}`,
@@ -1916,7 +1916,7 @@ if (!CLAIM) {
                             <td><a href="#" id="btn-${task.resource.id}">${task.resource.id}</a></td>
                             <td>${task.resource.meta.lastUpdated}</td>
                             <td>
-                                <a href="https://api.logicahealth.org/DaVinciCDexProvider/data/Task/${task.resource.id}">
+                                <a href="https://api.logicahealth.org/DaVinciCDexProvider/open/Task/${task.resource.id}">
                                     Download
                                 </a>
                             </td>
@@ -1946,7 +1946,7 @@ if (!CLAIM) {
 
                 let provider = {
                   type: "GET",
-                  url: `https://api.logicahealth.org/DaVinciCDexProvider/data/Task/${task.resource.id}`,
+                  url: `https://api.logicahealth.org/DaVinciCDexProvider/open/Task/${task.resource.id}`,
                   contentType: "application/fhir+json",
                   headers: {
                     authorization: `${accessToken.token_type} ${accessToken.access_token}`,
