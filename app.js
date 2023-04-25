@@ -7,7 +7,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 
 const PORT = process.env.PORT || 9090;
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0; //Remove for prod
+//process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0; //Remove for prod
 const app = express();
 
 app.use(morgan("dev"));
@@ -27,7 +27,7 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api", require("./routes/index"));
-app.use("/api/users", require("./routes/thirdparty"));
+//app.use("/api/users", require("./routes/thirdparty"));
 app.use("/\\$submit-attachment", require("./routes/attachments"));
 app.use("/api/sign", require("./routes/sign"));
 
