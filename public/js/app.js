@@ -2239,9 +2239,9 @@ if (!CLAIM) {
                           "#currentClaimId"
                         ).text()}`,
                         contentType: "application/fhir+json",
-                        headers: {
+                        /*headers: {
                           authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-                        },
+                        },*/
                       };
 
                       //Get Claim
@@ -2507,9 +2507,9 @@ if (!CLAIM) {
                                         CDEX.attachmentRequestedPayload
                                       ),
                                       contentType: "application/fhir+json",
-                                      headers: {
+                                      /*headers: {
                                         authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-                                      },
+                                      },*/
                                     };
                                     if (
                                       $("#customPayerEndpoint").val() !== ""
@@ -2584,9 +2584,9 @@ if (!CLAIM) {
                                     CDEX.attachmentRequestedPayload
                                   ),
                                   contentType: "application/json",
-                                  headers: {
+                                  /*headers: {
                                     authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-                                  },
+                                  },*/
                                 };
                                 if ($("#customPayerEndpoint").val() !== "") {
                                   configProvider.url = `${$(
@@ -2722,9 +2722,9 @@ if (!CLAIM) {
       url: `https://cdex-commreq.davinci.hl7.org/$submit-attachment`, //`${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentRequestedPayload.id}`,
       data: JSON.stringify(CDEX.attachmentRequestedPayload),
       contentType: "application/fhir+json",
-      headers: {
+      /*headers: {
         authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-      },
+      },*/
     };
 
     $.ajax(configProvider).then((response) => {
@@ -3111,9 +3111,9 @@ if (!CLAIM) {
                 url: `https://cdex-commreq.davinci.hl7.org/$submit-attachment`, //`${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentPayload.id}`,
                 data: JSON.stringify(CDEX.attachmentPayload),
                 contentType: "application/json",
-                headers: {
+                /*headers: {
                   authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-                },
+                },*/
               };
               if ($("#subUnsAttchPayerEndpoint").val() !== "") {
                 configProvider.url = `${$(
@@ -3272,9 +3272,9 @@ if (!CLAIM) {
                 url: `https://cdex-commreq.davinci.hl7.org/$submit-attachment`, //`${CDEX.payerEndpoint.url}/Parameters/${CDEX.attachmentPayload.id}`,
                 data: JSON.stringify(CDEX.attachmentPayload),
                 contentType: "application/json",
-                headers: {
+                /*headers: {
                   authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-                },
+                },*/
               };
               $.ajax(configProvider).then((response) => {
                 $("#parameter-output").html(
