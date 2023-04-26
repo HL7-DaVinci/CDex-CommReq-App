@@ -22,7 +22,7 @@ if (!CDEX) {
     {
       name: "DaVinci CDex Provider (Data)",
       display: "data",
-      url: "https://api.logicahealth.org/DaVinciCDexProvider/open",
+      url: "https://api.logicahealth.org/DaVinciCDexProvider/data",
     },
   ];
 

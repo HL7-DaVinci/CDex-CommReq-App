@@ -59,11 +59,11 @@ router.post("/", (req, res) => {
       }
     });
     //*******************
-    patientLookup(memberId, req.headers).then((value) => {
+    patientLookup(memberId).then((value) => {
       if (value.resourceType != "Patient") {
         res.send(value); //operationOutcome
       } else {
-        claimLookup(claimId, req.headers).then((value) => {
+        claimLookup(claimId).then((value) => {
           if (value.resourceType !== "Claim") {
             existingClaim = "";
             claimExists = false;
@@ -87,8 +87,8 @@ router.post("/", (req, res) => {
           let resourceId = resource.id
             ? resource.id
             : `CDex-${resource.resourceType}-${attachmentResource}`;
-          createResource(resource, resourceId, req.headers).then((value) => {
-            createParameter(resourceId, req.headers).then((value) => {
+          createResource(resource, resourceId).then((value) => {
+            createParameter(resourceId, req.body).then((value) => {
               upsertClaim(
                 claimId,
                 memberId,
@@ -129,17 +129,15 @@ router.post("/", (req, res) => {
   }
 });
 
-createParameter = async (attachmentResource, headers) => {
+createParameter = async (attachmentResource, body) => {
   return new Promise((resolve) => {
-    req.headers["content-type"] = "application/fhir+json";
-    req.headers["Accept"] = "application/fhir+json";
     request.put(
       {
-        headers: { headers, "content-type": "application/fhir+json" },
+        headers: { "content-type": "application/fhir+json" },
         url: `${baseurl}/Parameters/${
-          req.body.id ? req.body.id : `Parameter-with-${attachmentResource}`
+          body.id ? body.id : `Parameter-with-${attachmentResource}`
         }`,
-        body: req.body,
+        body,
         json: true,
       },
       function (parerr, parresp, parbody) {
@@ -152,7 +150,7 @@ createParameter = async (attachmentResource, headers) => {
   });
 };
 
-createBinary = async (attch, attachmentResource, headers) => {
+createBinary = async (attch, attachmentResource) => {
   return new Promise((resolve) => {
     const binaryBody = {
       resourceType: "Binary",
@@ -163,7 +161,6 @@ createBinary = async (attch, attachmentResource, headers) => {
     request.put(
       {
         headers: {
-          headers,
           "content-type": "application/fhir+json",
           Accept: "application/fhir+json",
         },
@@ -181,7 +178,7 @@ createBinary = async (attch, attachmentResource, headers) => {
   });
 };
 
-createResource = async (attch, attachmentResource, headers) => {
+createResource = async (attch, attachmentResource) => {
   if (attch.resourceType === "Bundle") {
     return;
   }
@@ -189,7 +186,6 @@ createResource = async (attch, attachmentResource, headers) => {
     request.put(
       {
         headers: {
-          headers,
           "content-type": "application/fhir+json",
           Accept: "application/fhir+json",
         },
@@ -207,11 +203,11 @@ createResource = async (attch, attachmentResource, headers) => {
   });
 };
 
-claimLookup = async (claimId, headers) => {
+claimLookup = async (claimId) => {
   return new Promise((resolve, reject) => {
     request(
       `${baseurl}/Claim/${claimId}`,
-      { json: true, headers: { headers } },
+      { json: true },
       function (claimerror, claimresp, claimbody) {
         if (!claimerror) resolve(claimbody);
         else {
@@ -222,11 +218,11 @@ claimLookup = async (claimId, headers) => {
   });
 };
 
-patientLookup = async (memberId, headers) => {
+patientLookup = async (memberId) => {
   return new Promise((resolve) => {
     request(
       `${baseurl}/Patient/${memberId}`,
-      { json: true, headers: headers },
+      { json: true },
       (err, resp, body) => {
         if (!err) resolve(body);
         else {
@@ -242,8 +238,7 @@ upsertClaim = async (
   memberId,
   reference,
   existingClaim,
-  parameter,
-  headers
+  parameter
 ) => {
   let claimBody = "";
   let supportingInfo = [];
@@ -314,7 +309,7 @@ upsertClaim = async (
   return new Promise((resolve) => {
     request.put(
       {
-        headers: { headers, "content-type": "application/fhir+json" },
+        headers: { "content-type": "application/fhir+json" },
         url: `${baseurl}/Claim/${claimId}?upsert=true`,
         body: claimBody,
         json: true,

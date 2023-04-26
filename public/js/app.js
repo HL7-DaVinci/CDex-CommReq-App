@@ -729,9 +729,9 @@ if (!CLAIM) {
               .val()
               .toString()}`,
             contentType: "application/fhir+json",
-            headers: {
+            /*headers: {
               authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-            },
+            },*/
           };
           $.ajax(configProvider).then((res) => {
             let claimServiceDate = "";
@@ -1023,7 +1023,7 @@ if (!CLAIM) {
           let providerEndpoint =
             $("#customProviderEndpoint").val() !== ""
               ? $("#customProviderEndpoint").val()
-              : CDEX.providerEndpoint.url;
+              : CDEX.providerEndpoints[1].url;
           let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
           let configProvider = {
             type: "PUT",
@@ -1606,9 +1606,9 @@ if (!CLAIM) {
       url: CDEX.payerEndpoint.url + CDEX.submitEndpoint,
       data: JSON.stringify(CDEX.operationPayload),
       contentType: "application/fhir+json",
-      headers: {
+      /*headers: {
         authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-      },
+      },*/
     };
 
     $.ajax(configPayer).then(
@@ -1623,7 +1623,7 @@ if (!CLAIM) {
         let configProvider = {
           type: subscribe ? "PUT" : "POST",
           url:
-            CDEX.providerEndpoint.url +
+            CDEX.providerEndpoints[1].url +
             CDEX.submitTaskEndpoint +
             (subscribe ? "/" + CDEX.taskPayload.id : ""),
           data: JSON.stringify(CDEX.taskPayload),
@@ -1665,9 +1665,9 @@ if (!CLAIM) {
                 CDEX.payerEndpoint.url + CDEX.submitEndpoint + "/" + commReq.id,
               data: JSON.stringify(commReq),
               contentType: "application/fhir+json",
-              headers: {
+              /*headers: {
                 authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-              },
+              },*/
             };
 
             $("#request-id").html(
@@ -1690,16 +1690,17 @@ if (!CLAIM) {
                   res.id,
                 data: JSON.stringify(res),
                 contentType: "application/fhir+json",
-                headers: {
+                /*headers: {
                   authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-                },
+                },*/
               };
 
               CDEX.subscriptionPayload.criteria = "Task?_id=" + res.id;
               let configProvider2 = {
                 type: "POST",
                 url:
-                  CDEX.providerEndpoint.url + CDEX.submitSubscriptionEndpoint,
+                  CDEX.providerEndpoints[1].url +
+                  CDEX.submitSubscriptionEndpoint,
                 data: JSON.stringify(CDEX.subscriptionPayload),
                 contentType: "application/fhir+json",
                 headers: {
@@ -1794,7 +1795,7 @@ if (!CLAIM) {
     let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
     let configProvider = {
       type: "GET",
-      url: `${CDEX.providerEndpoints[0].url}/Task?_sort=-_lastUpdated&_patient=${CDEX.patient.id}`,
+      url: `${CDEX.providerEndpoints[1].url}/Task?_sort=-_lastUpdated&_patient=${CDEX.patient.id}`,
       contentType: "application/fhir+json",
       headers: {
         authorization: `${accessToken.token_type} ${accessToken.access_token}`,
@@ -1831,7 +1832,7 @@ if (!CLAIM) {
                   );
                   let payerConfig = {
                     type: "POST",
-                    url: `https://api.logicahealth.org/DaVinciCDexProvider/open/QuestionnaireResponse`,
+                    url: `${CDEX.providerEndpoints[1].url}/QuestionnaireResponse`,
                     data: JSON.stringify(questionnaireResponse),
                     contentType: "application/fhir+json",
                     headers: {
@@ -1877,7 +1878,7 @@ if (!CLAIM) {
 
                 let provider = {
                   type: "GET",
-                  url: `https://api.logicahealth.org/DaVinciCDexProvider/open/Task/${task.resource.id}`,
+                  url: `${CDEX.providerEndpoints[1].url}/Task/${task.resource.id}`,
                   contentType: "application/fhir+json",
                   headers: {
                     authorization: `${accessToken.token_type} ${accessToken.access_token}`,
@@ -1946,7 +1947,7 @@ if (!CLAIM) {
 
                 let provider = {
                   type: "GET",
-                  url: `https://api.logicahealth.org/DaVinciCDexProvider/open/Task/${task.resource.id}`,
+                  url: `${CDEX.providerEndpoints[1].url}/Task/${task.resource.id}`,
                   contentType: "application/fhir+json",
                   headers: {
                     authorization: `${accessToken.token_type} ${accessToken.access_token}`,
@@ -2028,9 +2029,9 @@ if (!CLAIM) {
                     type: "GET",
                     url: `${CDEX.payerEndpoint.url}/Observation?patient=${CDEX.patient.id}`,
                     contentType: "application/fhir+json",
-                    headers: {
+                    /*headers: {
                       authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-                    },
+                    },*/
                   };
                   $.ajax(configProvider).then((res) => {
                     $("#total_attch").val(1);
@@ -2062,9 +2063,9 @@ if (!CLAIM) {
                       type: "GET",
                       url: `${CDEX.payerEndpoint.url}/Condition?patient=${CDEX.patient.id}`,
                       contentType: "application/fhir+json",
-                      headers: {
+                      /*headers: {
                         authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-                      },
+                      },*/
                     };
                     $.ajax(configProvider).then((res) => {
                       if (res.total > 0) {
@@ -2096,9 +2097,9 @@ if (!CLAIM) {
                       type: "GET",
                       url: `${CDEX.payerEndpoint.url}/DiagnosticReport?patient=${CDEX.patient.id}`,
                       contentType: "application/fhir+json",
-                      headers: {
+                      /*headers: {
                         authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-                      },
+                      },*/
                     };
                     $.ajax(configProvider).then((res) => {
                       if (res.total > 0) {
@@ -2130,9 +2131,9 @@ if (!CLAIM) {
                       type: "GET",
                       url: `${CDEX.payerEndpoint.url}/DocumentReference?_patient=${CDEX.patient.id}`,
                       contentType: "application/fhir+json",
-                      headers: {
+                      /*headers: {
                         authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-                      },
+                      },*/
                     };
                     $.ajax(configProvider).then((res) => {
                       if (res.total > 0) {
@@ -2159,9 +2160,9 @@ if (!CLAIM) {
                         type: "GET",
                         url: `${CDEX.payerEndpoint.url}/${claim.provider.reference}`,
                         contentType: "application/fhir+json",
-                        headers: {
+                        /*headers: {
                           authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-                        },
+                        },*/
                       };
                       $.ajax(configProvider).then((org) => {
                         $("#attch-request-data").append(
@@ -2321,9 +2322,9 @@ if (!CLAIM) {
                                 `#chk_${index}`
                               ).val()}`,
                               contentType: "application/fhir+json",
-                              headers: {
+                              /*headers: {
                                 authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-                              },
+                              },*/
                             };
                             const selectedValues = $(
                               `#lineItem_${index}`
@@ -3032,9 +3033,9 @@ if (!CLAIM) {
             url: `${CDEX.payerEndpoint.url}/DocumentReference/CDex-Document-Reference-${resourcesId}?upsert=true`,
             data: JSON.stringify(CDEX.documentReferencePayload),
             contentType: "application/json",
-            headers: {
+            /*headers: {
               authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-            },
+            },*/
           };
           $.ajax(configProvider).then((response) => {
             $("#Resource").html("Document reference successfully created.");
@@ -3163,9 +3164,9 @@ if (!CLAIM) {
           url: `${CDEX.payerEndpoint.url}/${jsonContent.resourceType}/${resourceIdentifier}`,
           data: JSON.stringify(jsonContent),
           contentType: "application/json",
-          headers: {
+          /*headers: {
             authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-          },
+          },*/
         };
         $.ajax(configProvider)
           .then((response) => {
@@ -3332,9 +3333,9 @@ if (!CLAIM) {
       url: "http://127.0.0.1:9090/api/sign",
       data: JSON.stringify(bundle),
       contentType: "application/json",
-      headers: {
+      /*headers: {
         authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-      },
+      },*/
     };
     const signedBundle = $.ajax(configProvider).then((response) => {
       return response;
@@ -3356,9 +3357,9 @@ if (!CLAIM) {
       type: "GET",
       url: `${CDEX.payerEndpoint.url}/${queryType}`,
       contentType: "application/fhir+json",
-      headers: {
+      /*headers: {
         authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-      },
+      },*/
     };
 
     $.ajax(configPayer).then(
