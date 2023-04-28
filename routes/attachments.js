@@ -5,8 +5,6 @@ const _ = require("underscore");
 
 const data = require("../attachments.json");
 
-const axios = require("axios");
-
 const baseurl = "https://api.logicahealth.org/DaVinciCDexPayer/open";
 
 router.post("/", (req, res) => {
