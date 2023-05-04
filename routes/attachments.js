@@ -48,9 +48,11 @@ router.post("/", (req, res) => {
               resource = part.resource.entry[3].resource;
               attchType = part.resource.entry[3].resource.resourceType;
             } else {
-              attchId = element.part[3].resource.id;
-              resource = element.part[3].resource;
-              attchType = element.part[3].resource.resourceType;
+              const index =
+                part.resource.resourceType === "QuestionnaireResponse" ? 1 : 2;
+              attchId = element.part[index].resource.id;
+              resource = element.part[index].resource;
+              attchType = element.part[index].resource.resourceType;
             }
           }
         });
