@@ -95,7 +95,7 @@
                 <span><b>Requesting Attachments:<br></b>
                     Payer solicits additional information for a claim or prior authorization using the asynchronous CDEX
                     Task based approach.<br>
-                    The actual data requested uses “attachments codes” or a FHIR Questinnaire. For detailed
+                    The actual data requested uses “attachments codes” or a FHIR Questionnaire. For detailed
                     documentation see:<br>
                     http://build.fhir.org/ig/HL7/davinci-ecdx/requesting-attachments-code.html and
                     http://build.fhir.org/ig/HL7/davinci-ecdx/requesting-attachments-code.html.<br>
@@ -123,7 +123,7 @@
             <a href="#" class="btn btn-primary" id="btn-submit-attach" data-toggle="tooltip" data-placement="top">Submit
                 Solicited Attachments
                 <span><b>Submit Solicited (Requested) Attachment:<br></b>
-                    In response to a Payer’s request for attachment using an attachments code or a questionnaire,
+                    In response to a Payer’s request for attachment using an attachment code or a questionnaire,
                      the Provider collects the information and <br>
                     Provider invokes the ‘$submit-attachment’ operation on the Payer’s endpoint to attach a document or
                      QuestionnaireResponse to<br>
@@ -135,7 +135,7 @@
                             Example Transaction 1:
                             <ul>
                                 <li>In a separate transaction, Payer asks for a visit summary for a Payer’s claim using
-                                    Task using and attachment code</li>
+                                    Task using and attachment code.</li>
                                 <li>The Provider submits the requested data using $submit-attachment to the Payer.</li>
                                 <li>Association of the attachment to the Claim resource.</li>
                             </ul>
@@ -295,7 +295,7 @@
                 <a class="btninfo" href="#" data-toggle="tooltip" data-placement="bottom">
                     <i class="fa fa-info"></i>
                     <span>
-                        <b>Custom tracking control number type:</b><br>
+                        <b>Service date:</b><br>
                         Enter date of service or starting date of the service for the claim or prior authorization.
                         It is optional if the attachment is for a prior authorization.
                     </span>
@@ -321,7 +321,7 @@
                     Signature required
                     <span><b>Signature required:</b><br>
                         Check this box to indicate that the PAYER requires a digital signature for this transaction.
-                        If selected, it will trigger the Payer to verify any attachments that are FHIR resources are a
+                        If selected, it will trigger the Payer to verify any attachments that are FHIR resources, are a
                         signed FHIR bundle
                         (PDF and CCDA(xml) are assumed to be natively signed).
                     </span>
@@ -699,7 +699,7 @@
             <i class="fa fa-info"></i>
             <span>
                 <b>Custom payer endpoint:</b><br>
-                A "3rd party" endpoint where the the CDEX Task will be posted instead of the default RI FHIR Server.
+                A "3rd party" endpoint where the CDEX Task will be posted instead of the default RI FHIR Server.
             </span>
         </a>
     </div>
@@ -813,7 +813,7 @@
             <p class="card-text"><textarea id="requested-task-payload"></textarea></p>
             <label class="stayover" data-toggle="tooltip" data-placement="bottom">Questionnaire
                 <span>
-                    DTR App inspect the Task for the questionnaire URL in the Task.input and then<br>
+                    DTR App inspects the Task for the questionnaire URL in the Task.input and then<br>
                     fetches the Questionnaire (and any CQL rules defined within it).
                 </span>
             </label></br>
@@ -860,7 +860,7 @@
             <p class="card-text"><textarea id="quest-resp-output"></textarea></p>
             <label class="stayover" data-toggle="tooltip" data-placement="bottom">Modified Task
                 <span>
-                    The DTR App updates the Task (on the Provider FHIR Server) with a local reference the<br>
+                    The DTR App updates the Task (on the Provider FHIR Server) with a local reference to the<br>
                     QuestionnaireResponse and marks it as ‘completed’
                 </span>
             </label></br>

@@ -1115,11 +1115,7 @@ if (!CLAIM) {
           data: JSON.stringify(CDEX.requestQuestionnairePayload),
           contentType: "application/fhir+json",
         };
-        if ($("#customProviderEndpoint").val() === "") {
-          configProvider.headers = {
-            authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-          };
-        }
+
         $.ajax(configProvider).then((res) => {
           $("#req-task-output").html(JSON.stringify(res, null, 2));
           CDEX.displayScreen("attachment-requested-screen");
@@ -2730,6 +2726,7 @@ if (!CLAIM) {
               reference: `QuestionnaireResponse/${attchRes.id}`,
             },
           });
+          configProvider.type = "PUT";
           configProvider.url = `${CDEX.payerEndpoint.url}/Claim/${taskReq.reasonReference.identifier.value}`;
           configProvider.data = JSON.stringify(results);
           $.ajax(configProvider).then((claimRes) => {
