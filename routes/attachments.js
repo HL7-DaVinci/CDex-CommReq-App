@@ -49,7 +49,7 @@ router.post("/", (req, res) => {
               attchType = part.resource.entry[3].resource.resourceType;
             } else {
               const index =
-                part.resource.resourceType === "QuestionnaireResponse" ? 1 : 2;
+                part.resource.resourceType === "QuestionnaireResponse" ? 1 : 3;
               attchId = element.part[index].resource.id;
               resource = element.part[index].resource;
               attchType = element.part[index].resource.resourceType;
