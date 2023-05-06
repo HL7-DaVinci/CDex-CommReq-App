@@ -48,8 +48,17 @@ router.post("/", (req, res) => {
               resource = part.resource.entry[3].resource;
               attchType = part.resource.entry[3].resource.resourceType;
             } else {
-              const index =
-                part.resource.resourceType === "QuestionnaireResponse" ? 1 : 3;
+              let index = 0;
+              if (part.resource.resourceType === "QuestionnaireResponse") {
+                index = 1;
+              } else {
+                for (pos = 0; pos < element.part.length; pos++) {
+                  if (element.part[pos].name === "Content") {
+                    index = pos;
+                    break;
+                  }
+                }
+              }
               attchId = element.part[index].resource.id;
               resource = element.part[index].resource;
               attchType = element.part[index].resource.resourceType;
