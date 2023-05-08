@@ -230,7 +230,7 @@ claimLookup = async (claimId) => {
 patientLookup = async (memberId) => {
   return new Promise((resolve) => {
     request(
-      `${baseurl}/Patient/${memberId}`,
+      `${baseurl}/Patient?identifier=${memberId}`,
       { json: true },
       (err, resp, body) => {
         if (!err) resolve(body);
