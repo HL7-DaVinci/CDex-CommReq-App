@@ -59,15 +59,15 @@ if (!CDEX) {
   };
 
   CLAIM.claimUpsert = async (claim, endpoint) => {
-    let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
+    //let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
     let configProvider = {
       type: "PUT",
       url: `${endpoint}/Claim/${claim.id}?upsert=true`,
       data: JSON.stringify(claim),
-      contentType: "application/json",
+      contentType: "application/json" /*
       headers: {
         authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-      },
+      },*/,
     };
     const createdClaim = $.ajax(configProvider).then((response) => {
       return response;

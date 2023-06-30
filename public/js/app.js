@@ -2203,7 +2203,7 @@ if (!CLAIM) {
                       CDEX.claimPayloadAttachment.patient.reference = `Patient/${CDEX.patient.id}`;
 
                       CDEX.attachmentRequestedPayload.id = `CDex-parameter-${resourcesId}`;
-                      const operationOutcome = {
+                      let operationOutcome = {
                         resourceType: "OperationOutcome",
                         id: "outcome_ok",
                         issue: [
@@ -2232,7 +2232,9 @@ if (!CLAIM) {
 
                       //Get Claim
                       $.ajax(configProvider).then((res) => {
-                        res.supportingInfo = [];
+                        if (!res.supportingInfo) {
+                          res.supportingInfo = [];
+                        }
                         let seq = res.supportingInfo.length + 1;
                         for (let index = 1; index < current_attch; index++) {
                           if ($(`#chk_${index}`).is(":checked")) {
@@ -2289,16 +2291,162 @@ if (!CLAIM) {
                           }
                         }
 
-                        CLAIM.claimUpsert(res, CDEX.payerEndpoint.url);
-                        $("#req-claim-output").html(
-                          JSON.stringify(res, null, "  ")
-                        );
+                        if (
+                          $("#select-solicited-attch").get(0).files.length !== 0
+                        ) {
+                          const reader = new FileReader();
+                          const resourcesId = Date.now();
+                          const fileName = $("#select-solicited-attch")
+                            .get(0)
+                            .files.item(0);
+                          if (
+                            fileName.type === "application/pdf" ||
+                            fileName.type === "text/xml"
+                          ) {
+                            reader.readAsDataURL(fileName);
+                            reader.onloadend = (evt) => {
+                              if (evt.target.readyState === FileReader.DONE) {
+                                CDEX.documentReferencePayload.content[0].attachment.data = `${
+                                  reader.result.split(";base64,")[1]
+                                }`;
+                                CDEX.documentReferencePayload.content[0].attachment.title = `${
+                                  $("#select-solicited-attch")
+                                    .get(0)
+                                    .files.item(0).name
+                                }`;
+                                CDEX.documentReferencePayload.content[0].attachment.contentType = `${fileName.type}`;
+                                CDEX.documentReferencePayload.id = `CDex-Document-Reference-${resourcesId}`;
+
+                                CDEX.attachmentPayload.parameter[6].part[2].resource =
+                                  CDEX.documentReferencePayload;
+                                let attachment = {};
+                                let configProvider = {
+                                  type: "PUT",
+                                  url: `${CDEX.payerEndpoint.url}/DocumentReference/CDex-Document-Reference-${resourcesId}?upsert=true`,
+                                  data: JSON.stringify(
+                                    CDEX.documentReferencePayload
+                                  ),
+                                  contentType: "application/json",
+                                };
+                                $.ajax(configProvider).then((response) => {
+                                  const claimId = $("#currentClaimId").text();
+                                  $("#binary-output").html(
+                                    JSON.stringify(response, null, "  ")
+                                  );
+                                  let supportingInfo = {
+                                    sequence: seq,
+                                    category: {
+                                      text: "sample text",
+                                    },
+                                    valueReference: {
+                                      reference: `DocumentReference/CDex-Document-Reference-${resourcesId}`,
+                                    },
+                                  };
+                                  res.item[
+                                    res.item.length - 1
+                                  ].informationSequence.push(
+                                    supportingInfo.sequence
+                                  );
+                                  res.supportingInfo.push(supportingInfo);
+                                  CLAIM.claimUpsert(
+                                    res,
+                                    CDEX.payerEndpoint.url
+                                  );
+                                  $("#req-claim-output").html(
+                                    JSON.stringify(res, null, "  ")
+                                  );
+                                  attachment = {
+                                    name: "Attachment",
+                                    part: lineItemsAttch.concat([
+                                      {
+                                        name: "LineItem",
+                                        valueString: "1",
+                                      },
+                                      {
+                                        name: "Code",
+                                        valueCodeableConcept: {
+                                          coding: [
+                                            {
+                                              system: "http://loinc.org",
+                                              code: `${$(
+                                                `#${selectedValues[0]}`
+                                              ).text()}`,
+                                              display: `${$(
+                                                `#${selectedValues[0]}`
+                                              ).text()}`,
+                                            },
+                                          ],
+                                        },
+                                      },
+                                      {
+                                        name: "Content",
+                                        resource: response,
+                                      },
+                                    ]),
+                                  };
+                                });
+
+                                const selectedValues = $(
+                                  `#lineItem_solicitedAttch`
+                                ).val();
+                                let lineItemsAttch = [];
+                                selectedValues.forEach((value) => {
+                                  const lineItem = value.split("_")[1];
+                                  lineItemsAttch.push({
+                                    name: "LineItem",
+                                    valueString: `${lineItem}`,
+                                  });
+                                });
+
+                                parameter.push(attachment);
+                                CDEX.attachmentRequestedPayload.parameter =
+                                  parameter;
+                                configProvider = {
+                                  type: "POST",
+                                  url: `https://cdex-commreq.davinci.hl7.org/$submit-attachment`,
+                                  data: JSON.stringify(
+                                    CDEX.attachmentRequestedPayload
+                                  ),
+                                  contentType: "application/json",
+                                };
+                                if ($("#customPayerEndpoint").val() !== "") {
+                                  configProvider.url = `${$(
+                                    "#customPayerEndpoint"
+                                  ).val()}/$submit-attachment`;
+                                  configProvider.type = "POST";
+                                }
+                                $.ajax(configProvider)
+                                  .then((response) => {
+                                    $("#req-parameter-output").html(
+                                      JSON.stringify(
+                                        CDEX.attachmentRequestedPayload,
+                                        null,
+                                        "  "
+                                      )
+                                    );
+                                    $("#req-operation-output").html(
+                                      JSON.stringify(
+                                        response, //operationOutcome,
+                                        null,
+                                        "  "
+                                      )
+                                    );
+                                  })
+                                  .catch((error) => {
+                                    console.log(JSON.stringify(error));
+                                  });
+                                CDEX.displayScreen("attch-req-confirm-screen");
+                              } else {
+                                CLAIM.claimUpsert(res, CDEX.payerEndpoint.url);
+                                $("#req-claim-output").html(
+                                  JSON.stringify(res, null, "  ")
+                                );
+                              }
+                            };
+                          }
+                        }
 
                         //Update attachments
-                        let accessToken = JSON.parse(
-                          sessionStorage.getItem("tokenResponse")
-                        );
-
                         for (let index = 1; index <= current_attch; index++) {
                           if ($(`#chk_${index}`).is(":checked")) {
                             configProvider = {
@@ -2307,9 +2455,6 @@ if (!CLAIM) {
                                 `#chk_${index}`
                               ).val()}`,
                               contentType: "application/fhir+json",
-                              /*headers: {
-                                authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-                              },*/
                             };
                             const selectedValues = $(
                               `#lineItem_${index}`
@@ -2475,9 +2620,6 @@ if (!CLAIM) {
                                     attachment.part[2].resource
                                   ),
                                   contentType: "application/json",
-                                  headers: {
-                                    authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-                                  },
                                 };
                                 $.ajax(provider)
                                   .then((response) => {
@@ -2713,6 +2855,12 @@ if (!CLAIM) {
       },*/
     };
 
+    if ($("#questSubAttchPayerEndpoint").val() !== "") {
+      configProvider.url = `${$(
+        "#questSubAttchPayerEndpoint"
+      ).val()}/$submit-attachment`;
+    }
+
     $.ajax(configProvider).then((response) => {
       $("#req-parameter-output").html(JSON.stringify(response, null, "  "));
       $("#req-operation-output").html(
@@ -2721,6 +2869,9 @@ if (!CLAIM) {
       // Claim
       CLAIM.claimLookupById(taskReq.reasonReference.identifier.value).then(
         (results) => {
+          if (!results.supportingInfo) {
+            results.supportingInfo = [];
+          }
           results.supportingInfo.push({
             valueReference: {
               reference: `QuestionnaireResponse/${attchRes.id}`,
@@ -3111,7 +3262,7 @@ if (!CLAIM) {
               $.ajax(configProvider)
                 .then((response) => {
                   $("#parameter-output").html(
-                    JSON.stringify(response, null, "  ")
+                    JSON.stringify(CDEX.attachmentPayload, null, "  ")
                   );
                   $("#operation-output").html(
                     JSON.stringify(operationOutcome, null, "  ")
