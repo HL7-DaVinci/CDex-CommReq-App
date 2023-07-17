@@ -3,8 +3,6 @@ const request = require("request");
 const router = Router();
 const _ = require("underscore");
 
-const data = require("../attachments.json");
-
 const baseurl = "https://api.logicahealth.org/DaVinciCDexPayer/open";
 
 router.post("/", (req, res) => {
@@ -49,9 +47,9 @@ router.post("/", (req, res) => {
               attchType = part.resource.entry[3].resource.resourceType;
             } else {
               let index = 0;
-              if (part.resource.resourceType === "QuestionnaireResponse") {
-                index = 1;
-              } else {
+              if (part.resource.resourceType !== "QuestionnaireResponse") {
+                //   index = 1;
+                // } else {
                 for (pos = 0; pos < element.part.length; pos++) {
                   if (element.part[pos].name === "Content") {
                     index = pos;
@@ -67,10 +65,10 @@ router.post("/", (req, res) => {
         });
       }
     });
-    //*******************
+
     patientLookup(memberId).then((value) => {
-      if (value.resourceType != "Patient") {
-        res.send(value); //operationOutcome
+      if (value.resourceType !== "Patient" && value.resourceType !== "Bundle") {
+        res.send(operationOutcome); //value
       } else {
         claimLookup(claimId).then((value) => {
           if (value.resourceType !== "Claim") {
@@ -230,7 +228,7 @@ claimLookup = async (claimId) => {
 patientLookup = async (memberId) => {
   return new Promise((resolve) => {
     request(
-      `${baseurl}/Patient?identifier=${memberId}`,
+      `${baseurl}/Patient/${memberId}`,
       { json: true },
       (err, resp, body) => {
         if (!err) resolve(body);
