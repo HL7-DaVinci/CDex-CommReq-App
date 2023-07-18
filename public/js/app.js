@@ -2738,7 +2738,7 @@ if (!CLAIM) {
                                         "  "
                                       )
                                     );
-                                    if (response.resourceType === "Bundle") {
+                                    if (response.resourceType) {
                                       //${currentTaskId}
                                       configProvider.type = "GET";
                                       configProvider.url = `${

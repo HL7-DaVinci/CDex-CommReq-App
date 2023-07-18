@@ -57,9 +57,11 @@ router.post("/", (req, res) => {
                   }
                 }
               }
-              attchId = element.part[index].resource.id;
-              resource = element.part[index].resource;
-              attchType = element.part[index].resource.resourceType;
+              resource = element.part[index].resource
+                ? element.part[index].resource
+                : element.part[1].resource;
+              attchId = resource.id;
+              attchType = resource.resourceType;
             }
           }
         });
