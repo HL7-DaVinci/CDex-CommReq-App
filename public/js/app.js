@@ -82,6 +82,22 @@ if (!CLAIM) {
     }
   };
 
+  CDEX.completeTask = (taskId) => {
+    const configProvider = {
+      type: "GET",
+      url: `${CDEX.providerEndpoints[0].url}/Task/${taskId}`,
+      contentType: "application/fhir+json",
+    };
+    $.ajax(configProvider).then((taskResource) => {
+      taskResource.status = "completed";
+      configProvider.type = "PUT";
+      configProvider.data = JSON.stringify(taskResource);
+      $.ajax(configProvider).then((modifiedTaskRes) => {
+        alert(`Task ${modifiedTaskRes.id} status changed to completed`);
+      });
+    });
+  };
+
   $("#attachment-codes").click(function () {
     $("#lineItems").show();
     $("#incloincCodes").show();
@@ -2425,6 +2441,11 @@ if (!CLAIM) {
                                           "  "
                                         )
                                       );
+                                      if (response.resourceType) {
+                                        CDEX.completeTask(
+                                          $("#currentTaskId").text()
+                                        );
+                                      }
                                     })
                                     .catch((error) => {
                                       console.log(JSON.stringify(error));
@@ -2739,26 +2760,8 @@ if (!CLAIM) {
                                       )
                                     );
                                     if (response.resourceType) {
-                                      //${currentTaskId}
-                                      configProvider.type = "GET";
-                                      configProvider.url = `${
-                                        CDEX.providerEndpoints[0].url
-                                      }/Task/${$("#currentTaskId").text()}`;
-                                      delete configProvider.data;
-                                      $.ajax(configProvider).then(
-                                        (taskResource) => {
-                                          taskResource.status = "completed";
-                                          configProvider.type = "PUT";
-                                          configProvider.data =
-                                            JSON.stringify(taskResource);
-                                          $.ajax(configProvider).then(
-                                            (modifiedTaskRes) => {
-                                              alert(
-                                                `Task ${modifiedTaskRes.id} status changed to completed`
-                                              );
-                                            }
-                                          );
-                                        }
+                                      CDEX.completeTask(
+                                        $("#currentTaskId").text()
                                       );
                                     }
                                   })
