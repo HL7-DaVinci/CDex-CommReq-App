@@ -37,7 +37,7 @@ router.post("/", (req, res) => {
       if (element.name === "MemberId") {
         memberId = element.valueIdentifier.value;
       } else if (element.name === "TrackingId") {
-        claimId = element.valueString;
+        claimId = element.valueIdentifier.value;
       } else if (element.name === "Attachment") {
         element.part.forEach((part) => {
           if (part.name === "Content") {
@@ -230,7 +230,7 @@ claimLookup = async (claimId) => {
 patientLookup = async (memberId) => {
   return new Promise((resolve) => {
     request(
-      `${baseurl}/Patient/${memberId}`,
+      `${baseurl}/Patient?identifier=${memberId}`,
       { json: true },
       (err, resp, body) => {
         if (!err) resolve(body);
