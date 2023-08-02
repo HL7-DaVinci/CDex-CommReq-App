@@ -37,7 +37,7 @@ router.post("/", (req, res) => {
       if (element.name === "MemberId") {
         memberId = element.valueIdentifier.value;
       } else if (element.name === "TrackingId") {
-        claimId = element.valueIdentifier.value;
+        claimId = element.valueString;
       } else if (element.name === "Attachment") {
         element.part.forEach((part) => {
           if (part.name === "Content") {
