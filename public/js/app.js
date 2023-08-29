@@ -1820,98 +1820,36 @@ if (!CLAIM) {
                             <td>${task.resource.status}</td>
                         </tr>`);
               $(`#btn-${task.resource.id}`).on("click", () => {
-                $("#questionnaire-patient-name").html(
-                  `${CDEX.patient.name[0].given[0]} ${CDEX.patient.name[0].family}`
-                );
-                $("#btn-submit-questionnaire-attch").click(function () {
-                  let questionnaireResponse = CDEX.questionnaireResponse;
-                  questionnaireResponse.subject.identifier.value =
-                    CDEX.patient.id;
-                  questionnaireResponse.subject.display = `${CDEX.patient.name[0].given[0]} ${CDEX.patient.name[0].family}`;
-                  let accessToken = JSON.parse(
-                    sessionStorage.getItem("tokenResponse")
-                  );
-                  let payerConfig = {
-                    type: "POST",
-                    url: `${CDEX.providerEndpoints[1].url}/QuestionnaireResponse`,
-                    data: JSON.stringify(questionnaireResponse),
-                    contentType: "application/fhir+json",
-                    headers: {
-                      authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-                    },
-                  };
-                  $.ajax(payerConfig).then((quest) => {
-                    task.resource.status = "completed";
-                    task.resource.output = [];
-                    task.resource.output.push({
-                      type: {
-                        coding: [
-                          {
-                            system:
-                              "http://hl7.org/fhir/uv/sdc/CodeSystem/temp",
-                            code: "questionnaire-response",
-                          },
-                        ],
-                      },
-                      valueReference: {
-                        reference: `QuestionnaireResponse/${quest.id}`,
-                      },
-                    });
-                    payerConfig.type = "PUT";
-                    payerConfig.url = `https://api.logicahealth.org/DaVinciCDexProvider/open/Task/${task.resource.id}`;
-                    payerConfig.data = JSON.stringify(task.resource);
-                    $.ajax(payerConfig).then((taskResponse) => {
-                      $("#quest-resp-output").html(
-                        JSON.stringify(quest, null, "  ")
-                      );
-                      $("#upd-task-output").html(
-                        JSON.stringify(taskResponse, null, "  ")
-                      );
-                      CDEX.displayScreen("questionnaire-req-confirm-screen");
-                    });
-                  });
-                });
+                //DTR context creation
+                const dtrContext = {
+                  context: {
+                    patientId: CDEX.patient.id,
+                    userId: "Practitioner/cdex-example-practitioner",
+                    taskId: task.resource.id  
+                  },
+                  prefetch: {
+                    patientToGreet: {
+                      resourceType: "Patient",
+                      gender: CDEX.patient.gender,
+                      birthDate: CDEX.patient.birthDate,
+                      id: CDEX.patient.id,
+                      active: true
+                    }
+                  }
+                }
 
-                //Get Task
-                let accessToken = JSON.parse(
-                  sessionStorage.getItem("tokenResponse")
-                );
-
-                let provider = {
-                  type: "GET",
-                  url: `${CDEX.providerEndpoints[1].url}/Task/${task.resource.id}`,
-                  contentType: "application/fhir+json",
+                //GET DTR endpoint
+                let dtrConfig = {
+                  type: "POST",
+                  url: "https://repocmcgpalmquest0523.azurewebsites.net/cdex-services/start-dtr",
+                  data: JSON.stringify(dtrContext),
                   headers: {
-                    authorization: `${accessToken.token_type} ${accessToken.access_token}`,
+                    "Content-Type": "application/json"
                   },
                 };
-                let requestedSignComponent = "";
-                let requestedSign = false;
-                $.ajax(provider).then((res) => {
-                  let questClaimId = "";
-                  res.input.forEach((input) => {
-                    if (input.type.coding[0].code === "signature-flag") {
-                      requestedSignComponent = input.valueBoolean
-                        ? '<div class="bg-warning w-25"><b>Signature requested</b></div>'
-                        : '<div class="bg-success w-25"><b>Signature not requested</b></div>';
-                      requestedSign = input.valueBoolean;
-                    }
-                    $("#requested-task-payload").text(
-                      JSON.stringify(res, null, "  ")
-                    );
-                    questClaimId = res.reasonReference.identifier.value;
-                  });
-
-                  $("#requested-questionnaire-payload").text(
-                    JSON.stringify(CDEX.questionnairePayload, null, "  ")
-                  );
-                  $("#questionnaireSignature").html("");
-                  $("#questionnaireSignature").append(
-                    `<div class="bg-info w-25"><b>Claim: ${questClaimId}</b></div>`
-                  );
-                  $("#questionnaireSignature").append(requestedSignComponent);
+                $.ajax(dtrConfig).then(dtrLaunchUrl => {
+                  alert(dtrLaunchUrl);
                 });
-                CDEX.displayScreen("attch-questionnaire-screen");
               });
             } else {
               $("#tasks-list").append(`<tr>
@@ -2171,6 +2109,7 @@ if (!CLAIM) {
                       let lineItemsAttch = [];
                       const resourcesId = Date.now();
                       const currentDate = new Date().toISOString().slice(0, 10);
+                      const member = CDEX.patient.identifier.find(id => id.system === "http://example.org/cdex/payer/member-ids");
                       let parameter = [
                         {
                           name: "AttachTo",
@@ -2201,7 +2140,7 @@ if (!CLAIM) {
                           name: "MemberId",
                           valueIdentifier: {
                             system: "http://example.org/cdex/member-ids",
-                            value: `${CDEX.patient.id}`,
+                            value: `${member.value}`,
                           },
                         },
                         {
@@ -2808,6 +2747,7 @@ if (!CLAIM) {
     CDEX.claimPayloadAttachment.patient.reference = `Patient/${CDEX.patient.id}`;
     attchRes = JSON.parse($("#quest-resp-output").html());
     taskReq = JSON.parse($("#requested-task-payload").html());
+    const member = CDEX.patient.identifier.find(id => id.system === "http://example.org/cdex/payer/member-ids");
     let parameter = [
       {
         name: "AttachTo",
@@ -2831,7 +2771,7 @@ if (!CLAIM) {
         name: "MemberId",
         valueIdentifier: {
           system: "http://example.org/cdex/member-ids",
-          value: `${CDEX.patient.id}`,
+          value: `${member.value}`,
         },
       },
       {
