@@ -37,7 +37,7 @@ router.post("/", (req, res) => {
       if (element.name === "MemberId") {
         memberId = element.valueIdentifier.value;
       } else if (element.name === "TrackingId") {
-        claimId = element.valueString;
+        claimId = element.valueString ? element.valueString : element.valueIdentifier.value;
       } else if (element.name === "Attachment") {
         element.part.forEach((part) => {
           if (part.name === "Content") {
@@ -56,10 +56,13 @@ router.post("/", (req, res) => {
                     break;
                   }
                 }
-              }
-              resource = element.part[index].resource
+                resource = element.part[index].resource
                 ? element.part[index].resource
                 : element.part[1].resource;
+                
+              } else {
+                resource = element.part[2].resource;
+              }
               attchId = resource.id;
               attchType = resource.resourceType;
             }
