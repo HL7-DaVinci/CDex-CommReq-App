@@ -346,8 +346,8 @@
                     </span>
                 </a>
             </p>
-            <label for="name"><b>Custom payer endpoint: </b></label>
-            <input type="text" id="subUnsAttchPayerEndpoint" name="customPayerEndpoint" required
+            <label for="subUnsAttchPayerEndpoint"><b>Custom payer endpoint: </b></label>
+            <input type="text" id="subUnsAttchPayerEndpoint" name="subUnsAttchPayerEndpoint" required
                 placeholder="https://api.logicahealth.org/DaVinciCDexPayer/open"><br>
         </div>
     </div>
@@ -692,7 +692,7 @@
                 </div>
             </div>
         </div>
-        <label for="name"><b>Custom provider endpoint: </b></label>
+        <label for="customProviderEndpoint"><b>Custom provider endpoint: </b></label>
         <input type="text" id="customProviderEndpoint" name="customProviderEndpoint" required
             placeholder="https://api.logicahealth.org/DaVinciCDexProvider/open">
         <a class="btninfo" href="#" data-toggle="tooltip" data-placement="bottom">
@@ -724,7 +724,7 @@
             </div>
             <br>
             <div>
-                <p><b>Tasks Using Questionnaire to Request Additional Information</b></p>
+                <p><b>Tasks Using Questionnaire to Request Additional Information</b> <button id="refreshQuestionnaires"><i class="fa fa-refresh" style="color:green"></i></button></p>
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -761,7 +761,7 @@
                 <tbody id="selection-list">
                 </tbody>
             </table>
-            <label for="name"><b>Custom payer endpoint: </b></label>
+            <label for="customPayerEndpoint"><b>Custom payer endpoint: </b></label>
             <input type="text" id="customPayerEndpoint" name="customPayerEndpoint" required
                 placeholder="https://api.logicahealth.org/DaVinciCDexPayer/open">
         </div>
@@ -801,7 +801,10 @@
                     The Task.code “attachment-request-questionnaire” triggers Provider to Launch DTR to complete the questionnaire."
                 </span>
             </label></br>
-            <img src="../images/favicon.png" alt="Questionnaire">
+            <div>
+                <iframe name="iFrameDTR" id="iFrameDTR"></iframe>
+            </div>
+            <!-- <img src="../images/favicon.png" alt="Questionnaire">
             <p class="text-danger"><b>This will launch a simulation of DTR process before submit the requested
                     attachment</b></p>
             </p>
@@ -826,7 +829,7 @@
                     <b>Complete questionnaire:</b><br>
                     The DTR App uses the Questionnaire and results from any CQL execution to generate and complete a QuestionnaireResponse.
                 </span>
-            </a>
+            </a>  -->
         </div>
     </div>
 
@@ -838,7 +841,7 @@
             <p class="card-text">Operation outcome</p>
             <p class="card-text"><textarea id="req-operation-output"></textarea></p>
             <p class="card-text" id="claimLabel">Claim updated</p>
-            <p class="card-text"><textarea id="req-claim-output"></textarea></p>
+            <p class="card-text"><textarea id="req-claim-output"></textarea></p> 
             <p class="card-text">
                 <a href="#" class="btn btn-primary" id="req-attch-btn-restart">OK</a>
                 <a href="#" class="btn btn-primary" id="req-download-resources">Download resources</a>
@@ -865,8 +868,8 @@
                 </span>
             </label></br>
             <p class="card-text"><textarea id="upd-task-output"></textarea></p>
-            <label for="name"><b>Custom payer endpoint: </b></label>
-            <input type="text" id="questSubAttchPayerEndpoint" name="customPayerEndpoint" required
+            <label for="questSubAttchPayerEndpoint"><b>Custom payer endpoint: </b></label>
+            <input type="text" id="questSubAttchPayerEndpoint" name="questSubAttchPayerEndpoint" required
                 placeholder="https://api.logicahealth.org/DaVinciCDexPayer/open"><br><br>
             <p class="card-text">
                 <a href="#" class="btn btn-primary" id="quest-download-resources">Download resources</a>
