@@ -266,6 +266,7 @@ if (!CDEX) {
       reference: CDEX.payerEndpoint.url + "/Claim/cdex-example-claim",
     },
     input: [],
+    output: []
   };
 
   CDEX.subscriptionPayload = {
@@ -5100,7 +5101,21 @@ if (!CDEX) {
         valueBoolean: false,
       },
     ],
-    output: [],
+    output: [
+      {
+        type: {
+          coding: [
+            {
+              system: "http://hl7.org/fhir/uv/sdc/CodeSystem/temp",
+              code: "questionnaire-response"
+            }
+          ]
+        },
+        valueReference: {
+          reference: ""
+        }
+      }
+    ],
   };
 
   CDEX.loincTypes = {
