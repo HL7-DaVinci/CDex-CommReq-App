@@ -153,6 +153,11 @@
                     </ul>
                 </span>
             </a>
+            <div class="card-body row">
+                <a href="#" class="btn btn-secondary" id="btn-submit-priorauth" data-toggle="tooltip" data-placement="top">Submit Prior Auth Request
+                    <span><b>Submit PAS Request Bundle to PAS RI using the $submit Operation:<br></b></span>
+                </a>
+            </div>
         </div>
     </div>
     <div></div>
@@ -804,32 +809,6 @@
             <div>
                 <iframe name="iFrameDTR" id="iFrameDTR"></iframe>
             </div>
-            <!-- <img src="../images/favicon.png" alt="Questionnaire">
-            <p class="text-danger"><b>This will launch a simulation of DTR process before submit the requested
-                    attachment</b></p>
-            </p>
-            <label class="stayover" data-toggle="tooltip" data-placement="bottom">Task
-                <span>
-                    The Provider’s local reference to Task is shared with the DTR App.
-                </span>
-            </label></br>
-            <p class="card-text"><textarea id="requested-task-payload"></textarea></p>
-            <label class="stayover" data-toggle="tooltip" data-placement="bottom">Questionnaire
-                <span>
-                    DTR App inspects the Task for the questionnaire URL in the Task.input and then<br>
-                    fetches the Questionnaire (and any CQL rules defined within it).
-                </span>
-            </label></br>
-            <p class="card-text"><textarea id="requested-questionnaire-payload"></textarea></p>
-            <button type="button" class="btn btn-secondary" id="btn-back-task-list">Back</button>
-            <button type="button" class="btn btn-primary" id="btn-submit-questionnaire-attch">Complete Questionnaire</button>
-            <a class="btninfo" href="#" data-toggle="tooltip" data-placement="bottom">
-                <i class="fa fa-info"></i>
-                <span>
-                    <b>Complete questionnaire:</b><br>
-                    The DTR App uses the Questionnaire and results from any CQL execution to generate and complete a QuestionnaireResponse.
-                </span>
-            </a>  -->
         </div>
     </div>
 
@@ -880,6 +859,30 @@
                         The Provider “pushes” the QuestionnaireResponse directly to the Payer-defined endpoint using the $submit-attachments operation.
                     </span>
                 </a>
+            </p>
+        </div>
+    </div>
+
+    <div id="preauth-response-screen" class="card alert-info screen dvt">
+        <div class="card-body">
+            <h5 class="card-title">PAS Claim Response Bundle returned by the PAS Server</h5>
+            <p class="card-text">Request successfully sent to $submit endpoint</p>
+            <p class="card-text"><textarea id="preauth-text-output"></textarea></p>
+            <p class="card-text">
+                <a href="#" class="btn btn-secondary" id="preauth-btn-restart">Back</a>
+                <a href="#" class="btn btn-primary" id="btn-process-request">Process Request</a>
+            </p>
+        </div>
+    </div>
+
+    <div id="preauth-task-screen" class="card alert-info screen dvt">
+        <div class="card-body">
+            <h5 class="card-title">Map the PAS Response Bundle to a CDex Task Attachment</h5>
+            <p class="card-text">The task to create in the Provider endpoint</p>
+            <p class="card-text"><textarea id="preauthtask-text-output"></textarea></p>
+            <p class="card-text">
+                <a href="#" class="btn btn-secondary" id="preauthtask-btn-back">Back</a>
+                <a href="#" class="btn btn-primary" id="btn-preauthtask-request">Create Task</a>
             </p>
         </div>
     </div>

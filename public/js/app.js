@@ -13,6 +13,8 @@ if (!CLAIM) {
   CLAIM = {};
 }
 
+let parsed;
+
 (function () {
   CDEX.client = null;
   CDEX.patient = null;
@@ -67,13 +69,14 @@ if (!CLAIM) {
     $("#query-request-screen").hide();
     $("#attachment-confirm-screen").hide();
     $("#attachment-requested-screen").hide();
-    $("#attachment-submit-screen").hide();
     $("#request-provider-attachments").hide();
     $("#submit-payer-attachments").hide();
     $("#attch-request-screen").hide();
     $("#attch-req-confirm-screen").hide();
     $("#attch-questionnaire-screen").hide();
     $("#questionnaire-req-confirm-screen").hide();
+    $("#preauth-response-screen").hide();
+    $("#preauth-task-screen").hide();
 
     if (screenID === "intro-screen") {
       $("#task-intro-screen").show();
@@ -1668,7 +1671,7 @@ if (!CLAIM) {
               configProvider.type + " " + configProvider.url
             );
             $("#text-output").html(
-              JSON.stringify(CDEX.taskPayload, null, "  ")
+              JSON.stringify(CDEX.taskPayload, null, 2)
             );
 
             if (CDEX.subscribe) {
@@ -3012,6 +3015,66 @@ if (!CLAIM) {
   $("#btn-task-request").click(function () {
     CDEX.displayDataRequestScreen();
     CDEX.addTypeSelection();
+  });
+
+  $("#btn-submit-priorauth").click(function () {
+    configProvider = {
+      type: "POST",
+      url: `https://cdex-commreq.davinci.hl7.org/$submit`,
+      data: JSON.stringify(CDEX.priorAuthPayload),
+      contentType: "application/json",
+    };
+    $.ajax(configProvider).then((response) => {
+      parsed = JSON.parse(response);
+      $("#preauth-text-output").html(JSON.stringify(parsed, null, 2));
+    }).catch(function (error) {
+        $("#preauth-text-output").html(JSON.stringify(error, null, 2));
+      });
+
+    CDEX.displayScreen("preauth-response-screen");
+  });
+
+  $("#preauth-btn-restart").click(function () {
+    CDEX.displayScreen("intro-screen");
+  });
+
+  $("#preauthtask-btn-back").click(function () {
+    CDEX.displayScreen("preauth-response-screen");
+  });
+
+  $("#btn-preauthtask-request").click(function () {
+    alert("Work in progress. Sorry for the inconvenience");
+  });
+
+  $("#btn-process-request").click(function () {
+    try {
+      //const paToMap = JSON.stringify($("#preauth-text-output").html());
+      CDEX.taskPayload.authoredOn = CDEX.now();
+      CDEX.taskPayload.lastModified = CDEX.taskPayload.authoredOn;
+      parsed.entry.forEach(entry => {
+        switch (entry.resource.resourceType) {
+          case "ClaimResponse":
+            CDEX.taskPayload.id = `PAS-${entry.resource.id}`;
+            CDEX.taskPayload.reasonReference.reference = `${entry.resource.id}`;
+            CDEX.taskPayload.reasonCode = "preauthorization";
+            CDEX.taskPayload.requester.reference = `${entry.resource.insurer.reference}`;
+            break;
+          case "Patient":
+            CDEX.taskPayload.for.reference = entry.resource.id;
+            break;
+          case "PractitionerRole":
+            CDEX.taskPayload.owner.reference = entry.resource.practitioner.reference;
+            break;
+          default:
+            break;
+        }
+      });
+      $("#preauthtask-text-output").html(JSON.stringify(CDEX.taskPayload, null, 2));
+    } catch (error) {
+      $("#preauthtask-text-output").html(error);
+    }
+    
+    CDEX.displayScreen("preauth-task-screen");
   });
 
   $("#btn-query-request").click(function () {
