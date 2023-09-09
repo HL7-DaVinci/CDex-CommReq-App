@@ -286,7 +286,10 @@ if (!CDEX) {
         text: "claim"
     },
     reasonReference: {
-      reference: CDEX.payerEndpoint.url + "/Claim/cdex-example-claim",
+      identifier: {
+          system: "http://example.org/cdex/payer/claim-ids",
+          value: "CLAIM-CONN-MAY23"
+        }
     },
     input: [],
     output: []
