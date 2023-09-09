@@ -68,7 +68,9 @@ img {
 #requested-task-payload,
 #requested-questionnaire-payload,
 #quest-resp-output,
-#upd-task-output {
+#upd-task-output,
+#preauth-text-output,
+#preauthtask-text-output {
   height: 300px;
   width: 900px;
 }
