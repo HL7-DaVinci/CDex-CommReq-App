@@ -238,6 +238,22 @@ if (!CDEX) {
         reference: "CommunicationRequest/cdex-example-communication-request",
       },
     ],
+    identifier: [
+        {
+            type: {
+                coding: [
+                    {
+                      system: "http://hl7.org/fhir/us/davinci-cdex/CodeSystem/cdex-temp",
+                      code: "tracking-id",
+                      display: "Tracking Id"
+                    }
+                ],
+                text: "Re-Association Tracking Control Number"
+            },
+            system: "https://api.logicahealth.org/DaVinciCDexPayer/open",
+            value: "CLAIM-CONN-MAY23"
+        }
+    ],
     status: "requested",
     intent: "order",
     code: {
@@ -260,7 +276,14 @@ if (!CDEX) {
       reference: "Organization/cdex-example-provider",
     },
     reasonCode: {
-      text: "Support prior authorization decision-making",
+      coding: [
+            {
+                system: "http://hl7.org/fhir/claim-use",
+                code: "claim",
+                display: "Claim"
+            }
+        ],
+        text: "claim"
     },
     reasonReference: {
       reference: CDEX.payerEndpoint.url + "/Claim/cdex-example-claim",
