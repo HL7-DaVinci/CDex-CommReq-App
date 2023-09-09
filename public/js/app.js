@@ -2009,11 +2009,17 @@ let parsed;
                 $("#attch-request-data").html("");
                 $("#attch-request-data").append(
                   `<p><b>Traking ID: </b><label id="currentTaskId">${task.resource.id}</label></p>
-                  <p><b>Use: </b>${task.resource.reasonCode.coding[0].display}</p>
+                  <p><b>Use: </b>${task.resource.reasonCode.coding[0].display ?
+                     task.resource.reasonCode.coding[0].display : 
+                      task.resource.reasonCode ?
+                       task.resource.reasonCode : 
+                        "Non specified"}</p>
                   <p><b>Payer URL: </b>${task.resource.identifier[0].system}</p>`
                 );
                 let claimForTask =
-                  task.resource.reasonReference.identifier.value;
+                  task.resource.reasonReference.identifier ?
+                  task.resource.reasonReference.identifier.value :
+                  task.resource.reasonReference.reference;
                 $("#attch-request-list").append(
                   `<p><b>Claim: </b><span id="currentClaimId">${claimForTask}</span></p><p><b>Requested attachments: </b></p>`
                 );
@@ -3043,7 +3049,24 @@ let parsed;
   });
 
   $("#btn-preauthtask-request").click(function () {
-    alert("Work in progress. Sorry for the inconvenience");
+    parsed = JSON.parse($("#preauthtask-text-output").html());
+     let configProvider = {
+            type: "PUT",
+            url: `${CDEX.providerEndpoints[0].url}/Task/${parsed.id}?upsert=true`,
+            data: JSON.stringify(parsed),
+            contentType: "application/json",
+          };
+          $.ajax(configProvider).then((task) => {
+            if(task.resourceType === "Task") {
+              alert(`Task ${task.id} successfuly created`);
+              CDEX.displayScreen("intro-screen");
+            } else {
+              alert("Invalid Task resource");
+            }
+          }).catch(error => {
+            console.log(error);
+          });
+    
   });
 
   $("#btn-process-request").click(function () {
@@ -3051,19 +3074,35 @@ let parsed;
       //const paToMap = JSON.stringify($("#preauth-text-output").html());
       CDEX.taskPayload.authoredOn = CDEX.now();
       CDEX.taskPayload.lastModified = CDEX.taskPayload.authoredOn;
+      CDEX.taskPayload.input = [];
       parsed.entry.forEach(entry => {
         switch (entry.resource.resourceType) {
           case "ClaimResponse":
             CDEX.taskPayload.id = `PAS-${entry.resource.id}`;
+            CDEX.taskPayload.identifier[0].value = `${entry.resource.id}`;
             CDEX.taskPayload.reasonReference.reference = `${entry.resource.id}`;
-            CDEX.taskPayload.reasonCode = "preauthorization";
-            CDEX.taskPayload.requester.reference = `${entry.resource.insurer.reference}`;
+            CDEX.taskPayload.reasonCode.coding[0].code = "preauthorization";
+            CDEX.taskPayload.reasonCode.coding[0].display = "Pre-Authorization";
+            CDEX.taskPayload.reasonCode.text = "preauthorization";
+            CDEX.taskPayload.requester.reference = "Organization/cdex-example-provider";//`${entry.resource.insurer.reference}`;
+            entry.resource.item[0].extension.forEach(extension => {
+              if(extension.url.includes("itemRequestedServiceDate")) {
+                CDEX.taskPayload.input.push({
+                  "service-date": extension.valueDateTime
+                });
+              }
+            });
             break;
           case "Patient":
-            CDEX.taskPayload.for.reference = entry.resource.id;
+            CDEX.taskPayload.for.reference = `Patient/${CDEX.patient.id}`;//entry.resource.id;
             break;
           case "PractitionerRole":
-            CDEX.taskPayload.owner.reference = entry.resource.practitioner.reference;
+            CDEX.taskPayload.owner.reference = "Practitioner/cdex-example-practitioner";//entry.resource.practitioner.reference;
+            break;
+          case "CommunicationRequest":
+            CDEX.taskPayload.input.push(entry.resource.payload);
+            CDEX.taskPayload.basedOn[0] = `CommunicationRequest/${entry.resource.id}`;
+            //TODO: Create resource
             break;
           default:
             break;
