@@ -2064,9 +2064,11 @@ let parsed;
                         );
                       }
                     }
-                    $("#attch-request-list").append(`
-                                <p>${attch.valueCodeableConcept.coding[0].code} / ${attch.valueCodeableConcept.coding[0].display} ${lineItems}</p>
-                            `);
+                    if(attch.valueCodeableConcept.coding[0].system === "http://loinc.org") {
+                      $("#attch-request-list").append(`
+                          <p>${attch.valueCodeableConcept.coding[0].code} / ${attch.valueCodeableConcept.coding[0].display} ${lineItems}</p>
+                      `);
+                    }
                   }
                 });
 
@@ -3099,7 +3101,7 @@ let parsed;
             CDEX.taskPayload.owner.reference = "Practitioner/cdex-example-practitioner";//entry.resource.practitioner.reference;
             break;
           case "CommunicationRequest":
-            CDEX.taskPayload.input.push(entry.resource.payload);
+            CDEX.taskPayload.input.push(entry.resource.payload[0].extension);
             CDEX.taskPayload.basedOn[0] = `CommunicationRequest/${entry.resource.id}`;
             //TODO: Create resource
             break;
