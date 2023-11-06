@@ -1,5 +1,11 @@
 # CDex-CommReq-App
-Clinical Data Exchange Communication Request Reference Implementation App
+Clinical Data Exchange Communication Request Reference Implementation App.<br>
+This version of the RI is compliant with the STU2 version of the IG
+
+## Questions?
+Contact HealthLX with your requests:<br>
+email: joel.walker@healthlx.com <br>
+email: karell.ruiz@healthlx.com
 
 ## Configure
 
