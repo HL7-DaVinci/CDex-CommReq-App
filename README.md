@@ -1,6 +1,6 @@
 # CDex-CommReq-App
 Clinical Data Exchange Communication Request Reference Implementation App.<br>
-This version of the RI is compliant with the [STU2 version of the IG](https://hl7.org/fhir/us/davinci-cdex/STU2/)
+This version of the RI is compliant with the STU2 version of the [Da Vinci Clinical Data Exchange (CDex) Implementation Guide](https://hl7.org/fhir/us/davinci-cdex/STU2/).
 
 ## Questions?
 Contact HealthLX with your requests:<br>
