@@ -2,10 +2,6 @@ body {
   margin-left: 20px;
 }
 
-.medtd {
-  width: 350px;
-}
-
 td {
   vertical-align: middle;
 }
@@ -83,8 +79,8 @@ img {
   margin-inline: 5px;
 }
 
-table {
-  width: 1000px;
+.table {
+  width: 95%;
 }
 
 a span,

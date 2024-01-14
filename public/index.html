@@ -153,11 +153,17 @@
                     </ul>
                 </span>
             </a>
-            <div class="card-body row">
-                <a href="#" class="btn btn-secondary" id="btn-submit-priorauth" data-toggle="tooltip" data-placement="top">Submit Prior Auth Request
-                    <span><b>Submit PAS Request Bundle to PAS RI using the $submit Operation:<br></b></span>
-                </a>
-            </div>
+        </div>
+        <div class="card-body">
+            <a href="#" class="btn btn-secondary" id="btn-submit-priorauth" data-toggle="tooltip" data-placement="top">Submit Prior Auth Request
+                <span><b>Submit PAS Request Bundle to PAS RI using the $submit Operation<br></b></span>
+            </a>
+            <a href="#" class="btn btn-secondary" id="btn-review-requests" data-toggle="tooltip" data-placement="top">Review Task Based Requests
+                <span>In this scenario, the user works for a provider and wishes to review and respond to information requests from a payer.<br>
+                        The user will review the payer requests, preview the data and confirm what data will be included in the response. In<br>
+                        this example application, the user reviews the data prior to responding. In a production system, this review could be automated<br>
+                        in order to minimize manual review.<br></span>
+            </a>
         </div>
     </div>
     <div></div>
@@ -192,14 +198,13 @@
         </table>
         <button type="button" class="btn btn-secondary" id="btn-back-communication">Back</button>
     </div>
-    <div id="communication-request-screen" class="screen">
-        <h3>Patient: <span id="commRes-patient-name">[loading...]</span></h3>
-        <p>
-            <button type="button" class="btn btn-primary" id="btn-task-request">Create Data Request</button>
-            <a href="#" class="btn btn-primary" id="btn-task-restart-commreq">Cancel</a>
-        </p>
-        <div>
+    <div id="communication-request-screen" class="card alert-info screen dvt">
+        <div class="card-body">
+            <h3>Patient: <span id="commRes-patient-name">[loading...]</span></h3>
             <p>
+                <button type="button" class="btn btn-primary" id="btn-task-request">Create Data Request</button>
+                <a href="#" class="btn btn-primary" id="btn-task-restart-commreq">Cancel</a>
+            </p>
             <div class='dvt'>
                 <table class='table'>
                     <thead>
@@ -211,10 +216,31 @@
                     <tbody id='comm-request-list'></tbody>
                 </table>
             </div>
-            </p>
+            <div id='communication-request-screen-loader'>
+                <p>[loading...]</p>
+            </div>
         </div>
-        <div id='communication-request-screen-loader'>
-            <p>[loading...]</p>
+        <div class="card-header bg-white"></div>
+        <div class="card-body alert-warning">
+            <h3>Data Requests</h3>
+                <div id="communication-request-list">
+                    <p>
+                        <div class='dvt'>
+                            <table class='table' id=>
+                                <thead>
+                                <tr>
+                                    <th class="medtd">Task</th>
+                                    <th class="medtd">Created</th>
+                                    <th class="medtd">Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody id='communication-request-selection-list'>
+                                <tr><td colspan="5" style="text-align:center"></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </p>
+                </div>
         </div>
     </div>
     <div id="direct-query-request-screen" class="card alert-info screen dvt">
@@ -444,9 +470,9 @@
                 <label class="btn btn-primary active">
                     <input type="radio" name="options" id="polling" autocomplete="off" checked> Polling
                 </label>
-                <label class="btn btn-primary">
+                <!-- <label class="btn btn-primary">
                     <input type="radio" name="options" id="subscription" autocomplete="off"> Subscription
-                </label>
+                </label> -->
             </div>
             </p>
         </div>
@@ -470,7 +496,7 @@
             </span>)</h3>
         <p class="alert-warning card-text">
             <strong>Workflow:</strong> <span id="review-workflow" class="card-text"></span><br />
-            <strong>Request:</strong> <span id='final-list'></span>
+            <strong>Request:</strong><br><span id='final-list'></span>
         </p>
         <div>
             <button type="button" class="btn btn-secondary" id="btn-edit">Edit</button>
@@ -485,8 +511,8 @@
             <p class="card-text">Data request (Task) successfully sent to Data Source (Provider). </p>
             <p class="card-text" id="submit-endpoint"></p>
             <p class="card-text"><textarea id="text-output"></textarea></p>
-            <p class="card-text" id="submit-endpoint2"></p>
-            <p class="card-text"><textarea id="text-output2"></textarea></p>
+            <!-- <p class="card-text" id="submit-endpoint2"></p>
+            <p class="card-text"><textarea id="text-output2"></textarea></p> -->
             <p class="card-text"><a href="#" class="btn btn-primary" id="btn-task-restart">OK</a></p>
         </div>
     </div>
