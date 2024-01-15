@@ -3644,7 +3644,7 @@ let parsed;
         switch (entry.resource.resourceType) {
           case "ClaimResponse":
             CDEX.taskPayload.id = `PAS-${entry.resource.id}`;
-            CDEX.taskPayload.reasonReference.identifier.value = `${entry.resource.id}`;
+            CDEX.taskPayload.reasonReference.identifier.value = `${CDEX.taskPayload.identifier[0].value}`; //`${entry.resource.id}`;
             CDEX.taskPayload.reasonCode.coding[0].code = "preauthorization";
             CDEX.taskPayload.reasonCode.coding[0].display = "Pre-Authorization";
             CDEX.taskPayload.reasonCode.text = "preauthorization";
