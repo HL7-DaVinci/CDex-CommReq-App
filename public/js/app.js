@@ -4153,7 +4153,7 @@ let parsed;
     let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
     let configPayer = {
       type: "GET",
-      url: `${CDEX.payerEndpoint.url}/${queryType}`,
+      url: `${CDEX.providerEndpoints[0].url}/${queryType}`,
       contentType: "application/fhir+json",
     };
 
