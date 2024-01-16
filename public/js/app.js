@@ -1856,7 +1856,9 @@ let parsed;
       CDEX.operationTaskPayload.output = CDEX.taskOutputContent;
       CDEX.operationTaskPayload.status = "completed";
       CDEX.operationTaskPayload.businessStatus.text = "Results reviewed for release";
-      CDEX.operationTaskPayload.statusReason.text = "Results reviewed for release";
+      if(CDEX.operationTaskPayload.statusReason) {
+        CDEX.operationTaskPayload.statusReason.text = "Results reviewed for release";
+      }
       let configPayer = {
         type: "PUT",
         url: `${CDEX.providerEndpoints[0].url}${CDEX.submitTaskEndpoint}/${CDEX.operationTaskPayload.id}?_upsert=true`,
@@ -1895,7 +1897,8 @@ let parsed;
 
           let subscribe = CDEX.subscribe;
           let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
-          CDEX.taskPayload.id = subscribe ? CDEX.taskPayload.id : `TBA-${Date.now()}`
+          CDEX.taskPayload.id = subscribe ? CDEX.taskPayload.id : `TBA-${Date.now()}`;
+          CDEX.taskPayload.code.coding[0].code = "data-request-code";
           let configProvider = {
             type: "PUT",
             url:
@@ -2095,7 +2098,9 @@ let parsed;
             let buttons = [];
             const idName = "btnCommReq" + index;
             const idButton = "COMM-" + idName;
-            if (task.resource.code.coding[0].code === "data-request") {
+            if (task.resource.code.coding[0].code === "data-request-code" ||
+             task.resource.code.coding[0].code === "data-request-query" ||
+             task.resource.code.coding[0].code === "data-request-questionnaire") {
               CDEX.tasks.push(task.resource);
               htmlBody = `<tr>
                             <td>
@@ -2545,8 +2550,7 @@ let parsed;
                   };
                   $.ajax(dtrConfig);
                 });
-              } 
-              if(task.resource.code.coding[0].code === "attachment-request") {
+            } else if(task.resource.code.coding[0].code === "attachment-request" || task.resource.code.coding[0].code === "attachment-request-code") {
                 $("#tasks-list").append(`<tr>
                               <td><a href="#" id="btn-${task.resource.id}">${task.resource.id}</a></td>
                               <td>${task.resource.meta.lastUpdated}</td>
@@ -3640,6 +3644,7 @@ let parsed;
       CDEX.taskPayload.authoredOn = CDEX.now();
       CDEX.taskPayload.lastModified = CDEX.taskPayload.authoredOn;
       CDEX.taskPayload.input = [];
+      CDEX.taskPayload.code.coding[0].code = "attachment-request-code";
       parsed.entry.forEach(entry => {
         switch (entry.resource.resourceType) {
           case "ClaimResponse":
