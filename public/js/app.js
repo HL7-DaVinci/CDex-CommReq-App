@@ -2080,11 +2080,46 @@ let parsed;
     }
 };
 
-  CDEX.getNotAttachmentRelatedTasks = () => {
+  CDEX.requestProviderResource = (resourceId) => {
+    let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
     let configProvider = {
       type: "GET",
-      url: `${CDEX.providerEndpoints[0].url}/Task?_sort=-_lastUpdated&_patient=${CDEX.patient.id}`,
+      url: `${CDEX.providerEndpoints[1].url}/Task/${resourceId}`,
       contentType: "application/fhir+json",
+      responseType: "blob",
+      headers: {
+        authorization: `${accessToken.token_type} ${accessToken.access_token}`,
+      },
+    };
+    $.ajax(configProvider).then(res => {
+      var blob = new Blob([JSON.stringify(res, null, "  ")], { type: "application/octetstream" });
+ 
+      //Check the Browser type and download the File.
+      var isIE = false || !!document.documentMode;
+      if (isIE) {
+          window.navigator.msSaveBlob(blob, fileName);
+      } else {
+          var url = window.URL || window.webkitURL;
+          link = url.createObjectURL(blob);
+          var a = $("<a />");
+          a.attr("download", "Task.json");
+          a.attr("href", link);
+          $("body").append(a);
+          a[0].click();
+          $("body").remove(a);
+      }
+    });
+  }
+
+  CDEX.getNotAttachmentRelatedTasks = () => {
+    let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
+    let configProvider = {
+      type: "GET",
+      url: `${CDEX.providerEndpoints[1].url}/Task?_sort=-_lastUpdated&_patient=${CDEX.patient.id}`,
+      contentType: "application/fhir+json",
+      headers: {
+        authorization: `${accessToken.token_type} ${accessToken.access_token}`,
+      },
     };
     $.ajax(configProvider).then(
       (res) => {
@@ -2104,9 +2139,9 @@ let parsed;
               CDEX.tasks.push(task.resource);
               htmlBody = `<tr>
                             <td>
-                                <a href="https://api.logicahealth.org/DaVinciCDexProvider/open/Task/${task.resource.id}">
-                                ${task.resource.id}
-                                </a>
+                            <button class="button-link" onClick="CDEX.requestProviderResource('${task.resource.id}')">
+                            ${task.resource.id}
+                            </button>
                             </td>
                             <td>${task.resource.meta.lastUpdated}</td>
                             <td>
@@ -4144,7 +4179,7 @@ let parsed;
   CDEX.directQueryRequest = () => {
     let queryType = "";
     if ($("#search-criteria").val() === "Observation - HbA1c") {
-      queryType = "Observation?patient=5849&code=4548-4";
+      queryType = `Observation?patient=${CDEX.patient.id}&code=4548-4`;
     } else if ($("#search-criteria").val() !== "custom") {
       queryType = `${$("#search-criteria").val()}?patient=${CDEX.patient.id}`;
     } else {
@@ -4153,7 +4188,7 @@ let parsed;
     let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
     let configPayer = {
       type: "GET",
-      url: `${CDEX.providerEndpoints[0].url}/${queryType}`,
+      url: `${CDEX.payerEndpoint.url}/${queryType}`,
       contentType: "application/fhir+json",
     };
 
