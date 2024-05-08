@@ -2207,7 +2207,9 @@ let parsed;
               }
               out += `<tr>
                         <td class='medtd'>
-                          <a href='${CDEX.providerEndpoint.url}/${task.resource.resourceType}/${task.resource.id}' target='_blank'>${task.resource.id}</a>
+                        <button class="button-link" onClick="CDEX.requestProviderResource('${task.resource.id}')">
+                        ${task.resource.id}
+                        </button>
                         </td>
                         <td class='medtd'>${CDEX.formatDate(task.resource.authoredOn)}</td>
                         <td class='medtd' id='${idName}'></td></tr>`;
