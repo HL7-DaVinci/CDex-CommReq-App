@@ -87,10 +87,14 @@ let parsed;
   };
 
   CDEX.completeTask = (taskId) => {
+    let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
     const configProvider = {
       type: "GET",
-      url: `${CDEX.providerEndpoints[0].url}/Task/${taskId}`,
+      url: `${CDEX.providerEndpoints[1].url}/Task/${taskId}`,
       contentType: "application/fhir+json",
+      headers: {
+        authorization: `${accessToken.token_type} ${accessToken.access_token}`,
+      },
     };
     $.ajax(configProvider).then((taskResource) => {
       taskResource.status = "completed";
@@ -688,6 +692,10 @@ let parsed;
   };
 
   CDEX.displayAttachmentScreen = () => {
+    $("#subUnsAttchPayerEndpoint").hide();
+    $("#subUnsAttchPayerEndpointLabel").hide();
+    $("#subUnsAttchPayerEndpointInfo").hide();
+    $("#subUnsAttchPayerEndpointSpan").hide();
     CDEX.searchClaims(
       "submit-searchClaim",
       "<option>-- Select tracking control number --</option>"
@@ -727,11 +735,19 @@ let parsed;
           $("#submit-searchClaim").attr("disabled", "disabled");
           $("#radio-claim").removeAttr("disabled");
           $("#radio-auth").removeAttr("disabled");
+          $("#subUnsAttchPayerEndpoint").show();
+          $("#subUnsAttchPayerEndpointLabel").show();
+          $("#subUnsAttchPayerEndpointInfo").show();
+          $("#subUnsAttchPayerEndpointSpan").show();
         } else {
           $("#claimid").attr("disabled", "disabled");
           $("#submit-searchClaim").removeAttr("disabled");
           $("#radio-claim").attr("disabled", "disabled");
           $("#radio-auth").attr("disabled", "disabled");
+          $("#subUnsAttchPayerEndpoint").hide();
+          $("#subUnsAttchPayerEndpointLabel").hide();
+          $("#subUnsAttchPayerEndpointInfo").hide();
+          $("#subUnsAttchPayerEndpointSpan").hide();
         }
       });
     });
@@ -801,12 +817,15 @@ let parsed;
     CDEX.operationTaskPayload.status = "rejected";
     CDEX.operationTaskPayload.businessStatus = {"text": "Unable to verify claim"};
     CDEX.operationTaskPayload.statusReason = {"text": "Unable to verify claim"};
-
+    let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
     let config = {
         type: 'PUT',
-        url: CDEX.providerEndpoints[0].url + CDEX.submitTaskEndpoint + "/" + CDEX.operationTaskPayload.id,
+        url: CDEX.providerEndpoints[1].url + CDEX.submitTaskEndpoint + "/" + CDEX.operationTaskPayload.id,
         data: JSON.stringify(CDEX.operationTaskPayload),
-        contentType: "application/fhir+json"
+        contentType: "application/fhir+json",
+        headers: {
+          authorization: `${accessToken.token_type} ${accessToken.access_token}`,
+        },
     };
     $.ajax(config);
     CDEX.notify(CDEX.operationTaskPayload);
@@ -1852,6 +1871,7 @@ let parsed;
   };
 
   CDEX.finalize = () => {
+    let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
     if(CDEX.dataFulfill) {
       CDEX.operationTaskPayload.output = CDEX.taskOutputContent;
       CDEX.operationTaskPayload.status = "completed";
@@ -1861,9 +1881,12 @@ let parsed;
       }
       let configPayer = {
         type: "PUT",
-        url: `${CDEX.providerEndpoints[0].url}${CDEX.submitTaskEndpoint}/${CDEX.operationTaskPayload.id}?_upsert=true`,
+        url: `${CDEX.providerEndpoints[1].url}${CDEX.submitTaskEndpoint}/${CDEX.operationTaskPayload.id}?_upsert=true`,
         data: JSON.stringify(CDEX.operationTaskPayload),
         contentType: "application/fhir+json",
+        headers: {
+          authorization: `${accessToken.token_type} ${accessToken.access_token}`,
+        },
       };
 
       $.ajax(configPayer).then((updatedTask) => {
@@ -1871,7 +1894,7 @@ let parsed;
           "<p><strong>Task ID:</strong> " + updatedTask.id + "</p>"
         );
         $("#submit-endpoint").html(
-          `PUT ${CDEX.providerEndpoints[0].url}${CDEX.submitTaskEndpoint}/${CDEX.operationTaskPayload.id}`
+          `PUT ${CDEX.providerEndpoints[1].url}${CDEX.submitTaskEndpoint}/${CDEX.operationTaskPayload.id}`
         );
         $("#text-output").html(
           JSON.stringify(updatedTask, null, 2)
@@ -1902,11 +1925,14 @@ let parsed;
           let configProvider = {
             type: "PUT",
             url:
-              CDEX.providerEndpoints[0].url +
+              CDEX.providerEndpoints[1].url +
               CDEX.submitTaskEndpoint +
               `/${CDEX.taskPayload.id}?_upsert=true`,
             data: JSON.stringify(CDEX.taskPayload),
             contentType: "application/fhir+json",
+            headers: {
+              authorization: `${accessToken.token_type} ${accessToken.access_token}`,
+            },
           };
 
           $.ajax(configProvider).then(
@@ -2183,7 +2209,10 @@ let parsed;
                           type: 'PUT',
                           url: `${CDEX.providerEndpoints[0].url}/Task/${task.resource.id}`,
                           data: JSON.stringify(task.resource),
-                          contentType: "application/fhir+json"
+                          contentType: "application/fhir+json",
+                          headers: {
+                            authorization: `${accessToken.token_type} ${accessToken.access_token}`,
+                          },
                       };
                       $.ajax(config);
 
@@ -2227,6 +2256,7 @@ let parsed;
   }
 
   CDEX.openCommunicationRequest = (commRequestId) => {
+    let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
     CDEX.reviewCommunication = [];
     CDEX.resources = {
         "queries": [],
@@ -2274,7 +2304,10 @@ let parsed;
           let promise;
           let config = {
             type: 'GET',
-            url: CDEX.providerEndpoints[0].url + "/" + query
+            url: CDEX.providerEndpoints[1].url + "/" + query,
+            headers: {
+              authorization: `${accessToken.token_type} ${accessToken.access_token}`,
+            },
           };
           CDEX.resources.queries.push({
             "question": description,
@@ -2329,8 +2362,11 @@ let parsed;
         }else if(code){
           const configProvider = {
             type: "GET",
-            url: `${CDEX.providerEndpoints[0].url}/DocumentReference?_patient=${CDEX.patient.id}&type=${code}`,
+            url: `${CDEX.providerEndpoints[1].url}/DocumentReference?_patient=${CDEX.patient.id}&type=${code}`,
             contentType: "application/fhir+json",
+            headers: {
+              authorization: `${accessToken.token_type} ${accessToken.access_token}`,
+            },
           };
           $.ajax(configProvider).then(function(documentReferences) {
             $('#payload' + index).html("");
@@ -3655,12 +3691,16 @@ let parsed;
   });
 
   $("#btn-preauthtask-request").click(function () {
+    let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
     parsed = JSON.parse($("#preauthtask-text-output").html());
      let configProvider = {
             type: "PUT",
-            url: `${CDEX.providerEndpoints[0].url}/Task/${parsed.id}?upsert=true`,
+            url: `${CDEX.providerEndpoints[1].url}/Task/${parsed.id}?upsert=true`,
             data: JSON.stringify(parsed),
             contentType: "application/json",
+            headers: {
+              authorization: `${accessToken.token_type} ${accessToken.access_token}`,
+            },
           };
           $.ajax(configProvider).then((task) => {
             if(task.resourceType === "Task") {
@@ -3818,7 +3858,7 @@ let parsed;
     );
   });
   $("#config-select").append("<option value='custom'>Custom</option>");
-  $("#config-text").val(JSON.stringify(CDEX.providerEndpoints[0], null, "   "));
+  $("#config-text").val(JSON.stringify(CDEX.providerEndpoints[1], null, "   "));
 
   $("#config-select").on("change", function () {
     if (this.value !== "custom") {

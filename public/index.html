@@ -60,7 +60,8 @@
                     </ul>
                 </span>
             </a>
-            <a href="#" class="btn btn-primary" id="btn-query" data-toggle="tooltip" data-placement="top">Direct Query
+            <!-- Hiding Direct Query Button
+                <a href="#" class="btn btn-primary" id="btn-query" data-toggle="tooltip" data-placement="top">Direct Query
                 <span>
                     <b>Direct Query:</b><br>
                     A system that needs information about a patient/member and which can solicit that information using
@@ -73,7 +74,7 @@
                         </li>
                     </ul>
                 </span>
-            </a>
+            </a> -->
             <a href="#" class="btn btn-primary" id="btn-attach" data-toggle="tooltip" data-placement="top">Submit Unsolicited Attachment
                 <span><b>Submit unsolicited attachment:<br></b>
                     Provider invokes the ‘$submit-attachment’ operation on the Payer’s endpoint to attach a document to
@@ -154,11 +155,12 @@
                 </span>
             </a>
         </div>
-        <div class="card-body">
+        <!-- Hiding Submit Prior Auth Request section
+            <div class="card-body">
             <a href="#" class="btn btn-secondary" id="btn-submit-priorauth" data-toggle="tooltip" data-placement="top">Submit Prior Auth Request
                 <span><b>Submit PAS Request Bundle to PAS RI using the $submit Operation<br></b></span>
             </a>
-        </div>
+        </div> -->
     </div>
     <div></div>
 
@@ -313,6 +315,20 @@
                     authorization.
                 </span>
             </a>
+            <div>
+                <label id="subUnsAttchPayerEndpointLabel" for="subUnsAttchPayerEndpoint"><b>Custom payer endpoint: </b></label>
+                <input type="text" id="subUnsAttchPayerEndpoint" name="subUnsAttchPayerEndpoint" required
+                    placeholder="https://api.logicahealth.org/DaVinciCDexPayer/open">
+                <a class="btninfo" href="#" data-toggle="tooltip" data-placement="bottom" id="subUnsAttchPayerEndpointInfo">
+                    <i class="fa fa-info" id="subUnsAttchPayerEndpointSpan"></i>
+                    <span>
+                        <b>Custom payer endpoint:</b><br>
+                        When the Tracking Control Number check box is selected,
+                        you can specify a custom endpoint where the claim or prior
+                        authorization will be submitted.
+                    </span>
+                </a>
+            </div>
             <br>
             <div>
                 <label for="serviceDate">Service date</label><br>
@@ -371,9 +387,6 @@
                     </span>
                 </a>
             </p>
-            <label for="subUnsAttchPayerEndpoint"><b>Custom payer endpoint: </b></label>
-            <input type="text" id="subUnsAttchPayerEndpoint" name="subUnsAttchPayerEndpoint" required
-                placeholder="https://api.logicahealth.org/DaVinciCDexPayer/open"><br>
         </div>
     </div>
 
