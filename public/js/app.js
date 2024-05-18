@@ -2989,6 +2989,9 @@ let parsed;
                                         }
                                       ];
                                     } else {
+                                      if(res.item[res.item.length - 1].informationSequence === undefined) {
+                                        res.item[res.item.length - 1].informationSequence = [];
+                                      }
                                       res.item[
                                         res.item.length - 1
                                       ].informationSequence.push(
