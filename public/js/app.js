@@ -1372,7 +1372,7 @@ let parsed;
         let providerEndpoint =
           $("#customProviderEndpoint").val() !== ""
             ? $("#customProviderEndpoint").val()
-            : CDEX.providerEndpoint.url;
+            : CDEX.providerEndpoints[1].url;
         let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
         let configProvider = {
           type: "PUT",
@@ -1384,6 +1384,9 @@ let parsed;
             "-Q1234",
           data: JSON.stringify(CDEX.requestQuestionnairePayload),
           contentType: "application/fhir+json",
+          headers: {
+            authorization: `${accessToken.token_type} ${accessToken.access_token}`,
+          },
         };
 
         $.ajax(configProvider).then((res) => {
@@ -2978,11 +2981,24 @@ let parsed;
                                         reference: `DocumentReference/CDex-Document-Reference-${resourcesId}`,
                                       },
                                     };
-                                    res.item[
-                                      res.item.length - 1
-                                    ].informationSequence.push(
-                                      supportingInfo.sequence
-                                    );
+
+                                    if(res.item === undefined) {
+                                      res.item = [
+                                        {
+                                          informationSequence: supportingInfo.sequence
+                                        }
+                                      ];
+                                    } else {
+                                      res.item[
+                                        res.item.length - 1
+                                      ].informationSequence.push(
+                                        supportingInfo.sequence
+                                      );
+                                    }
+
+                                    if(res.supportingInfo === undefined) {
+                                      res.supportingInfo = [];
+                                    }
                                     res.supportingInfo.push(supportingInfo);
                                     CLAIM.claimUpsert(
                                       res,
