@@ -87,14 +87,10 @@ let parsed;
   };
 
   CDEX.completeTask = (taskId) => {
-    let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
     const configProvider = {
       type: "GET",
-      url: `${CDEX.providerEndpoints[1].url}/Task/${taskId}`,
+      url: `${CDEX.providerEndpoint.url}/Task/${taskId}`,
       contentType: "application/fhir+json",
-      headers: {
-        authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-      },
     };
     $.ajax(configProvider).then((taskResource) => {
       taskResource.status = "completed";
@@ -817,15 +813,12 @@ let parsed;
     CDEX.operationTaskPayload.status = "rejected";
     CDEX.operationTaskPayload.businessStatus = {"text": "Unable to verify claim"};
     CDEX.operationTaskPayload.statusReason = {"text": "Unable to verify claim"};
-    let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
+    
     let config = {
         type: 'PUT',
-        url: CDEX.providerEndpoints[1].url + CDEX.submitTaskEndpoint + "/" + CDEX.operationTaskPayload.id,
+        url: CDEX.providerEndpoint.url + CDEX.submitTaskEndpoint + "/" + CDEX.operationTaskPayload.id,
         data: JSON.stringify(CDEX.operationTaskPayload),
-        contentType: "application/fhir+json",
-        headers: {
-          authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-        },
+        contentType: "application/fhir+json"
     };
     $.ajax(config);
     CDEX.notify(CDEX.operationTaskPayload);
@@ -1008,13 +1001,18 @@ let parsed;
           $("#req-searchClaim").val().toString() !==
           "-- Select a Claim or Prior Auth --"
         ) {
-          let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
+          let accessToken = window.PAYER_SERVER_TOKEN;
+          let accessTokenType = window.PAYER_SERVER_TOKEN_TYPE;
           let configProvider = {
             type: "GET",
             url: `${CDEX.payerEndpoint.url}/Claim/${$("#req-searchClaim")
               .val()
               .toString()}`,
             contentType: "application/fhir+json",
+            headers: {
+              authorization: `${accessTokenType} ${accessToken}`,
+            }
+
           };
           $.ajax(configProvider).then((res) => {
             let claimServiceDate = "";
@@ -1306,8 +1304,11 @@ let parsed;
           let providerEndpoint =
             $("#customProviderEndpoint").val() !== ""
               ? $("#customProviderEndpoint").val()
-              : CDEX.providerEndpoints[1].url;
-          let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
+              : CDEX.providerEndpoint.url;
+
+          let accessToken = window.PROVIDER_SERVER_TOKEN
+          let accessTokenType = window.PROVIDER_SERVER_TOKEN_TYPE
+          
           let configProvider = {
             type: "PUT",
             url:
@@ -1319,9 +1320,11 @@ let parsed;
             data: JSON.stringify(CDEX.requestAttachmentPayload),
             contentType: "application/fhir+json",
             headers: {
-              authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-            },
+              authorization: `${accessTokenType} ${accessToken}`
+            }
+
           };
+
           const spanHtml = `<span class="bg-custom"><b>Task created</b><br>
                     If the Task was successfully created, The user can complete the request by clicking the “OK”
                     button below and the “Submit Solicited Attachments” button on the CDex Dashboard</span>`;
@@ -1372,12 +1375,15 @@ let parsed;
         let providerEndpoint =
           $("#customProviderEndpoint").val() !== ""
             ? $("#customProviderEndpoint").val()
-            : CDEX.providerEndpoints[1].url;
-        let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
+            : CDEX.providerEndpoint.url;
+        
+        let accessToken = window.PROVIDER_SERVER_TOKEN
+        let accessTokenType = window.PROVIDER_SERVER_TOKEN_TYPE
+          
         let configProvider = {
           type: "PUT",
           url:
-            providerEndpoint +
+            CDEX.providerEndpoint.url +
             CDEX.submitTaskEndpoint +
             "/" +
             $("#req-searchClaim").val().toString() +
@@ -1385,8 +1391,8 @@ let parsed;
           data: JSON.stringify(CDEX.requestQuestionnairePayload),
           contentType: "application/fhir+json",
           headers: {
-            authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-          },
+            authorization: `${accessTokenType} ${accessToken}`,
+          }
         };
 
         $.ajax(configProvider).then((res) => {
@@ -1806,7 +1812,6 @@ let parsed;
     $("#query-intro").html(CDEX.directQueryScenarioDescription.description);
     try {
       CDEX.client = client;
-
       CDEX.client.patient
         .read()
         .then((pt) => {
@@ -1830,7 +1835,7 @@ let parsed;
                   c.contained.length > 0
               );
               CDEX.processRequests(commReqs).then(() => {
-                setInterval(() => CDEX.processRequests(commReqs, false), 3000);
+                //setInterval(() => CDEX.processRequests(commReqs, false), 3000);
               });
             });
         });
@@ -1874,7 +1879,6 @@ let parsed;
   };
 
   CDEX.finalize = () => {
-    let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
     if(CDEX.dataFulfill) {
       CDEX.operationTaskPayload.output = CDEX.taskOutputContent;
       CDEX.operationTaskPayload.status = "completed";
@@ -1884,12 +1888,9 @@ let parsed;
       }
       let configPayer = {
         type: "PUT",
-        url: `${CDEX.providerEndpoints[1].url}${CDEX.submitTaskEndpoint}/${CDEX.operationTaskPayload.id}?_upsert=true`,
+        url: `${CDEX.providerEndpoint.url}${CDEX.submitTaskEndpoint}/${CDEX.operationTaskPayload.id}`,
         data: JSON.stringify(CDEX.operationTaskPayload),
         contentType: "application/fhir+json",
-        headers: {
-          authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-        },
       };
 
       $.ajax(configPayer).then((updatedTask) => {
@@ -1897,7 +1898,7 @@ let parsed;
           "<p><strong>Task ID:</strong> " + updatedTask.id + "</p>"
         );
         $("#submit-endpoint").html(
-          `PUT ${CDEX.providerEndpoints[1].url}${CDEX.submitTaskEndpoint}/${CDEX.operationTaskPayload.id}`
+          `PUT ${CDEX.providerEndpoint.url}${CDEX.submitTaskEndpoint}/${CDEX.operationTaskPayload.id}`
         );
         $("#text-output").html(
           JSON.stringify(updatedTask, null, 2)
@@ -1922,20 +1923,22 @@ let parsed;
           CDEX.taskPayload.id = "s" + commReq.id;
 
           let subscribe = CDEX.subscribe;
-          let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
+          let accessToken = window.PROVIDER_SERVER_TOKEN;
+          let accessTokenType = window.PROVIDER_SERVER_TOKEN_TYPE;
           CDEX.taskPayload.id = subscribe ? CDEX.taskPayload.id : `TBA-${Date.now()}`;
           CDEX.taskPayload.code.coding[0].code = "data-request-code";
           let configProvider = {
             type: "PUT",
             url:
-              CDEX.providerEndpoints[1].url +
+              CDEX.providerEndpoint.url +
               CDEX.submitTaskEndpoint +
-              `/${CDEX.taskPayload.id}?_upsert=true`,
-            data: JSON.stringify(CDEX.taskPayload),
+              `/${CDEX.taskPayload.id}`,
+          data: JSON.stringify(CDEX.taskPayload),
             contentType: "application/fhir+json",
             headers: {
-              authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-            },
+              authorization: `${accessTokenType} ${accessToken}`
+            }
+
           };
 
           $.ajax(configProvider).then(
@@ -1995,16 +1998,20 @@ let parsed;
                 };
 
                 CDEX.subscriptionPayload.criteria = "Task?_id=" + res.id;
+                let accessToken = window.PROVIDER_SERVER_TOKEN;
+                let accessTokenType = window.PROVIDER_SERVER_TOKEN_TYPE;
+          
                 let configProvider2 = {
                   type: "POST",
                   url:
-                    CDEX.providerEndpoints[1].url +
+                  CDEX.providerEndpoint.url +
                     CDEX.submitSubscriptionEndpoint,
                   data: JSON.stringify(CDEX.subscriptionPayload),
                   contentType: "application/fhir+json",
                   headers: {
-                    authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-                  },
+                    authorization: `${accessTokenType} ${accessToken}`
+                  }
+
                 };
 
                 $.when($.ajax(configPayer3), $.ajax(configProvider2)).then(
@@ -2024,14 +2031,14 @@ let parsed;
                       },
                       () =>
                         CDEX.displayErrorScreen(
-                          "Communication request submission failed",
+                          "Communication request submission failed (1)",
                           "Please check the endpoint configuration <br> You can close this window now"
                         )
                     );
                   },
                   () =>
                     CDEX.displayErrorScreen(
-                      "Communication request submission failed",
+                      "Communication request submission failed (2)",
                       "Please check the endpoint configuration <br> You can close this window now"
                     )
                 );
@@ -2044,7 +2051,7 @@ let parsed;
                   },
                   () =>
                     CDEX.displayErrorScreen(
-                      "Communication request submission failed",
+                      "Communication request submission failed (3)",
                       "Please check the endpoint configuration <br> You can close this window now"
                     )
                 );
@@ -2052,7 +2059,7 @@ let parsed;
             },
             () =>
               CDEX.displayErrorScreen(
-                "Communication request submission failed",
+                "Communication request submission failed (4)",
                 "Please check the submit endpoint configuration <br> You can close this window now"
               )
           ).catch(error => {
@@ -2061,7 +2068,7 @@ let parsed;
         },
         () =>
           CDEX.displayErrorScreen(
-            "Communication request submission failed",
+            "Communication request submission failed (5)",
             "Please check the submit endpoint configuration <br> You can close this window now"
           )
       );
@@ -2110,14 +2117,15 @@ let parsed;
 };
 
   CDEX.requestProviderResource = (resourceId) => {
-    let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
+    let accessToken = window.PROVIDER_SERVER_TOKEN;
+    let accessTokenType = window.PROVIDER_SERVER_TOKEN_TYPE;
     let configProvider = {
       type: "GET",
-      url: `${CDEX.providerEndpoints[1].url}/Task/${resourceId}`,
+      url: `${CDEX.providerEndpoint.url}/Task/${resourceId}`,
       contentType: "application/fhir+json",
       responseType: "blob",
       headers: {
-        authorization: `${accessToken.token_type} ${accessToken.access_token}`,
+        authorization: `${accessTokenType} ${accessToken}`,
       },
     };
     $.ajax(configProvider).then(res => {
@@ -2141,14 +2149,10 @@ let parsed;
   }
 
   CDEX.getNotAttachmentRelatedTasks = () => {
-    let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
     let configProvider = {
       type: "GET",
-      url: `${CDEX.providerEndpoints[1].url}/Task?_sort=-_lastUpdated&_patient=${CDEX.patient.id}`,
+      url: `${CDEX.providerEndpoint.url}/Task?_sort=-_lastUpdated&_patient=${CDEX.patient.id}`,
       contentType: "application/fhir+json",
-      headers: {
-        authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-      },
     };
     $.ajax(configProvider).then(
       (res) => {
@@ -2210,12 +2214,9 @@ let parsed;
 
                       let config = {
                           type: 'PUT',
-                          url: `${CDEX.providerEndpoints[0].url}/Task/${task.resource.id}`,
+                          url: `${CDEX.providerEndpoint.url}/Task/${task.resource.id}`,
                           data: JSON.stringify(task.resource),
-                          contentType: "application/fhir+json",
-                          headers: {
-                            authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-                          },
+                          contentType: "application/fhir+json"
                       };
                       $.ajax(config);
 
@@ -2226,7 +2227,7 @@ let parsed;
                         CDEX.openCommunicationRequest(task.resource.id);
                         return false;
                       });
-                      config.url = `${CDEX.payerEndpoint.url}/Task/${task.resource.id}?upsert=true`;
+                      config.url = `${CDEX.payerEndpoint.url}/Task/${task.resource.id}`;
                       $.ajax(config).then((reqResponse) => {
                         
                       }).catch(err => {
@@ -2259,7 +2260,6 @@ let parsed;
   }
 
   CDEX.openCommunicationRequest = (commRequestId) => {
-    let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
     CDEX.reviewCommunication = [];
     CDEX.resources = {
         "queries": [],
@@ -2307,10 +2307,7 @@ let parsed;
           let promise;
           let config = {
             type: 'GET',
-            url: CDEX.providerEndpoints[1].url + "/" + query,
-            headers: {
-              authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-            },
+            url: CDEX.providerEndpoint.url + "/" + query
           };
           CDEX.resources.queries.push({
             "question": description,
@@ -2365,11 +2362,8 @@ let parsed;
         }else if(code){
           const configProvider = {
             type: "GET",
-            url: `${CDEX.providerEndpoints[1].url}/DocumentReference?_patient=${CDEX.patient.id}&type=${code}`,
+            url: `${CDEX.providerEndpoint.url}/DocumentReference?_patient=${CDEX.patient.id}&type=${code}`,
             contentType: "application/fhir+json",
-            headers: {
-              authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-            },
           };
           $.ajax(configProvider).then(function(documentReferences) {
             $('#payload' + index).html("");
@@ -2414,14 +2408,16 @@ let parsed;
   };
 
   CDEX.getTasks = () => {
-    let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
+    let accessToken = window.PROVIDER_SERVER_TOKEN
+    let accessTokenType = window.PROVIDER_SERVER_TOKEN_TYPE
+    
     let configProvider = {
       type: "GET",
-      url: `${CDEX.providerEndpoints[1].url}/Task?_sort=-_lastUpdated&_patient=${CDEX.patient.id}`,
+      url: `${CDEX.providerEndpoint.url}/Task?_sort=-_lastUpdated&_patient=${CDEX.patient.id}`,
       contentType: "application/fhir+json",
       headers: {
-        authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-      },
+        authorization: `${accessTokenType} ${accessToken}`
+      }
     };
     $.ajax(configProvider).then(
       (res) => {
@@ -2437,7 +2433,7 @@ let parsed;
                                   <td><a href="#" id="btn-${task.resource.id}">${task.resource.id}</a></td>
                                   <td>${task.resource.meta.lastUpdated}</td>
                                   <td>
-                                      <a href="https://api.logicahealth.org/DaVinciCDexProvider/open/Task/${task.resource.id}">
+                                      <a href="${CDEX.providerEndpoint.url}/Task/${task.resource.id}">
                                           Download
                                       </a>
                                   </td>
@@ -2449,7 +2445,7 @@ let parsed;
                                   <td>${task.resource.id}</td>
                                   <td>${task.resource.meta.lastUpdated}</td>
                                   <td>
-                                      <a href="https://api.logicahealth.org/DaVinciCDexProvider/open/Task/${task.resource.id}">
+                                      <a href="${CDEX.providerEndpoint.url}/Task/${task.resource.id}">
                                           Download
                                       </a>
                                   </td>
@@ -2461,7 +2457,7 @@ let parsed;
                                   <td>${task.resource.id}</td>
                                   <td>${task.resource.meta.lastUpdated}</td>
                                   <td>
-                                      <a href="https://api.logicahealth.org/DaVinciCDexProvider/open/Task/${task.resource.id}">
+                                      <a href="${CDEX.providerEndpoint.url}/Task/${task.resource.id}">
                                           Download
                                       </a>
                                   </td>
@@ -2474,13 +2470,16 @@ let parsed;
 
                 $(`#complete-${task.resource.id}`).on("click", () => {
                   //Get task to modify status
+                  let accessToken = window.PROVIDER_SERVER_TOKEN;
+                  let accessTokenType = window.PROVIDER_SERVER_TOKEN_TYPE;
+
                   let questionnaireResponsePath = '';
                   let taskSettings = {
                     type: "GET",
-                    url: `${CDEX.providerEndpoints[1].url}/Task/${task.resource.id}`,
+                    url: `${CDEX.providerEndpoint.url}/Task/${task.resource.id}`,
                     contentType: "application/fhir+json",
                     headers: {
-                      authorization: `${accessToken.token_type} ${accessToken.access_token}`,
+                      authorization: `${accessTokenType} ${accessToken}`
                     },
                     success: function(response) {
                       console.log(`Task updated successfuly: ${response.id}`);
@@ -2500,10 +2499,10 @@ let parsed;
                         $.ajax(taskSettings);
                         let attchSettings = {
                           type: "GET",
-                          url: `${CDEX.providerEndpoints[1].url}/${questionnaireResponsePath}`,
+                          url: `${CDEX.providerEndpoint.url}/${questionnaireResponsePath}`,
                           contentType: "application/fhir+json",
                           headers: {
-                            authorization: `${accessToken.token_type} ${accessToken.access_token}`,
+                            authorization: `${accessTokenType} ${accessToken}`
                           },
                           error: function(error) {
                             console.log(`ERROR questionnaire response to submit attachment: ${error}`);
@@ -2537,12 +2536,17 @@ let parsed;
                             ],
                           };
 
-                          // let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
+                          let accessToken = window.PAYER_SERVER_TOKEN;
+                          let accessTokenType = window.PAYER_SERVER_TOKEN_TYPE;
+
                           let submitAttConfig = {
                             type: "POST",
-                            url: "https://cdex-commreq.davinci.hl7.org/$submit-attachment",
+                            url: window.URL_SUBMIT_ATTACHMENT,
                             data: JSON.stringify(CDEX.attachmentPayload),
                             contentType: "application/fhir+json",
+                            headers: {
+                              authorization: `${accessTokenType} ${accessToken}`
+                              }
                           };
 
                           $.ajax(submitAttConfig).then((response) => {
@@ -2559,10 +2563,9 @@ let parsed;
                                 configProvider.type = "PUT";
                                 configProvider.url = `${CDEX.payerEndpoint.url}/Claim/${results.id}`;
                                 configProvider.data = JSON.stringify(results);
+                                configProvider.headers = {authorization: `${accessTokenType} ${accessToken}`}
+                                
                                 $.ajax(configProvider).then((claimRes) => {
-                                  // $("#quest-resp-output").html(JSON.stringify(questResp, null, "  "));
-                                  // $("#upd-task-output").html(JSON.stringify(task, null, "  "));
-                                  // CDEX.displayScreen("questionnaire-req-confirm-screen");
                                   $("#req-parameter-output").html(
                                     JSON.stringify(CDEX.attachmentPayload, null, 2)
                                   );
@@ -2610,7 +2613,7 @@ let parsed;
                   //GET DTR endpoint
                   let dtrConfig = {
                     type: "POST",
-                    url: "https://repocmcgpalmquest0523.azurewebsites.net/cdex-services/start-dtr",
+                    url:  window.DTR_SERVER_URL,
                     data: JSON.stringify(dtrContext),
                     headers: {
                       "Content-Type": "application/json"
@@ -2631,7 +2634,7 @@ let parsed;
                               <td><a href="#" id="btn-${task.resource.id}">${task.resource.id}</a></td>
                               <td>${task.resource.meta.lastUpdated}</td>
                               <td>
-                                  <a href="https://api.logicahealth.org/DaVinciCDexProvider/open/Task/${task.resource.id}">
+                                  <a href="${CDEX.providerEndpoint.url}/Task/${task.resource.id}">
                                       Download
                                   </a>
                               </td>
@@ -2661,17 +2664,18 @@ let parsed;
                   $("#attch-request-list").append(
                     `<p><b>Claim: </b><span id="currentClaimId">${claimForTask}</span></p><p><b>Requested attachments: </b></p>`
                   );
-                  let accessToken = JSON.parse(
-                    sessionStorage.getItem("tokenResponse")
-                  );
+                  let accessToken = window.PROVIDER_SERVER_TOKEN;
+                  let accessTokenType = window.PROVIDER_SERVER_TOKEN_TYPE;
+
 
                   let provider = {
                     type: "GET",
-                    url: `${CDEX.providerEndpoints[1].url}/Task/${task.resource.id}`,
+                    url: `${CDEX.providerEndpoint.url}/Task/${task.resource.id}`,
                     contentType: "application/fhir+json",
                     headers: {
-                      authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-                    },
+                      authorization: `${accessTokenType} ${accessToken}`
+                      }
+                                    
                   };
                   let requestedSignComponent = "";
                   let requestedSign = false;
@@ -2709,7 +2713,6 @@ let parsed;
                       }
                     }
                   });
-
                   CLAIM.claimLookupById(claimForTask).then((claim) => {
                     if (claim.item) {
                       let serviceDate = res.created;
@@ -2744,18 +2747,16 @@ let parsed;
                       });
                       $("#lineItem_solicitedAttch").html(optionValues);
                     }
-                    // let accessToken = JSON.parse(
-                    //   sessionStorage.getItem("tokenResponse")
-                    // );
-                    // let configProvider = {
-                    //   type: "GET",
-                    //   url: `${CDEX.payerEndpoint.url}/Observation?patient=${CDEX.patient.id}`,
-                    //   contentType: "application/fhir+json",
-                    // };
+                    let accessToken = window.PAYER_SERVER_TOKEN;
+                    let accessTokenType = window.PAYER_SERVER_TOKEN_TYPE;
                     let configProvider = {
                       type: "GET",
                       url: `${CDEX.payerEndpoint.url}/DocumentReference?_patient=${CDEX.patient.id}`,
                       contentType: "application/fhir+json",
+                      headers: {
+                        authorization: `${accessTokenType} ${accessToken}`
+                        }
+                    
                     };
                     $.ajax(configProvider).then((res) => {
                       $("#total_attch").val(1);
@@ -2787,6 +2788,10 @@ let parsed;
                           type: "GET",
                           url: `${CDEX.payerEndpoint.url}/${claim.provider.reference}`,
                           contentType: "application/fhir+json",
+                          headers: {
+                            authorization: `${accessTokenType} ${accessToken}`
+                            }
+                        
                         };
                         $.ajax(configProvider).then((org) => {
                           $("#attch-request-data").append(
@@ -2834,7 +2839,7 @@ let parsed;
                             name: "MemberId",
                             valueIdentifier: {
                               system: "http://example.org/cdex/member-ids",
-                              value: `${member.value}`,
+                              value: `${member.value}`
                             },
                           },
                           {
@@ -2858,17 +2863,20 @@ let parsed;
                             },
                           ],
                         };
-                        let accessToken = JSON.parse(
-                          sessionStorage.getItem("tokenResponse")
-                        );
+                        let accessToken = window.PAYER_SERVER_TOKEN;
+                        let accessTokenType = window.PAYER_SERVER_TOKEN_TYPE;
+
                         let configProvider = {
                           type: "GET",
                           url: `${CDEX.payerEndpoint.url}/Claim/${$(
                             "#currentClaimId"
                           ).text()}`,
                           contentType: "application/fhir+json",
+                          headers: {
+                            authorization: `${accessTokenType} ${accessToken}`
+                            }
+                        
                         };
-
                         //Get Claim
                         $.ajax(configProvider).then((res) => {
                           if (!res.supportingInfo) {
@@ -2961,7 +2969,7 @@ let parsed;
                                   let attachment = {};
                                   let configProvider = {
                                     type: "PUT",
-                                    url: `${CDEX.payerEndpoint.url}/DocumentReference/CDex-Document-Reference-${resourcesId}?upsert=true`,
+                                    url: `${CDEX.payerEndpoint.url}/DocumentReference/CDex-Document-Reference-${resourcesId}`,
                                     data: JSON.stringify(
                                       CDEX.documentReferencePayload
                                     ),
@@ -3059,7 +3067,7 @@ let parsed;
                                       parameter;
                                     configProvider = {
                                       type: "POST",
-                                      url: `https://cdex-commreq.davinci.hl7.org/$submit-attachment`,
+                                      url: window.URL_SUBMIT_ATTACHMENT,
                                       data: JSON.stringify(
                                         CDEX.attachmentRequestedPayload
                                       ),
@@ -3297,7 +3305,7 @@ let parsed;
                                         parameter;
                                       configProvider = {
                                         type: "POST",
-                                        url: `https://cdex-commreq.davinci.hl7.org/$submit-attachment`,
+                                        url: window.URL_SUBMIT_ATTACHMENT,
                                         data: JSON.stringify(
                                           CDEX.attachmentRequestedPayload
                                         ),
@@ -3371,7 +3379,7 @@ let parsed;
                                     parameter;
                                   configProvider = {
                                     type: "POST",
-                                    url: `https://cdex-commreq.davinci.hl7.org/$submit-attachment`,
+                                    url: window.URL_SUBMIT_ATTACHMENT,
                                     data: JSON.stringify(
                                       CDEX.attachmentRequestedPayload
                                     ),
@@ -3430,7 +3438,7 @@ let parsed;
       },
       () =>
         CDEX.displayErrorScreen(
-          "Communication request submission failed",
+          "Communication request submission failed (6)",
           "Please check the submit endpoint configuration <br> You can close this window now"
         )
     );
@@ -3511,12 +3519,18 @@ let parsed;
       ],
     };
 
-    // let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
+    let accessToken = window.PAYER_SERVER_TOKEN;
+    let accessTokenType = window.PAYER_SERVER_TOKEN_TYPE;
+
     let configProvider = {
       type: "POST",
-      url: `https://cdex-commreq.davinci.hl7.org/$submit-attachment`,
+      url: window.URL_SUBMIT_ATTACHMENT,
       data: JSON.stringify(CDEX.attachmentRequestedPayload),
       contentType: "application/fhir+json",
+      headers: {
+        authorization: `${accessTokenType} ${accessToken}`
+        }
+    
     };
 
     if ($("#questSubAttchPayerEndpoint").val() !== "") {
@@ -3687,7 +3701,7 @@ let parsed;
   $("#btn-submit-priorauth").click(function () {
     configProvider = {
       type: "POST",
-      url: `https://cdex-commreq.davinci.hl7.org/$submit`,
+      url: window.URL_SUBMIT,
       data: JSON.stringify(CDEX.priorAuthPayload),
       contentType: "application/json",
     };
@@ -3710,16 +3724,12 @@ let parsed;
   });
 
   $("#btn-preauthtask-request").click(function () {
-    let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
     parsed = JSON.parse($("#preauthtask-text-output").html());
      let configProvider = {
             type: "PUT",
-            url: `${CDEX.providerEndpoints[1].url}/Task/${parsed.id}?upsert=true`,
+            url: `${CDEX.providerEndpoint.url}/Task/${parsed.id}`,
             data: JSON.stringify(parsed),
             contentType: "application/json",
-            headers: {
-              authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-            },
           };
           $.ajax(configProvider).then((task) => {
             if(task.resourceType === "Task") {
@@ -3877,7 +3887,7 @@ let parsed;
     );
   });
   $("#config-select").append("<option value='custom'>Custom</option>");
-  $("#config-text").val(JSON.stringify(CDEX.providerEndpoints[1], null, "   "));
+  $("#config-text").val(JSON.stringify(CDEX.providerEndpoints[0], null, "   "));
 
   $("#config-select").on("change", function () {
     if (this.value !== "custom") {
@@ -3936,12 +3946,18 @@ let parsed;
           CDEX.attachmentPayload.parameter[6].part[2].resource =
             CDEX.documentReferencePayload;
 
-          let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
+          let accessToken = window.PAYER_SERVER_TOKEN;
+          let accessTokenType = window.PAYER_SERVER_TOKEN_TYPE;
+            
           let configProvider = {
             type: "PUT",
-            url: `${CDEX.payerEndpoint.url}/DocumentReference/CDex-Document-Reference-${resourcesId}?upsert=true`,
+            url: `${CDEX.payerEndpoint.url}/DocumentReference/CDex-Document-Reference-${resourcesId}`,
             data: JSON.stringify(CDEX.documentReferencePayload),
             contentType: "application/json",
+            headers: {
+              authorization: `${accessTokenType} ${accessToken}`
+              }
+          
           };
           $.ajax(configProvider).then((response) => {
             $("#Resource").html("Document reference successfully created.");
@@ -4015,7 +4031,7 @@ let parsed;
               //Parameter creation
               configProvider = {
                 type: "POST",
-                url: `https://cdex-commreq.davinci.hl7.org/$submit-attachment`,
+                url: window.URL_SUBMIT_ATTACHMENT,
                 data: JSON.stringify(CDEX.attachmentPayload),
                 contentType: "application/json",
               };
@@ -4170,7 +4186,7 @@ let parsed;
               //Parameter creation
               configProvider = {
                 type: "POST",
-                url: `https://cdex-commreq.davinci.hl7.org/$submit-attachment`,
+                url: window.URL_SUBMIT_ATTACHMENT,
                 data: JSON.stringify(CDEX.attachmentPayload),
                 contentType: "application/json",
               };
@@ -4224,10 +4240,10 @@ let parsed;
   };
 
   CDEX.signAttachment = async (bundle) => {
-    let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
+    
     let configProvider = {
       type: "POST",
-      url: "http://127.0.0.1:9090/api/sign",
+      url: window.URL_SIGN,
       data: JSON.stringify(bundle),
       contentType: "application/json",
     };
@@ -4240,17 +4256,21 @@ let parsed;
   CDEX.directQueryRequest = () => {
     let queryType = "";
     if ($("#search-criteria").val() === "Observation - HbA1c") {
-      queryType = `Observation?patient=${CDEX.patient.id}&code=4548-4`;
+      queryType = "Observation?patient=cdex-example-patient&code=4548-4";
     } else if ($("#search-criteria").val() !== "custom") {
       queryType = `${$("#search-criteria").val()}?patient=${CDEX.patient.id}`;
     } else {
       queryType = $("#customquery").val();
     }
-    let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
+    let accessToken = window.PROVIDER_SERVER_TOKEN;
+    let accessTokenType = window.PROVIDER_SERVER_TOKEN_TYPE;
     let configPayer = {
       type: "GET",
-      url: `${CDEX.payerEndpoint.url}/${queryType}`,
+      url: `${CDEX.providerEndpoint.url}/${queryType}`,
       contentType: "application/fhir+json",
+      headers: {
+        authorization: `${accessTokenType} ${accessToken}`
+        }
     };
 
     $.ajax(configPayer).then(
@@ -4263,7 +4283,7 @@ let parsed;
       },
       () =>
         CDEX.displayErrorScreen(
-          "Communication request submission failed",
+          "Communication request submission failed (7)",
           "Please check the submit endpoint configuration <br> You can close this window now"
         )
     );

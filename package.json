@@ -1,16 +1,19 @@
 {
-  "name": "cdex-commReq-app",
+  "name": "cdex-comm-req-app",
   "version": "0.1.0",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "dev": "nodemon app.js"
+    "dev": "/usr/local/Cellar/gettext/0.22.5/bin/envsubst < public/js/configuration.template.js > public/js/configuration.js"
   },
   "dependencies": {
+    "@cypress/request": "^3.0.0",
     "body-parser": "^1.20.2",
     "canonicalize": "^2.0.0",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.18.2",
+    "fhirclient": "github:smart-on-fhir/client-js",
     "helmet": "^6.1.5",
     "http-server": "^14.1.1",
     "jszip": "^3.10.1",
@@ -19,10 +22,9 @@
     "node-fetch": "^3.3.1",
     "node-jose": "^2.2.0",
     "pdfreader": "^3.0.0",
-    "request": "^2.88.2",
     "underscore": "^1.13.6"
   },
   "devDependencies": {
-    "nodemon": "^2.0.22"
+    "nodemon": "^3.1.0"
   }
 }

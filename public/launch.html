@@ -1,13 +1,22 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <script src="lib/fhir-client-0.1.8.js"></script>
-    <script src="js/config.js"></script>
-</head>
-<body>
-Loading...
-<script>
-    FHIR.oauth2.authorize(CDEX.clientSettings);
-</script>
-</body>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>CDEX REFERENCE IMPLEMENTATION</title>
+    <script src="https://cdn.jsdelivr.net/npm/fhirclient@2.0.6/build/fhir-client.js"></script>
+    <script src="js/env_configuration.js"></script>
+    <script>
+     
+      FHIR.oauth2.authorize({
+        fhirServiceUrl: window.PROVIDER_SERVER_BASE_URL,
+          redirectUri: "./index.html",
+          patientId:window.PATIENT_ID
+          
+      });
+      
+         
+    </script>
+  </head>
+  <body>Loading...</body>
 </html>

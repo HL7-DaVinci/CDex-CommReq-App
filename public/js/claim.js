@@ -15,14 +15,16 @@ if (!CDEX) {
 
 (function () {
   CLAIM.claimLookupByPatient = async (patientId) => {
-    let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
+    let accessToken = window.PAYER_SERVER_TOKEN;
+    let accessTokenType = window.PAYER_SERVER_TOKEN_TYPE;
+
     let configProvider = {
       type: "GET",
       url: `${CDEX.payerEndpoint.url}/Claim?patient=${patientId}`,
       contentType: "application/json",
       headers: {
-        authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-      },
+        authorization: `${accessTokenType} ${accessToken}`
+      }
     };
     const claims = await $.ajax(configProvider)
       .then((res) => {
@@ -37,14 +39,16 @@ if (!CDEX) {
   };
 
   CLAIM.claimLookupById = async (claim) => {
-    let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
+    let accessToken = window.PAYER_SERVER_TOKEN;
+    let accessTokenType = window.PAYER_SERVER_TOKEN_TYPE;
+
     let configProvider = {
       type: "GET",
       url: `${CDEX.payerEndpoint.url}/Claim/${claim}`,
       contentType: "application/json",
       headers: {
-        authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-      },
+        authorization: `${accessTokenType} ${accessToken}`
+      }
     };
     let existingClaim = await $.ajax(configProvider)
       .then((res) => {
@@ -59,15 +63,17 @@ if (!CDEX) {
   };
 
   CLAIM.claimUpsert = async (claim, endpoint) => {
-    //let accessToken = JSON.parse(sessionStorage.getItem("tokenResponse"));
+    let accessToken = window.PAYER_SERVER_TOKEN;
+    let accessTokenType = window.PAYER_SERVER_TOKEN_TYPE;
+
     let configProvider = {
       type: "PUT",
-      url: `${endpoint}/Claim/${claim.id}?upsert=true`,
+      url: `${endpoint}/Claim/${claim.id}`,
       data: JSON.stringify(claim),
-      contentType: "application/json" /*
+      contentType: "application/fhir+json",
       headers: {
-        authorization: `${accessToken.token_type} ${accessToken.access_token}`,
-      },*/,
+        authorization: `${accessTokenType} ${accessToken}`
+      }
     };
     const createdClaim = $.ajax(configProvider).then((response) => {
       return response;

@@ -1,9 +1,8 @@
 const { Router } = require("express");
-const request = require("request");
+const request = require('@cypress/request');
 const router = Router();
 const _ = require("underscore");
-
-const baseurl = "https://api.logicahealth.org/DaVinciCDexPayer/open";
+const baseurl = process.env.PAYER_SERVER_BASE_URL       
 
 router.post("/", (req, res) => {
   req.headers["accept"] = "application/fhir+json;charset=UTF-8";
@@ -31,7 +30,6 @@ router.post("/", (req, res) => {
   let resource = "";
   let existingClaim = "";
   const attachmentResource = Date.now();
-
   if (parameter && resourceType === "Parameters") {
     parameter.forEach((element) => {
       if (element.name === "MemberId") {
@@ -322,7 +320,7 @@ upsertClaim = async (
     request.put(
       {
         headers: { "content-type": "application/fhir+json" },
-        url: `${baseurl}/Claim/${claimId}?upsert=true`,
+        url: `${baseurl}/Claim/${claimId}`,
         body: claimBody,
         json: true,
       },

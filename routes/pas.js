@@ -1,14 +1,14 @@
 const { Router } = require("express");
-const request = require("request");
+const request = require('@cypress/request');
 const router = Router();
 const _ = require("underscore");
 
-const priorFHIRBase = "https://prior-auth.davinci.hl7.org/fhir";
-
+const priorFHIRBase = process.env.PAS_SERVER_URL;
+const PAS_auth = "Bearer "+process.env.PAS_SERVER_TOKEN;
 router.post("/", (req, res) => {
   req.headers["accept"] = "application/json";
   req.headers["content-type"] = "application/json";
-  req.headers["Authorization"] = "Bearer Y3YWq2l08kvFqy50fQJY";
+  req.headers["Authorization"] = PAS_auth;
   const { resourceType, parameter } = req.body;
   if(resourceType !== "Bundle") {
     res.status(400).send("Invalid request Body");
@@ -19,7 +19,7 @@ router.post("/", (req, res) => {
       headers: {
         'Content-Type': 'application/json',
         accept: 'application/json',
-        Authorization: 'Bearer Y3YWq2l08kvFqy50fQJY'
+        Authorization: PAS_auth
       },
       body: JSON.stringify(req.body)
     };

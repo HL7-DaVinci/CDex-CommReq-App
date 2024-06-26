@@ -1,0 +1,652 @@
+{
+	"info": {
+		"_postman_id": "a9949765-fc8f-4e94-83ca-feb2dee13076",
+		"name": "CDEX Setup",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "224650"
+	},
+	"item": [
+		{
+			"name": "Resources in CDEX Provider Server",
+			"item": [
+				{
+					"name": "Create Patient cdex-example-patient",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"resourceType\": \"Patient\",\n  \"meta\": {\n    \"profile\": [\n      \"http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient\"\n    ]\n  },\n  \"id\":\"cdex-example-patient\",\n  \"text\": {\n    \"status\": \"extensions\",\n    \"div\": \"<div xmlns=\\\"http://www.w3.org/1999/xhtml\\\"><p><b>Generated Narrative</b></p><blockquote><p><b>US Core Race Extension</b></p><p><b>value</b>: <span title=\\\"{urn:oid:2.16.840.1.113883.6.238 2106-3}\\\">White</span></p><p><b>value</b>: <span title=\\\"{urn:oid:2.16.840.1.113883.6.238 1002-5}\\\">American Indian or Alaska Native</span></p><p><b>value</b>: <span title=\\\"{urn:oid:2.16.840.1.113883.6.238 2028-9}\\\">Asian</span></p><p><b>value</b>: <span title=\\\"{urn:oid:2.16.840.1.113883.6.238 1586-7}\\\">Shoshone</span></p><p><b>value</b>: <span title=\\\"{urn:oid:2.16.840.1.113883.6.238 2036-2}\\\">Filipino</span></p><p><b>value</b>: Mixed</p></blockquote><blockquote><p><b>US Core Ethnicity Extension</b></p><p><b>value</b>: <span title=\\\"{urn:oid:2.16.840.1.113883.6.238 2135-2}\\\">Hispanic or Latino</span></p><p><b>value</b>: <span title=\\\"{urn:oid:2.16.840.1.113883.6.238 2184-0}\\\">Dominican</span></p><p><b>value</b>: <span title=\\\"{urn:oid:2.16.840.1.113883.6.238 2148-5}\\\">Mexican</span></p><p><b>value</b>: Hispanic or Latino</p></blockquote><p><b>US Core Birth Sex Extension</b>: F</p><p><b>identifier</b>: Medical Record Number: 1032702 (USUAL)</p><p><b>active</b>: true</p><p><b>name</b>: Amy V. Shaw , Amy V. Baxter </p><p><b>telecom</b>: ph: 555-555-5555(HOME), <a href=\\\"mailto:amy.shaw@example.com\\\">amy.shaw@example.com</a></p><p><b>gender</b>: female</p><p><b>birthDate</b>: 1987-02-20</p><p><b>address</b>: </p><ul><li>49 Meadow St Mounds OK 74047 US </li><li>183 Mountain View St Mounds OK 74048 US </li></ul></div>\"\n  },\n  \"extension\": [\n    {\n      \"extension\": [\n        {\n          \"url\": \"ombCategory\",\n          \"valueCoding\": {\n            \"system\": \"urn:oid:2.16.840.1.113883.6.238\",\n            \"code\": \"2106-3\",\n            \"display\": \"White\"\n          }\n        },\n        {\n          \"url\": \"ombCategory\",\n          \"valueCoding\": {\n            \"system\": \"urn:oid:2.16.840.1.113883.6.238\",\n            \"code\": \"1002-5\",\n            \"display\": \"American Indian or Alaska Native\"\n          }\n        },\n        {\n          \"url\": \"ombCategory\",\n          \"valueCoding\": {\n            \"system\": \"urn:oid:2.16.840.1.113883.6.238\",\n            \"code\": \"2028-9\",\n            \"display\": \"Asian\"\n          }\n        },\n        {\n          \"url\": \"detailed\",\n          \"valueCoding\": {\n            \"system\": \"urn:oid:2.16.840.1.113883.6.238\",\n            \"code\": \"1586-7\",\n            \"display\": \"Shoshone\"\n          }\n        },\n        {\n          \"url\": \"detailed\",\n          \"valueCoding\": {\n            \"system\": \"urn:oid:2.16.840.1.113883.6.238\",\n            \"code\": \"2036-2\",\n            \"display\": \"Filipino\"\n          }\n        },\n        {\n          \"url\": \"text\",\n          \"valueString\": \"Mixed\"\n        }\n      ],\n      \"url\": \"http://hl7.org/fhir/us/core/StructureDefinition/us-core-race\"\n    },\n    {\n      \"extension\": [\n        {\n          \"url\": \"ombCategory\",\n          \"valueCoding\": {\n            \"system\": \"urn:oid:2.16.840.1.113883.6.238\",\n            \"code\": \"2135-2\",\n            \"display\": \"Hispanic or Latino\"\n          }\n        },\n        {\n          \"url\": \"detailed\",\n          \"valueCoding\": {\n            \"system\": \"urn:oid:2.16.840.1.113883.6.238\",\n            \"code\": \"2184-0\",\n            \"display\": \"Dominican\"\n          }\n        },\n        {\n          \"url\": \"detailed\",\n          \"valueCoding\": {\n            \"system\": \"urn:oid:2.16.840.1.113883.6.238\",\n            \"code\": \"2148-5\",\n            \"display\": \"Mexican\"\n          }\n        },\n        {\n          \"url\": \"text\",\n          \"valueString\": \"Hispanic or Latino\"\n        }\n      ],\n      \"url\": \"http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity\"\n    },\n    {\n      \"url\": \"http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex\",\n      \"valueCode\": \"F\"\n    }\n  ],\n  \"identifier\": [\n    {\n      \"use\": \"usual\",\n      \"type\": {\n        \"coding\": [\n          {\n            \"system\": \"http://terminology.hl7.org/CodeSystem/v2-0203\",\n            \"code\": \"MR\",\n            \"display\": \"Medical Record Number\"\n          }\n        ],\n        \"text\": \"Medical Record Number\"\n      },\n      \"system\": \"http://hospital.smarthealthit.org\",\n      \"value\": \"1032702\"\n    }\n    ,\n    {\n      \"system\": \"http://example.org/cdex/payer/member-ids\",\n      \"value\": \"99XYZMEMBIDEX\"\n    }\n  ],\n  \"active\": true,\n  \"name\": [\n    {\n      \"family\": \"Shaw\",\n      \"given\": [\n        \"Amy\",\n        \"V.\"\n      ]\n    }\n  ],\n  \"telecom\": [\n    {\n      \"system\": \"phone\",\n      \"value\": \"555-555-5555\",\n      \"use\": \"home\"\n    },\n    {\n      \"system\": \"email\",\n      \"value\": \"amy.shaw@example.com\"\n    }\n  ],\n   \"birthDate\": \"1987-02-20\",\n \n   \"gender\":\"male\",\n \n  \"address\": [\n    {\n      \"line\": [\n        \"49 Meadow St\"\n      ],\n      \"city\": \"Mounds\",\n      \"state\": \"OK\",\n      \"postalCode\": \"74047\",\n      \"country\": \"US\",\n      \"period\": {\n        \"start\": \"2016-12-06\",\n        \"end\": \"2020-07-22\"\n      }\n    },\n    {\n      \"line\": [\n        \"183 Mountain View St\"\n      ],\n      \"city\": \"Mounds\",\n      \"state\": \"OK\",\n      \"postalCode\": \"74048\",\n      \"country\": \"US\",\n      \"period\": {\n        \"start\": \"2020-07-22\"\n      }\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{provider_server_url}}/Patient/{{patient_id}}",
+							"host": [
+								"{{provider_server_url}}"
+							],
+							"path": [
+								"Patient",
+								"{{patient_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Practitioner CDEX-example-practitioner",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"resourceType\": \"Practitioner\",\n  \"id\": \"cdex-example-practitioner\",\n  \"identifier\": [\n    {\n      \"system\": \"http://hl7.org/fhir/sid/us-npi\",\n      \"value\": \"460\"\n    }\n  ],\n  \"active\": true,\n  \"name\": [\n    {\n      \"family\": \"Example\",\n      \"given\": [\n        \"Practitioner\"\n      ],\n      \"prefix\": [\n        \"Dr.\"\n      ]\n    }\n  ],\n  \"address\": [\n    {\n      \"line\": [\n        \"235 NORTH PEARL STREET\"\n      ],\n      \"city\": \"BROCKTON\",\n      \"state\": \"MA\",\n      \"postalCode\": \"02301\",\n      \"country\": \"US\"\n    }\n  ],\n  \"gender\": \"male\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{provider_server_url}}/Practitioner/cdex-example-practitioner",
+							"host": [
+								"{{provider_server_url}}"
+							],
+							"path": [
+								"Practitioner",
+								"cdex-example-practitioner"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Organization CDEX cdex-example-provider",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": " {\n        \"resourceType\": \"Organization\",\n        \"id\": \"cdex-example-provider\",\n        \"identifier\": [\n          {\n            \"system\": \"https://github.com/synthetichealth/synthea\",\n            \"value\": \"eeca3319-9cbf-382e-a7ee-43986c981135\"\n          }\n        ],\n        \"active\": true,\n        \"type\": [\n          {\n            \"coding\": [\n              {\n                \"system\": \"http://terminology.hl7.org/CodeSystem/organization-type\",\n                \"code\": \"prov\",\n                \"display\": \"Healthcare Provider\"\n              }\n            ],\n            \"text\": \"Healthcare Provider\"\n          }\n        ],\n        \"name\": \"CDEX EXAMPLE PROVIDER\",\n        \"telecom\": [\n          {\n            \"system\": \"phone\",\n            \"value\": \"508-822-2311\"\n          }\n        ],\n        \"address\": [\n          {\n            \"line\": [\n              \"58 EXAMPLE PROVIDER STREET\"\n            ],\n            \"city\": \"TAUNTON\",\n            \"state\": \"MA\",\n            \"postalCode\": \"2780\",\n            \"country\": \"US\"\n          }\n        ]\n      }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{provider_server_url}}/Organization/cdex-example-provider",
+							"host": [
+								"{{provider_server_url}}"
+							],
+							"path": [
+								"Organization",
+								"cdex-example-provider"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Organization CDEX cdex-example-payer",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": " {\n        \"resourceType\": \"Organization\",\n        \"id\": \"cdex-example-payer\",\n        \"identifier\": [\n          {\n            \"system\": \"https://github.com/synthetichealth/synthea\",\n            \"value\": \"eeca3319-9cbf-382e-a7ee-13986c981135\"\n          }\n        ],\n        \"active\": true,\n        \"type\": [\n          {\n            \"coding\": [\n              {\n                \"system\": \"http://terminology.hl7.org/CodeSystem/organization-type\",\n                \"code\": \"pay\",\n                \"display\": \"Payer\"\n              }\n            ],\n            \"text\": \"Healthcare Payer\"\n          }\n        ],\n        \"name\": \"CDEX EXAMPLE PAYER\",\n        \"telecom\": [\n          {\n            \"system\": \"phone\",\n            \"value\": \"508-811-2311\"\n          }\n        ],\n        \"address\": [\n          {\n            \"line\": [\n              \"01 EXAMPLE PAYER AVENUE\"\n            ],\n            \"city\": \"TAUNTON\",\n            \"state\": \"MA\",\n            \"postalCode\": \"2780\",\n            \"country\": \"US\"\n          }\n        ]\n      }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{provider_server_url}}/Organization/cdex-example-payer",
+							"host": [
+								"{{provider_server_url}}"
+							],
+							"path": [
+								"Organization",
+								"cdex-example-payer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create CDEX Task",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"resourceType\": \"Task\",\n  \"id\":\"task-example-1\",\n  \"identifier\": [\n    {\n      \"type\": {\n        \"coding\": [\n          {\n            \"system\": \"http://hl7.org/fhir/us/davinci-cdex/CodeSystem/cdex-temp\",\n            \"code\": \"tracking-id\",\n            \"display\": \"Tracking Id\"\n          }\n        ],\n        \"text\": \"Re-Association Tracking Control Number\"\n      },\n      \"system\": \"{{provider_server_url}}\",\n      \"value\": \"task-example-1\"\n    }\n  ],\n  \"status\": \"requested\",\n  \"intent\": \"order\",\n  \"code\": {\n    \"coding\": [\n      {\n        \"system\": \"http://hl7.org/fhir/us/davinci-hrex/CodeSystem/hrex-temp\",\n        \"code\": \"data-request-code\"\n      }\n    ]\n  },\n  \"for\": {\n    \"reference\": \"Patient/cdex-example-patient\"\n  },\n  \"authoredOn\": \"2024-05-06T16:11:22.217Z\",\n  \"lastModified\": \"2024-05-06T16:11:22.217Z\",\n  \"requester\": {\n    \"reference\": \"Organization/cdex-example-payer\"\n  },\n  \"owner\": {\n    \"reference\": \"Organization/cdex-example-provider\"\n  },\n  \"reasonCode\": {\n    \"coding\": [\n      {\n        \"system\": \"http://hl7.org/fhir/claim-use\",\n        \"code\": \"claim\",\n        \"display\": \"Claim\"\n      }\n    ],\n    \"text\": \"claim\"\n  },\n  \"reasonReference\": {\n    \"identifier\": {\n      \"system\": \"http://example.org/cdex/payer/claim-ids\",\n      \"value\": \"CLAIM-CONN-MAY23\"\n    }\n  },\n  \"input\": [\n    {\n      \"type\": {\n        \"coding\": [\n          {\n            \"system\": \"http://hl7.org/fhir/us/davinci-hrex/CodeSystem/hrex-temp\",\n            \"code\": \"data-code\"\n          }\n        ]\n      },\n      \"valueCodeableConcept\": {\n        \"coding\": [\n          {\n            \"system\": \"http://loinc.org\",\n            \"code\": \"34117-2\"\n          }\n        ],\n        \"text\": \"History and Physical Notes\"\n      }\n    },\n    {\n      \"type\": {\n        \"coding\": [\n          {\n            \"system\": \"http://hl7.org/fhir/us/davinci-cdex/CodeSystem/cdex-temp\",\n            \"code\": \"purpose-of-use\"\n          }\n        ]\n      },\n      \"valueCodeableConcept\": {\n        \"coding\": [\n          {\n            \"system\": \"http://terminology.hl7.org/CodeSystem/v3-ActReasonv3-ActReason\",\n            \"code\": \"COVERAGE\"\n          }\n        ]\n      }\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{provider_server_url}}/Task/task-example-1",
+							"host": [
+								"{{provider_server_url}}"
+							],
+							"path": [
+								"Task",
+								"task-example-1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create CDEX CommunicationRequest",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/fhir+json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"resourceType\": \"CommunicationRequest\",\n    \"id\":\"comm-request-1\",\n    \"contained\": [\n        {\n            \"resourceType\": \"Organization\",\n            \"id\": \"df342907-5690-eb02-c918-e3dd5e240707\",\n            \"identifier\": [\n                {\n                    \"system\": \"{{provider_server_url}}\",\n                    \"value\": \"cdex-example-provider\"\n                }\n            ]\n        }\n    ],\n    \"status\": \"active\",\n    \"priority\": \"routine\",\n    \"subject\": {\n        \"reference\": \"Patient/cdex-example-patient\"\n    },\n    \"about\": [\n        {\n            \"reference\": \"{{provider_server_url}}/Task/task-example-1\"\n        }\n    ],\n    \"authoredOn\": \"2024-05-06T16:11:22.217Z\",\n    \"recipient\": [\n        {\n            \"reference\": \"#df342907-5690-eb02-c918-e3dd5e240707\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{provider_server_url}}/CommunicationRequest/comm-request-1",
+							"host": [
+								"{{provider_server_url}}"
+							],
+							"path": [
+								"CommunicationRequest",
+								"comm-request-1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create CDEX Observation",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/fhir+json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"resourceType\": \"Observation\",\n    \"id\":\"observation-example-1\",\n    \"status\": \"final\",\n    \"category\": [\n        {\n            \"coding\": [\n                {\n                    \"system\": \"http://terminology.hl7.org/CodeSystem/observation-category\",\n                    \"code\": \"laboratory\",\n                    \"display\": \"laboratory\"\n                }\n            ]\n        }\n    ],\n    \"code\": {\n        \"coding\": [\n            {\n                \"system\": \"http://loinc.org\",\n                \"code\": \"2069-3\",\n                \"display\": \"Chloride\"\n            }\n        ],\n        \"text\": \"Chloride\"\n    },\n    \"subject\": {\n        \"reference\": \"Patient/cdex-example-patient\"\n    },\n    \"effectiveDateTime\": \"2024-03-23T10:10:39+00:00\",\n    \"issued\": \"2024-03-23T10:10:39.902+00:00\",\n    \"valueQuantity\": {\n        \"value\": 103.91061894657038,\n        \"unit\": \"mmol/L\",\n        \"system\": \"http://unitsofmeasure.org\",\n        \"code\": \"mmol/L\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{provider_server_url}}/Observation/observation-example-1",
+							"host": [
+								"{{provider_server_url}}"
+							],
+							"path": [
+								"Observation",
+								"observation-example-1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create CDEX Condition",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"resourceType\": \"Condition\",\n    \"id\":\"condition-example-1\",\n    \"clinicalStatus\": {\n        \"coding\": [\n            {\n                \"system\": \"http://terminology.hl7.org/CodeSystem/condition-clinical\",\n                \"code\": \"active\"\n            }\n        ]\n    },\n    \"verificationStatus\": {\n        \"coding\": [\n            {\n                \"system\": \"http://terminology.hl7.org/CodeSystem/condition-ver-status\",\n                \"code\": \"confirmed\"\n            }\n        ]\n    },\n    \"code\": {\n        \"coding\": [\n            {\n                \"system\": \"http://snomed.info/sct\",\n                \"code\": \"40055000\",\n                \"display\": \"Chronic sinusitis (disorder)\"\n            }\n        ],\n        \"text\": \"Chronic sinusitis (disorder)\"\n    },\n    \"subject\": {\n        \"reference\": \"Patient/cdex-example-patient\"\n    },\n    \"onsetDateTime\": \"2024-01-24T05:47:30+00:00\",\n    \"recordedDate\": \"2024-01-24T05:47:30+00:00\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{provider_server_url}}/Condition/condition-example-1",
+							"host": [
+								"{{provider_server_url}}"
+							],
+							"path": [
+								"Condition",
+								"condition-example-1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Observation HBA1C",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/fhir+json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"resourceType\": \"Observation\",\n    \"id\":\"observation-example-hba1c\",\n    \"status\": \"final\",\n    \"category\": [\n        {\n            \"coding\": [\n                {\n                    \"system\": \"http://terminology.hl7.org/CodeSystem/observation-category\",\n                    \"code\": \"laboratory\",\n                    \"display\": \"laboratory\"\n                }\n            ]\n        }\n    ],\n    \"code\": {\n        \"coding\": [\n            {\n                \"system\": \"http://loinc.org\",\n                \"code\": \"4548-4\",\n                \"display\": \"HBA1C\"\n            }\n        ],\n        \"text\": \"HBA1C\"\n    },\n    \"subject\": {\n        \"reference\": \"Patient/cdex-example-patient\"\n    },\n    \"effectiveDateTime\": \"2024-03-13T10:10:39+00:00\",\n    \"issued\": \"2024-03-13T10:10:39.902+00:00\",\n    \"valueQuantity\": {\n        \"value\": 5.91,\n        \"unit\": \"%\",\n        \"system\": \"http://unitsofmeasure.org\",\n        \"code\": \"%\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{provider_server_url}}/Observation/observation-example-hba1c",
+							"host": [
+								"{{provider_server_url}}"
+							],
+							"path": [
+								"Observation",
+								"observation-example-hba1c"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Document Reference Example 1",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"resourceType\": \"DocumentReference\",\n  \"id\": \"cdex-document-reference-example-1\",\n  \"status\": \"current\",\n  \"subject\": {\n    \"reference\": \"Patient/cdex-example-patient\"\n  },\n  \"date\":\"2023-12-24T09:43:41+11:00\",\n  \"category\": [\n          {\n            \"coding\": [\n              {\n                \"system\": \"http://loinc.org\",\n                \"code\": \"34108-1\",\n                \"display\": \"Inpatient Admission history and physical note\"\n              }\n            ]\n            ,\n            \"text\":\"Inpatient Admission history and physical note\"\n          }\n        ],\n  \"type\": {\n    \"coding\": [\n      {\n        \"system\": \"http://loinc.org\",\n        \"code\": \"34108-1\",\n        \"display\": \"Outpatient Note\"\n      }\n    ]\n  },\n  \"content\": [\n    {\n      \"attachment\": {\n        \"contentType\": \"application/pdf\",\n        \"data\": \"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\",\n        \"title\": \"Very_Small_Attachment_1.pdf\"\n      }\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{provider_server_url}}/DocumentReference/cdex-document-reference-example-1",
+							"host": [
+								"{{provider_server_url}}"
+							],
+							"path": [
+								"DocumentReference",
+								"cdex-document-reference-example-1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Document Reference Example 2",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"resourceType\": \"DocumentReference\",\n  \"id\": \"cdex-document-reference-example-2\",\n  \"status\": \"current\",\n  \"subject\": {\n    \"reference\": \"Patient/cdex-example-patient\"\n  },\n  \"category\": [\n          {\n            \"coding\": [\n              {\n                \"system\": \"http://loinc.org\",\n                \"code\": \"34108-1\",\n                \"display\": \"Inpatient Admission history and physical note\"\n              }\n            ],\n            \"text\":\"Inpatient Admission history and physical note\"\n          }\n        ],\n  \n  \"date\":\"2023-12-24T09:43:41+11:00\",\n  \"type\": {\n    \"coding\": [\n      {\n        \"system\": \"http://loinc.org\",\n        \"code\": \"11506-3\",\n        \"display\": \"Progress Notes\"\n      }\n    ]\n  },\n  \"content\": [\n    {\n      \"attachment\": {\n        \"contentType\": \"application/pdf\",\n        \"data\": \"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\",\n        \"title\": \"Very_Small_Attachment_1.pdf\"\n      }\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{provider_server_url}}/DocumentReference/cdex-document-reference-example-2",
+							"host": [
+								"{{provider_server_url}}"
+							],
+							"path": [
+								"DocumentReference",
+								"cdex-document-reference-example-2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Resources in CDEX Payer Server",
+			"item": [
+				{
+					"name": "Create Patient cdex-example-patient",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/fhir+json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"resourceType\": \"Patient\",\n  \"meta\": {\n    \"profile\": [\n      \"http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient\"\n    ]\n  },\n  \"id\":\"cdex-example-patient\",\n  \"text\": {\n    \"status\": \"extensions\",\n    \"div\": \"<div xmlns=\\\"http://www.w3.org/1999/xhtml\\\"><p><b>Generated Narrative</b></p><blockquote><p><b>US Core Race Extension</b></p><p><b>value</b>: <span title=\\\"{urn:oid:2.16.840.1.113883.6.238 2106-3}\\\">White</span></p><p><b>value</b>: <span title=\\\"{urn:oid:2.16.840.1.113883.6.238 1002-5}\\\">American Indian or Alaska Native</span></p><p><b>value</b>: <span title=\\\"{urn:oid:2.16.840.1.113883.6.238 2028-9}\\\">Asian</span></p><p><b>value</b>: <span title=\\\"{urn:oid:2.16.840.1.113883.6.238 1586-7}\\\">Shoshone</span></p><p><b>value</b>: <span title=\\\"{urn:oid:2.16.840.1.113883.6.238 2036-2}\\\">Filipino</span></p><p><b>value</b>: Mixed</p></blockquote><blockquote><p><b>US Core Ethnicity Extension</b></p><p><b>value</b>: <span title=\\\"{urn:oid:2.16.840.1.113883.6.238 2135-2}\\\">Hispanic or Latino</span></p><p><b>value</b>: <span title=\\\"{urn:oid:2.16.840.1.113883.6.238 2184-0}\\\">Dominican</span></p><p><b>value</b>: <span title=\\\"{urn:oid:2.16.840.1.113883.6.238 2148-5}\\\">Mexican</span></p><p><b>value</b>: Hispanic or Latino</p></blockquote><p><b>US Core Birth Sex Extension</b>: F</p><p><b>identifier</b>: Medical Record Number: 1032702 (USUAL)</p><p><b>active</b>: true</p><p><b>name</b>: Amy V. Shaw , Amy V. Baxter </p><p><b>telecom</b>: ph: 555-555-5555(HOME), <a href=\\\"mailto:amy.shaw@example.com\\\">amy.shaw@example.com</a></p><p><b>gender</b>: female</p><p><b>birthDate</b>: 1987-02-20</p><p><b>address</b>: </p><ul><li>49 Meadow St Mounds OK 74047 US </li><li>183 Mountain View St Mounds OK 74048 US </li></ul></div>\"\n  },\n  \"extension\": [\n    {\n      \"extension\": [\n        {\n          \"url\": \"ombCategory\",\n          \"valueCoding\": {\n            \"system\": \"urn:oid:2.16.840.1.113883.6.238\",\n            \"code\": \"2106-3\",\n            \"display\": \"White\"\n          }\n        },\n        {\n          \"url\": \"ombCategory\",\n          \"valueCoding\": {\n            \"system\": \"urn:oid:2.16.840.1.113883.6.238\",\n            \"code\": \"1002-5\",\n            \"display\": \"American Indian or Alaska Native\"\n          }\n        },\n        {\n          \"url\": \"ombCategory\",\n          \"valueCoding\": {\n            \"system\": \"urn:oid:2.16.840.1.113883.6.238\",\n            \"code\": \"2028-9\",\n            \"display\": \"Asian\"\n          }\n        },\n        {\n          \"url\": \"detailed\",\n          \"valueCoding\": {\n            \"system\": \"urn:oid:2.16.840.1.113883.6.238\",\n            \"code\": \"1586-7\",\n            \"display\": \"Shoshone\"\n          }\n        },\n        {\n          \"url\": \"detailed\",\n          \"valueCoding\": {\n            \"system\": \"urn:oid:2.16.840.1.113883.6.238\",\n            \"code\": \"2036-2\",\n            \"display\": \"Filipino\"\n          }\n        },\n        {\n          \"url\": \"text\",\n          \"valueString\": \"Mixed\"\n        }\n      ],\n      \"url\": \"http://hl7.org/fhir/us/core/StructureDefinition/us-core-race\"\n    },\n    {\n      \"extension\": [\n        {\n          \"url\": \"ombCategory\",\n          \"valueCoding\": {\n            \"system\": \"urn:oid:2.16.840.1.113883.6.238\",\n            \"code\": \"2135-2\",\n            \"display\": \"Hispanic or Latino\"\n          }\n        },\n        {\n          \"url\": \"detailed\",\n          \"valueCoding\": {\n            \"system\": \"urn:oid:2.16.840.1.113883.6.238\",\n            \"code\": \"2184-0\",\n            \"display\": \"Dominican\"\n          }\n        },\n        {\n          \"url\": \"detailed\",\n          \"valueCoding\": {\n            \"system\": \"urn:oid:2.16.840.1.113883.6.238\",\n            \"code\": \"2148-5\",\n            \"display\": \"Mexican\"\n          }\n        },\n        {\n          \"url\": \"text\",\n          \"valueString\": \"Hispanic or Latino\"\n        }\n      ],\n      \"url\": \"http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity\"\n    },\n    {\n      \"url\": \"http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex\",\n      \"valueCode\": \"F\"\n    }\n  ],\n  \"identifier\": [\n    {\n      \"use\": \"usual\",\n      \"type\": {\n        \"coding\": [\n          {\n            \"system\": \"http://terminology.hl7.org/CodeSystem/v2-0203\",\n            \"code\": \"MR\",\n            \"display\": \"Medical Record Number\"\n          }\n        ],\n        \"text\": \"Medical Record Number\"\n      },\n      \"system\": \"http://hospital.smarthealthit.org\",\n      \"value\": \"1032702\"\n    }\n    ,\n    {\n      \"system\": \"http://example.org/cdex/payer/member-ids\",\n      \"value\": \"99XYZMEMBIDEX\"\n    }\n    \n  ],\n  \"active\": true,\n  \"name\": [\n    {\n      \"family\": \"Shaw\",\n      \"given\": [\n        \"Amy\",\n        \"V.\"\n      ],\n      \"period\": {\n        \"start\": \"2016-12-06\",\n        \"end\": \"2020-07-22\"\n      }\n    },\n    {\n      \"family\": \"Baxter\",\n      \"given\": [\n        \"Amy\",\n        \"V.\"\n      ],\n      \"suffix\": [\n        \"PharmD\"\n      ],\n      \"period\": {\n        \"start\": \"2020-07-22\"\n      }\n    }\n  ],\n  \"telecom\": [\n    {\n      \"system\": \"phone\",\n      \"value\": \"555-555-5555\",\n      \"use\": \"home\"\n    },\n    {\n      \"system\": \"email\",\n      \"value\": \"amy.shaw@example.com\"\n    }\n  ],\n   \"birthDate\": \"1987-02-20\",\n \n   \"gender\":\"male\",\n \n  \"address\": [\n    {\n      \"line\": [\n        \"49 Meadow St\"\n      ],\n      \"city\": \"Mounds\",\n      \"state\": \"OK\",\n      \"postalCode\": \"74047\",\n      \"country\": \"US\",\n      \"period\": {\n        \"start\": \"2016-12-06\",\n        \"end\": \"2020-07-22\"\n      }\n    },\n    {\n      \"line\": [\n        \"183 Mountain View St\"\n      ],\n      \"city\": \"Mounds\",\n      \"state\": \"OK\",\n      \"postalCode\": \"74048\",\n      \"country\": \"US\",\n      \"period\": {\n        \"start\": \"2020-07-22\"\n      }\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{payer_server_url}}/Patient/cdex-example-patient",
+							"host": [
+								"{{payer_server_url}}"
+							],
+							"path": [
+								"Patient",
+								"cdex-example-patient"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Organization CDEX cdex-example-provider",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": " {\n        \"resourceType\": \"Organization\",\n        \"id\": \"cdex-example-provider\",\n        \"identifier\": [\n          {\n            \"system\": \"https://github.com/synthetichealth/synthea\",\n            \"value\": \"eeca3319-9cbf-382e-a7ee-43986c981135\"\n          }\n        ],\n        \"active\": true,\n        \"type\": [\n          {\n            \"coding\": [\n              {\n                \"system\": \"http://terminology.hl7.org/CodeSystem/organization-type\",\n                \"code\": \"prov\",\n                \"display\": \"Healthcare Provider\"\n              }\n            ],\n            \"text\": \"Healthcare Provider\"\n          }\n        ],\n        \"name\": \"CDEX EXAMPLE PROVIDER\",\n        \"telecom\": [\n          {\n            \"system\": \"phone\",\n            \"value\": \"508-822-2311\"\n          }\n        ],\n        \"address\": [\n          {\n            \"line\": [\n              \"58 EXAMPLE PROVIDER STREET\"\n            ],\n            \"city\": \"TAUNTON\",\n            \"state\": \"MA\",\n            \"postalCode\": \"2780\",\n            \"country\": \"US\"\n          }\n        ]\n      }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{payer_server_url}}/Organization/cdex-example-provider",
+							"host": [
+								"{{payer_server_url}}"
+							],
+							"path": [
+								"Organization",
+								"cdex-example-provider"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Organization CDEX cdex-example-payer",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": " {\n        \"resourceType\": \"Organization\",\n        \"id\": \"cdex-example-payer\",\n        \"identifier\": [\n          {\n            \"system\": \"https://github.com/synthetichealth/synthea\",\n            \"value\": \"eeca3319-9cbf-382e-a7ee-13986c981135\"\n          }\n        ],\n        \"active\": true,\n        \"type\": [\n          {\n            \"coding\": [\n              {\n                \"system\": \"http://terminology.hl7.org/CodeSystem/organization-type\",\n                \"code\": \"pay\",\n                \"display\": \"Payer\"\n              }\n            ],\n            \"text\": \"Healthcare Payer\"\n          }\n        ],\n        \"name\": \"CDEX EXAMPLE PAYER\",\n        \"telecom\": [\n          {\n            \"system\": \"phone\",\n            \"value\": \"508-811-2311\"\n          }\n        ],\n        \"address\": [\n          {\n            \"line\": [\n              \"01 EXAMPLE PAYER AVENUE\"\n            ],\n            \"city\": \"TAUNTON\",\n            \"state\": \"MA\",\n            \"postalCode\": \"2780\",\n            \"country\": \"US\"\n          }\n        ]\n      }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{payer_server_url}}/Organization/cdex-example-payer",
+							"host": [
+								"{{payer_server_url}}"
+							],
+							"path": [
+								"Organization",
+								"cdex-example-payer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Practitioner cdex-example-practitioner",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"resourceType\": \"Practitioner\",\n  \"id\": \"cdex-example-practitioner\",\n  \"identifier\": [\n    {\n      \"system\": \"http://hl7.org/fhir/sid/us-npi\",\n      \"value\": \"460\"\n    }\n  ],\n  \"active\": true,\n  \"name\": [\n    {\n      \"family\": \"Example\",\n      \"given\": [\n        \"Practitioner\"\n      ],\n      \"prefix\": [\n        \"Dr.\"\n      ]\n    }\n  ],\n  \"address\": [\n    {\n      \"line\": [\n        \"235 NORTH PEARL STREET\"\n      ],\n      \"city\": \"BROCKTON\",\n      \"state\": \"MA\",\n      \"postalCode\": \"02301\",\n      \"country\": \"US\"\n    }\n  ],\n  \"gender\": \"male\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{payer_server_url}}/Practitioner/cdex-example-practitioner",
+							"host": [
+								"{{payer_server_url}}"
+							],
+							"path": [
+								"Practitioner",
+								"cdex-example-practitioner"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Encounter #1",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"resourceType\": \"Encounter\",\n  \"id\": \"example-encounter-1\",\n  \"status\": \"finished\",\n  \"class\": {\n    \"system\": \"http://terminology.hl7.org/CodeSystem/v3-ActCode\",\n    \"code\": \"AMB\"\n  },\n  \"type\": [\n    {\n      \"coding\": [\n        {\n          \"system\": \"http://snomed.info/sct\",\n          \"code\": \"424441002\",\n          \"display\": \"Prenatal initial visit\"\n        }\n      ],\n      \"text\": \"Prenatal initial visit\"\n    }\n  ],\n  \"subject\": {\n    \"reference\": \"Patient/cdex-example-patient\"\n  },\n  \"participant\": [\n    {\n      \"individual\": {\n        \"reference\": \"Practitioner/cdex-example-practitioner\"\n      }\n    }\n  ],\n  \"period\": {\n    \"start\": \"2024-09-02T10:07:20+00:00\",\n    \"end\": \"2024-09-02T15:22:20+00:00\"\n  },\n  \"reasonCode\": [\n    {\n      \"coding\": [\n        {\n          \"system\": \"http://snomed.info/sct\",\n          \"code\": \"72892002\",\n          \"display\": \"Normal pregnancy\"\n        }\n      ]\n    }\n  ],\n  \"serviceProvider\": {\n    \"reference\": \"Organization/cdex-example-provider\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{payer_server_url}}/Encounter/example-encounter-1",
+							"host": [
+								"{{payer_server_url}}"
+							],
+							"path": [
+								"Encounter",
+								"example-encounter-1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Procedure #1",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": " {\n        \"resourceType\": \"Procedure\",\n        \"id\": \"example-procedure-1\",\n        \"status\": \"completed\",\n        \"code\": {\n          \"coding\": [\n            {\n              \"system\": \"http://snomed.info/sct\",\n              \"code\": \"265764009\",\n              \"display\": \"Renal Dialysis (procedure)\"\n            }\n          ],\n          \"text\": \"Renal Dialysis\"\n        },\n        \"subject\": {\n          \"reference\": \"Patient/cdex-example-patient\"\n        },\n        \"encounter\": {\n          \"reference\": \"Encounter/example-encounter-1\"\n        },\n        \"performedPeriod\": {\n          \"start\": \"2024-09-02T10:07:20+00:00\",\n          \"end\": \"2024-09-02T10:22:20+00:00\"\n        }\n      }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{payer_server_url}}/Procedure/example-procedure-1",
+							"host": [
+								"{{payer_server_url}}"
+							],
+							"path": [
+								"Procedure",
+								"example-procedure-1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Claim #1",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"resourceType\": \"Claim\",\n    \"id\": \"claim-example-1\",\n    \"status\": \"active\",\n    \"type\": {\n        \"coding\": [\n            {\n                \"system\": \"http://terminology.hl7.org/CodeSystem/claim-type\",\n                \"code\": \"institutional\"\n            }\n        ]\n    },\n    \"use\": \"claim\",\n    \"patient\": {\n        \"reference\": \"Patient/cdex-example-patient\",\n        \"display\": \"Amy V. Baxter\"\n    },\n    \"billablePeriod\": {\n        \"start\": \"2024-03-04T23:17:55-05:00\",\n        \"end\": \"2024-03-05T01:32:55-05:00\"\n    },\n    \"created\": \"2024-03-05T01:32:55-05:00\",\n    \"provider\": {\n        \"reference\": \"Organization/cdex-example-provider\",\n        \"display\": \"EXAMPLE PROVIDER\"\n    },\n    \"priority\": {\n        \"coding\": [\n            {\n                \"system\": \"http://terminology.hl7.org/CodeSystem/processpriority\",\n                \"code\": \"normal\"\n            }\n        ]\n    },\n    \"procedure\": [\n        {\n            \"sequence\": 1,\n            \"procedureReference\": {\n                \"reference\": \"Procedure/example-procedure-1\"\n            }\n        }\n    ],\n    \"careTeam\": [\n        {\n            \"provider\": {\n                \"reference\": \"Organization/cdex-example-provider\"\n            },\n            \"sequence\": 1\n        }\n    ],\n    \"insurance\": [\n        {\n            \"sequence\": 1,\n            \"focal\": true,\n            \"coverage\": {\n                \"display\": \"CDEX EXAMPLE PAYER\"\n            }\n        }\n    ],\n    \"item\": [\n        {\n            \"sequence\": 1,\n            \"productOrService\": {\n                \"coding\": [\n                    {\n                        \"system\": \"http://snomed.info/sct\",\n                        \"code\": \"185347001\",\n                        \"display\": \"Encounter for problem (procedure)\"\n                    }\n                ],\n                \"text\": \"Encounter for problem (procedure)\"\n            },\n            \"encounter\": [\n                {\n                    \"reference\": \"Encounter/example-encounter-1\"\n                }\n            ]\n        },\n        {\n            \"sequence\": 2,\n            \"procedureSequence\": [\n                1\n            ],\n            \"productOrService\": {\n                \"coding\": [\n                    {\n                        \"system\": \"http://snomed.info/sct\",\n                        \"code\": \"265764009\",\n                        \"display\": \"Renal dialysis (procedure)\"\n                    }\n                ],\n                \"text\": \"Renal dialysis (procedure)\"\n            },\n            \"net\": {\n                \"value\": 516.65,\n                \"currency\": \"USD\"\n            }\n        }\n    ],\n    \"total\": {\n        \"value\": 129.16,\n        \"currency\": \"USD\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{payer_server_url}}/Claim/claim-example-1/$validate",
+							"host": [
+								"{{payer_server_url}}"
+							],
+							"path": [
+								"Claim",
+								"claim-example-1",
+								"$validate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Claim #2",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"resourceType\": \"Claim\",\n    \"id\": \"claim-example-2\",\n    \"status\": \"active\",\n    \"type\": {\n        \"coding\": [\n            {\n                \"system\": \"http://terminology.hl7.org/CodeSystem/claim-type\",\n                \"code\": \"institutional\"\n            }\n        ]\n    },\n    \"use\": \"claim\",\n    \"patient\": {\n        \"reference\": \"Patient/cdex-example-patient\",\n        \"display\": \"Amy V. Baxter\"\n    },\n    \"billablePeriod\": {\n        \"start\": \"2024-03-14T23:17:55-05:00\",\n        \"end\": \"2024-03-15T01:32:55-05:00\"\n    },\n    \"created\": \"2024-03-15T01:32:55-05:00\",\n    \"provider\": {\n        \"reference\": \"Organization/cdex-example-provider\",\n        \"display\": \"EXAMPLE PROVIDER\"\n    },\n    \"priority\": {\n        \"coding\": [\n            {\n                \"system\": \"http://terminology.hl7.org/CodeSystem/processpriority\",\n                \"code\": \"normal\"\n            }\n        ]\n    },\n    \"procedure\": [\n        {\n            \"sequence\": 1,\n            \"procedureReference\": {\n                \"reference\": \"Procedure/example-procedure-1\"\n            }\n        }\n    ],\n    \"careTeam\": [\n        {\n            \"provider\": {\n                \"reference\": \"Organization/cdex-example-provider\"\n            },\n            \"sequence\": 1\n        }\n    ],\n    \"insurance\": [\n        {\n            \"sequence\": 1,\n            \"focal\": true,\n            \"coverage\": {\n                \"display\": \"CDEX EXAMPLE PAYER\"\n            }\n        }\n    ],\n    \"item\": [\n        {\n            \"sequence\": 1,\n            \"servicedDate\":\"2024-03-14T01:32:55-05:00\",\n            \"productOrService\": {\n                \"coding\": [\n                    {\n                        \"system\": \"http://snomed.info/sct\",\n                        \"code\": \"185347001\",\n                        \"display\": \"Encounter for problem (procedure)\"\n                    }\n                ],\n                \"text\": \"Encounter for problem (procedure)\"\n            },\n            \"encounter\": [\n                {\n                    \"reference\": \"Encounter/example-encounter-1\"\n                }\n            ]\n        },\n        {\n            \"sequence\": 2,\n            \"servicedDate\":\"2024-03-14T01:32:55-05:00\",\n            \"procedureSequence\": [\n                1\n            ],\n            \"productOrService\": {\n                \"coding\": [\n                    {\n                        \"system\": \"http://snomed.info/sct\",\n                        \"code\": \"47079000\",\n                        \"display\": \"Ultrasonography of Breast (procedure)\"\n                    }\n                ],\n                \"text\": \"Ultrasonography of breast\"\n            },\n            \"net\": {\n                \"value\": 382.20,\n                \"currency\": \"USD\"\n            }\n        }\n    ],\n    \"total\": {\n        \"value\": 382.20,\n        \"currency\": \"USD\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{payer_server_url}}/Claim/claim-example-2",
+							"host": [
+								"{{payer_server_url}}"
+							],
+							"path": [
+								"Claim",
+								"claim-example-2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Claim #3",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"resourceType\": \"Claim\",\n    \"id\": \"claim-example-3\",\n    \"status\": \"active\",\n    \"type\": {\n        \"coding\": [\n            {\n                \"system\": \"http://terminology.hl7.org/CodeSystem/claim-type\",\n                \"code\": \"institutional\"\n            }\n        ]\n    },\n    \"use\": \"claim\",\n    \"patient\": {\n        \"reference\": \"Patient/cdex-example-patient\",\n        \"display\": \"Amy V. Baxter\"\n    },\n    \"billablePeriod\": {\n        \"start\": \"2024-03-14T23:17:55-05:00\",\n        \"end\": \"2024-03-15T01:32:55-05:00\"\n    },\n    \"created\": \"2024-03-15T01:32:55-05:00\",\n    \"provider\": {\n        \"reference\": \"Organization/cdex-example-provider\",\n        \"display\": \"EXAMPLE PROVIDER\"\n    },\n    \"priority\": {\n        \"coding\": [\n            {\n                \"system\": \"http://terminology.hl7.org/CodeSystem/processpriority\",\n                \"code\": \"normal\"\n            }\n        ]\n    },\n    \"procedure\": [\n        {\n            \"sequence\": 1,\n            \"procedureReference\": {\n                \"reference\": \"Procedure/example-procedure-1\"\n            }\n        }\n    ],\n    \"careTeam\": [\n        {\n            \"provider\": {\n                \"reference\": \"Organization/cdex-example-provider\"\n            },\n            \"sequence\": 1\n        }\n    ],\n    \"insurance\": [\n        {\n            \"sequence\": 1,\n            \"focal\": true,\n            \"coverage\": {\n                \"display\": \"CDEX EXAMPLE PAYER\"\n            }\n        }\n    ],\n    \"item\": [\n        {\n            \"sequence\": 1,\n            \"productOrService\": {\n                \"coding\": [\n                    {\n                        \"system\": \"http://snomed.info/sct\",\n                        \"code\": \"185347001\",\n                        \"display\": \"Encounter for problem (procedure)\"\n                    }\n                ],\n                \"text\": \"Encounter for problem (procedure)\"\n            },\n            \"servicedDate\":\"2024-03-14T11:32:55-05:00\",\n            \"encounter\": [\n                {\n                    \"reference\": \"Encounter/example-encounter-1\"\n                }\n            ]\n        },\n        {\n            \"sequence\": 2,\n            \"procedureSequence\": [\n                1\n            ],\n            \"productOrService\": {\n                \"coding\": [\n                    {\n                        \"system\": \"http://snomed.info/sct\",\n                        \"code\": \"77018005\",\n                        \"display\": \"Excision of intracranial artery lesion\"\n                    }\n                ],\n                \"text\": \"Excision of intracranial artery lesion\"\n            },\n            \"servicedDate\":\"2024-03-14T11:32:55-05:00\",\n            \"net\": {\n                \"value\": 52387.20,\n                \"currency\": \"USD\"\n            }\n        }\n    ],\n    \"total\": {\n        \"value\": 52387.20,\n        \"currency\": \"USD\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{payer_server_url}}/Claim/claim-example-3",
+							"host": [
+								"{{payer_server_url}}"
+							],
+							"path": [
+								"Claim",
+								"claim-example-3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Claim #4",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"resourceType\": \"Claim\",\n    \"id\": \"claim-example-4\",\n    \"status\": \"active\",\n    \"type\": {\n        \"coding\": [\n            {\n                \"system\": \"http://terminology.hl7.org/CodeSystem/claim-type\",\n                \"code\": \"institutional\"\n            }\n        ]\n    },\n    \"use\": \"claim\",\n    \"patient\": {\n        \"reference\": \"Patient/cdex-example-patient\",\n        \"display\": \"Amy V. Baxter\"\n    },\n    \"billablePeriod\": {\n        \"start\": \"2024-03-08T23:17:55-05:00\",\n        \"end\": \"2024-03-10T01:32:55-05:00\"\n    },\n    \"created\": \"2024-03-10T01:32:55-05:00\",\n    \"provider\": {\n        \"reference\": \"Organization/cdex-example-provider\",\n        \"display\": \"EXAMPLE PROVIDER\"\n    },\n    \"priority\": {\n        \"coding\": [\n            {\n                \"system\": \"http://terminology.hl7.org/CodeSystem/processpriority\",\n                \"code\": \"normal\"\n            }\n        ]\n    },\n    \"procedure\": [\n        {\n            \"sequence\": 1,\n            \"procedureReference\": {\n                \"reference\": \"Procedure/example-procedure-1\"\n            }\n        }\n    ],\n    \"careTeam\": [\n        {\n            \"provider\": {\n                \"reference\": \"Organization/cdex-example-provider\"\n            },\n            \"sequence\": 1\n        }\n    ],\n    \"insurance\": [\n        {\n            \"sequence\": 1,\n            \"focal\": true,\n            \"coverage\": {\n                \"display\": \"CDEX EXAMPLE PAYER\"\n            }\n        }\n    ],\n    \"item\": [\n        {\n            \"sequence\": 1,\n            \"servicedDate\":\"2024-03-10T11:32:55-05:00\",\n            \"productOrService\": {\n                \"coding\": [\n                    {\n                        \"system\": \"http://snomed.info/sct\",\n                        \"code\": \"185347001\",\n                        \"display\": \"Encounter for problem (procedure)\"\n                    }\n                ],\n                \"text\": \"Encounter for problem (procedure)\"\n            },\n            \"encounter\": [\n                {\n                    \"reference\": \"Encounter/example-encounter-1\"\n                }\n            ]\n        },\n        {\n            \"sequence\": 2,\n            \"servicedDate\":\"2024-03-10T11:32:55-05:00\",\n            \"procedureSequence\": [\n                1\n            ],\n            \"productOrService\": {\n                \"coding\": [\n                    {\n                        \"system\": \"http://snomed.info/sct\",\n                        \"code\": \"77018005\",\n                        \"display\": \"Excision of intracranial artery lesion\"\n                    }\n                ],\n                \"text\": \"Excision of intracranial artery lesion\"\n            },\n            \"net\": {\n                \"value\": 52387.20,\n                \"currency\": \"USD\"\n            }\n        }\n    ],\n    \"total\": {\n        \"value\": 52387.20,\n        \"currency\": \"USD\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{payer_server_url}}/Claim/claim-example-4",
+							"host": [
+								"{{payer_server_url}}"
+							],
+							"path": [
+								"Claim",
+								"claim-example-4"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "provider_server_url",
+			"value": "https://launch.smarthealthit.org/v/r4/fhir",
+			"type": "string"
+		},
+		{
+			"key": "payer_server_url",
+			"value": "https://hapi.fhir.org/baseR4",
+			"type": "string"
+		},
+		{
+			"key": "patient_id",
+			"value": "cdex-example-patient",
+			"type": "string"
+		}
+	]
+}

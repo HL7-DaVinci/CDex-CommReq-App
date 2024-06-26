@@ -26,11 +26,9 @@ app.use(
 app.use(cors());
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use("/api", require("./routes/index"));
-//app.use("/api/users", require("./routes/thirdparty"));
 app.use("/\\$submit-attachment", require("./routes/attachments"));
 app.use("/\\$submit", require("./routes/pas"));
-app.use("/api/sign", require("./routes/sign"));
+app.use("/\\$sign", require("./routes/sign"));
 
 const server = http.createServer(app);
 

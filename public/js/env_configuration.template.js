@@ -1,0 +1,18 @@
+(function(window) {
+    // Environment variables
+    window["PROVIDER_SERVER_AUTH_TYPE"] = "${PROVIDER_SERVER_AUTH_TYPE}";
+    window["PROVIDER_SERVER_BASE_URL"] = "${PROVIDER_SERVER_BASE_URL}";
+    window["PROVIDER_SERVER_CLIENT_ID"] = "${PROVIDER_SERVER_CLIENT_ID}";
+    window["PROVIDER_SERVER_TOKEN"] = "${PROVIDER_SERVER_TOKEN}";
+    window["PROVIDER_SERVER_TOKEN_TYPE"] = "${PROVIDER_SERVER_TOKEN_TYPE}";
+    window["PAYER_SERVER_BASE_URL"] = "${PAYER_SERVER_BASE_URL}";
+    window["PAYER_SERVER_TOKEN"] = "${PAYER_SERVER_TOKEN}";
+    window["PAYER_SERVER_TOKEN_TYPE"] = "${PAYER_SERVER_TOKEN_TYPE}";
+    window["DTR_SERVER_URL"]="${DTR_SERVER_BASE_URL}";
+    window["DTR_SERVER_TOKEN"]="${DTR_SERVER_BASE_TOKEN}";
+    window["URL_SUBMIT_ATTACHMENT"]="${URL_SUBMIT_ATTACHMENT}";
+    window["URL_SUBMIT"]="${URL_SUBMIT}";
+    window["PATIENT_ID"]="${PATIENT_ID}";
+    
+    
+})(this);

@@ -4,11 +4,24 @@ if (!CDEX) {
 }
 
 (function () {
-  CDEX.clientSettings = {
-    client_id: "bed3bfd0-17d1-473f-90ac-c006fec5e9c9",//"619c591e-8957-43d8-9b6d-21489025177c",
-    scope: "launch patient/*.* openid profile",
-  };
-
+   
+  if (window.PROVIDER_SERVER_AUTH_TYPE==="OPEN")
+  {
+    CDEX.clientSettings = {
+    serverUrl: window.PROVIDER_SERVER_BASE_URL,
+    scope: "launch openid fhirUser patient/*.*",
+    redirectUri:"./index.html",
+    clientId:window.PROVIDER_SERVER_CLIENT_ID
+    }
+  }
+  else
+  {
+    CDEX.clientSettings = {
+      scope: "launch openid fhirUser patient/*.*",
+      redirectUri:"./index.html",
+      clientId:"my_web_app"
+  }
+  }
   CDEX.submitEndpoint = "/CommunicationRequest";
   CDEX.submitTaskEndpoint = "/Task";
   CDEX.submitSubscriptionEndpoint = "/Subscription";
@@ -17,20 +30,20 @@ if (!CDEX) {
     {
       name: "DaVinci CDex Provider (Open)",
       display: "open",
-      url: "https://api.logicahealth.org/DaVinciCDexProvider/open",
+      url: window.PROVIDER_SERVER_BASE_URL
     },
     {
-      name: "DaVinci CDex Provider (Data)",
+      name: "DaVinci CDex Provider (Open)",
       display: "data",
-      url: "https://api.logicahealth.org/DaVinciCDexProvider/data",
-    },
+      url: window.PROVIDER_SERVER_BASE_URL
+    }
   ];
 
   //Change URL and Name if you want to change the destination of returned Communication to this CommunicationRequest
   CDEX.payerEndpoint = {
     name: "DaVinci CDex Payer (Open)",
     display: "open",
-    url: "https://api.logicahealth.org/DaVinciCDexPayer/open",
+    url: window.PAYER_SERVER_BASE_URL
   };
 
   // default configuration
@@ -250,7 +263,7 @@ if (!CDEX) {
                 ],
                 text: "Re-Association Tracking Control Number"
             },
-            system: "https://api.logicahealth.org/DaVinciCDexPayer/open",
+            system: CDEX.providerEndpoint,
             value: "CLAIM-CONN-MAY23"
         }
     ],
