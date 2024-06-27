@@ -1808,7 +1808,6 @@ let parsed;
   };
 
   CDEX.loadData = (client) => {
-    $("#task-intro").html(CDEX.taskScenarioDescription.description);
     $("#query-intro").html(CDEX.directQueryScenarioDescription.description);
     try {
       CDEX.client = client;

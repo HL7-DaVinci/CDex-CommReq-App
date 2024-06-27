@@ -50,20 +50,6 @@ if (!CDEX) {
   CDEX.configSetting = 0; // HSPC Provider Demo (Open)
   CDEX.providerEndpoint = CDEX.providerEndpoints[CDEX.configSetting];
 
-  CDEX.taskScenarioDescription = {
-    description:
-      "In this scenario, the user works for a payer and wishes to\n" +
-      "            request clinical data from the provider to support\n" +
-      "            a post-payment audit. In the next screens, the user\n" +
-      "            will select clinical documents, specific clinical\n" +
-      "            data, or create a general information request that\n" +
-      "            will be sent to and fulfilled by the provider. The\n" +
-      "            selection options are examples and not wholly representative\n" +
-      "            of all the requested  data available. Data that can be\n" +
-      "            represented in FHIR and supported by the provider system\n" +
-      "            could be created using the CDex approach.",
-  };
-
   CDEX.directQueryScenarioDescription = {
     description: "Here is the scenario description for Direct Query",
   };

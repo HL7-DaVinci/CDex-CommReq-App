@@ -33,10 +33,21 @@
         </div>
     </div>
 
-    <div id="task-intro-screen" class="card alert-info screen dvt">
+    <div id="task-intro-screen" class="card alert-info screen dvt"  style="display: block;">
         <div class="card-body">
             <h5 class="card-title">CDex Scenarios Description</h5>
-            <p class='card-text' id='task-intro'></p>
+            <p class='card-text' id='task-intro'>
+                In this scenario, the user works for a payer and wishes to
+                request clinical data from the provider to support
+                a post-payment audit. In the next screens, the user
+                will select clinical documents, specific clinical
+                data, or create a general information request that
+                will be sent to and fulfilled by the provider. The
+                selection options are examples and not wholly representative
+                of all the requested  data available. Data that can be
+                represented in FHIR and supported by the provider system
+                could be created using the CDex approach.
+            </p>
             <a href="#" class="btn btn-primary" id="btn-task" data-toggle="tooltip" data-placement="top">
                 Task Based Approach
                 <span>
@@ -788,7 +799,7 @@
         </div>
     </div>
 
-    <div id="attch-request-screen" class="card alert-warning screen dvt" style="display: block;">
+    <div id="attch-request-screen" class="card alert-warning screen dvt">
         <h4>CDEX: Provider Collects and Submits Attachments for Coded Attachments Requests.</h4>
         <h5>Patient <span id="req-patient-name">[Loading ...]</span></h5>
         <div id="attch-request-data"></div>
