@@ -3900,7 +3900,7 @@ let parsed;
     $("#config-select").val("custom");
   });
 
-  FHIR.oauth2.ready(CDEX.initialize);
+  // FHIR.oauth2.ready(CDEX.initialize);
 
   CDEX.submitAttachments = (claimId) => {
     let operationOutcome = "";
