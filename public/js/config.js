@@ -269,7 +269,7 @@ if (!CDEX) {
     authoredOn: "TIMESTAMP",
     lastModified: "TIMESTAMP",
     requester: {
-      reference: CDEX.payerEndpoint.url + "/Organization/cdex-example-payer",
+      reference: window.PAYER_SERVER_BASE_URL + "/Organization/cdex-example-payer",
     },
     owner: {
       reference: "Organization/cdex-example-provider",
@@ -301,7 +301,7 @@ if (!CDEX) {
     criteria: "Task?_id=TASKID",
     channel: {
       display: "rest-hook",
-      endpoint: CDEX.payerEndpoint.url,
+      endpoint: window.PAYER_SERVER_BASE_URL,
       payload: "application/fhir+json",
     },
   };

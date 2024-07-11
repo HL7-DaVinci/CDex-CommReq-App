@@ -17,7 +17,7 @@ if (!CDEX) {
     PATIENT.patientLookup = async (patient) => {
         let accessToken = process.env.PAYER_SERVER_TOKEN;
         let accessTokenType = process.env.PAYER_SERVER_TOKEN_TYPE;
-        let url = CDEX.payerEndpoint.url + "/Patient?identifier=" + patient;
+        let url = window.PAYER_SERVER_BASE_URL + "/Patient?identifier=" + patient;
         const exists = await $.ajax(url).then((res) => {
             if (res.total > 0) {
                 return true

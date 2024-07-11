@@ -663,7 +663,7 @@ let parsed;
 
   CDEX.searchClaims = async (component, firstOption) => {
     $(`#${component}`).html(firstOption);
-    CLAIM.claimLookupByPatient(CDEX.patient.id).then((res) => {
+    CLAIM.claimLookupByPatient(window.PATIENT_ID).then((res) => {
       if (res.total > 0) {
         res.entry.forEach((value) => {
           let optionText = value.resource.id;
@@ -1005,7 +1005,7 @@ let parsed;
           let accessTokenType = window.PAYER_SERVER_TOKEN_TYPE;
           let configProvider = {
             type: "GET",
-            url: `${CDEX.payerEndpoint.url}/Claim/${$("#req-searchClaim")
+            url: `${window.PAYER_SERVER_BASE_URL}/Claim/${$("#req-searchClaim")
               .val()
               .toString()}`,
             contentType: "application/fhir+json",
@@ -1053,9 +1053,9 @@ let parsed;
           });
         }
       });
-      $("#payerIdCol").html(`${CDEX.patient.id}`);
-      $("#patientAccCol").html(`${CDEX.patient.id}`);
-      $("#urlCol").html(`${CDEX.payerEndpoint.url}`);
+      $("#payerIdCol").html(`${window.PATIENT_ID}`);
+      $("#patientAccCol").html(`${window.PATIENT_ID}`);
+      $("#urlCol").html(`${window.PAYER_SERVER_BASE_URL}`);
       $("#patientDOBCol").html(`${CDEX.patient.birthDate}`);
       $("#patientNameCol").html(
         `${CDEX.patient.name[0].given[0]} ${CDEX.patient.name[0].family}`
@@ -1065,7 +1065,7 @@ let parsed;
       dueDate.setDate(currentDate.getDate() + 10);
       $("#serviceDateCol").html(currentDate.toISOString().slice(0, 10));
       $("#dueDateCol").html(dueDate.toISOString().slice(0, 10));
-      $("#memberIdCol").html(`${CDEX.patient.id}`);
+      $("#memberIdCol").html(`${window.PATIENT_ID}`);
       $("#incloincCodes").html(`<p class="stayover">
                                         <br>LOINC Attachment Code
                                         <span>
@@ -1208,7 +1208,7 @@ let parsed;
           CDEX.requestAttachmentPayload.id =
             $("#req-searchClaim").val().toString() + "-T1234";
           CDEX.requestAttachmentPayload.identifier[0].system =
-            CDEX.payerEndpoint.url.toString();
+            window.PAYER_SERVER_BASE_URL;
           CDEX.requestAttachmentPayload.identifier[0].value = $(
             "#req-searchClaim"
           )
@@ -1219,7 +1219,7 @@ let parsed;
           CDEX.requestAttachmentPayload.lastModified =
             $("#serviceDateCol").html();
           CDEX.requestAttachmentPayload.requester.identifier.value =
-            CDEX.patient.id;
+          window.PATIENT_ID;
           CDEX.requestAttachmentPayload.owner.identifier.value =
             "cdex-example-practitioner";
           CDEX.requestAttachmentPayload.restriction.period.end =
@@ -1229,7 +1229,7 @@ let parsed;
           )
             .val()
             .toString();
-          //CDEX.requestAttachmentPayload.contained[0].id = CDEX.patient.id;
+          //CDEX.requestAttachmentPayload.contained[0].id = window.PATIENT_ID;
           CDEX.requestAttachmentPayload.contained[0].name[0].family =
             CDEX.patient.name[0].family;
           CDEX.requestAttachmentPayload.contained[0].name[0].given =
@@ -1286,7 +1286,7 @@ let parsed;
                   },
                 ],
               },
-              valueUrl: `${CDEX.payerEndpoint.url}/$submit-attachment`,
+              valueUrl: `${window.PAYER_SERVER_BASE_URL}/$submit-attachment`,
             },
             {
               type: {
@@ -1352,7 +1352,7 @@ let parsed;
         CDEX.requestQuestionnairePayload.lastModified =
           $("#serviceDateCol").html();
         CDEX.requestQuestionnairePayload.requester.identifier.value =
-          CDEX.patient.id;
+          window.PATIENT_ID;
         CDEX.requestQuestionnairePayload.owner.identifier.value =
           "cdex-example-practitioner";
         CDEX.requestQuestionnairePayload.input[2].valueBoolean =
@@ -1363,7 +1363,7 @@ let parsed;
           .val()
           .toString();
         CDEX.requestQuestionnairePayload.requester.identifier.value =
-          CDEX.patient.id;
+        window.PATIENT_ID;
         CDEX.requestQuestionnairePayload.owner.identifier.value =
           "cdex-example-practitioner";
 
@@ -1623,7 +1623,7 @@ let parsed;
           if (secondaryType.name === secondaryTypeSelected) {
             let queryString = secondaryType.FHIRQueryString.replace(
               "[this patient's id]",
-              CDEX.patient.id
+              window.PATIENT_ID
             );
             payload[idx] = {};
             Object.assign(payload[idx], CDEX.extensionQuery);
@@ -1703,7 +1703,7 @@ let parsed;
           const task = result.task;
           const url = result.url;
           const base = result.base;
-          const workflow = result.url.includes(CDEX.payerEndpoint.url)
+          const workflow = result.url.includes(window.PAYER_SERVER_BASE_URL)
             ? "subscription"
             : "polling";
           const reqTagID = "REQ-" + task.id;
@@ -1807,10 +1807,24 @@ let parsed;
     return promise;
   };
 
-  CDEX.loadData = (client) => {
+  CDEX.loadData = () => {
     $("#query-intro").html(CDEX.directQueryScenarioDescription.description);
-    try {
-      CDEX.client = client;
+    let configPayer = {
+      type: "GET",
+      url: `${window.PAYER_SERVER_BASE_URL}/Patient/${window.PATIENT_ID}`,
+      contentType: "application/fhir+json",
+    };
+    $.ajax(configPayer).then((pt) => {
+      CDEX.patient = pt;
+      CDEX.displayPatient(pt);
+    }).catch(err => {
+      console.log(err);
+      CDEX.displayErrorScreen(
+        "Failed to initialize request menu",
+        "Please make sure that everything is OK with request configuration"
+      )
+    });
+    /*try {
       CDEX.client.patient
         .read()
         .then((pt) => {
@@ -1822,7 +1836,7 @@ let parsed;
             .fetchAll({
               type: "CommunicationRequest",
               query: {
-                subject: CDEX.patient.id,
+                subject: window.PATIENT_ID,
               },
             })
             .then((commRequests) => {
@@ -1843,7 +1857,7 @@ let parsed;
         "Failed to initialize request menu",
         "Please make sure that everything is OK with request configuration"
       );
-    }
+    }*/
   };
 
   CDEX.reconcile = () => {
@@ -1857,10 +1871,10 @@ let parsed;
     CDEX.finalize();
   };
 
-  CDEX.initialize = (client) => {
+  CDEX.initialize = () => {
     CDEX.displayIntroScreen();
     CDEX.loadConfig();
-    CDEX.loadData(client);
+    CDEX.loadData();
   };
 
   CDEX.loadConfig = () => {
@@ -1909,7 +1923,7 @@ let parsed;
     } else {
       let configPayer = {
         type: "POST",
-        url: CDEX.payerEndpoint.url + CDEX.submitEndpoint,
+        url: window.PAYER_SERVER_BASE_URL + CDEX.submitEndpoint,
         data: JSON.stringify(CDEX.operationPayload),
         contentType: "application/fhir+json",
       };
@@ -1917,7 +1931,7 @@ let parsed;
       $.ajax(configPayer).then(
         (commReq) => {
           let url =
-            CDEX.payerEndpoint.url + CDEX.submitEndpoint + "/" + commReq.id;
+            window.PAYER_SERVER_BASE_URL + CDEX.submitEndpoint + "/" + commReq.id;
           CDEX.taskPayload.basedOn[0].reference = url;
           CDEX.taskPayload.id = "s" + commReq.id;
 
@@ -1948,7 +1962,7 @@ let parsed;
                 commReq.about = [
                   {
                     reference:
-                      CDEX.payerEndpoint.url +
+                      window.PAYER_SERVER_BASE_URL +
                       CDEX.submitTaskEndpoint +
                       "/" +
                       CDEX.taskPayload.id,
@@ -1969,7 +1983,7 @@ let parsed;
               let configPayer2 = {
                 type: "PUT",
                 url:
-                  CDEX.payerEndpoint.url + CDEX.submitEndpoint + "/" + commReq.id,
+                window.PAYER_SERVER_BASE_URL + CDEX.submitEndpoint + "/" + commReq.id,
                 data: JSON.stringify(commReq),
                 contentType: "application/fhir+json",
               };
@@ -1988,7 +2002,7 @@ let parsed;
                 let configPayer3 = {
                   type: "PUT",
                   url:
-                    CDEX.payerEndpoint.url +
+                    window.PAYER_SERVER_BASE_URL +
                     CDEX.submitTaskEndpoint +
                     "/" +
                     res.id,
@@ -2150,7 +2164,7 @@ let parsed;
   CDEX.getNotAttachmentRelatedTasks = () => {
     let configProvider = {
       type: "GET",
-      url: `${CDEX.providerEndpoint.url}/Task?_sort=-_lastUpdated&_patient=${CDEX.patient.id}`,
+      url: `${CDEX.providerEndpoint.url}/Task?_sort=-_lastUpdated&_patient=${window.PATIENT_ID}`,
       contentType: "application/fhir+json",
     };
     $.ajax(configProvider).then(
@@ -2226,7 +2240,7 @@ let parsed;
                         CDEX.openCommunicationRequest(task.resource.id);
                         return false;
                       });
-                      config.url = `${CDEX.payerEndpoint.url}/Task/${task.resource.id}`;
+                      config.url = `${window.PAYER_SERVER_BASE_URL}/Task/${task.resource.id}`;
                       $.ajax(config).then((reqResponse) => {
                         
                       }).catch(err => {
@@ -2361,7 +2375,7 @@ let parsed;
         }else if(code){
           const configProvider = {
             type: "GET",
-            url: `${CDEX.providerEndpoint.url}/DocumentReference?_patient=${CDEX.patient.id}&type=${code}`,
+            url: `${CDEX.providerEndpoint.url}/DocumentReference?_patient=${window.PATIENT_ID}&type=${code}`,
             contentType: "application/fhir+json",
           };
           $.ajax(configProvider).then(function(documentReferences) {
@@ -2412,7 +2426,7 @@ let parsed;
     
     let configProvider = {
       type: "GET",
-      url: `${CDEX.providerEndpoint.url}/Task?_sort=-_lastUpdated&_patient=${CDEX.patient.id}`,
+      url: `${CDEX.providerEndpoint.url}/Task?_sort=-_lastUpdated&_patient=${window.PATIENT_ID}`,
       contentType: "application/fhir+json",
       headers: {
         authorization: `${accessTokenType} ${accessToken}`
@@ -2560,7 +2574,7 @@ let parsed;
                                   },
                                 });
                                 configProvider.type = "PUT";
-                                configProvider.url = `${CDEX.payerEndpoint.url}/Claim/${results.id}`;
+                                configProvider.url = `${window.PAYER_SERVER_BASE_URL}/Claim/${results.id}`;
                                 configProvider.data = JSON.stringify(results);
                                 configProvider.headers = {authorization: `${accessTokenType} ${accessToken}`}
                                 
@@ -2594,7 +2608,7 @@ let parsed;
                   //DTR context creation
                   const dtrContext = {
                     context: {
-                      patientId: CDEX.patient.id,
+                      patientId: window.PATIENT_ID,
                       userId: "Practitioner/cdex-example-practitioner",
                       taskId: task.resource.id  
                     },
@@ -2603,7 +2617,7 @@ let parsed;
                         resourceType: "Patient",
                         gender: CDEX.patient.gender,
                         birthDate: CDEX.patient.birthDate,
-                        id: CDEX.patient.id,
+                        id: window.PATIENT_ID,
                         active: true
                       }
                     }
@@ -2750,7 +2764,7 @@ let parsed;
                     let accessTokenType = window.PAYER_SERVER_TOKEN_TYPE;
                     let configProvider = {
                       type: "GET",
-                      url: `${CDEX.payerEndpoint.url}/DocumentReference?_patient=${CDEX.patient.id}`,
+                      url: `${window.PAYER_SERVER_BASE_URL}/DocumentReference?_patient=${window.PATIENT_ID}`,
                       contentType: "application/fhir+json",
                       headers: {
                         authorization: `${accessTokenType} ${accessToken}`
@@ -2785,7 +2799,7 @@ let parsed;
                       if (claim.provider) {
                         configProvider = {
                           type: "GET",
-                          url: `${CDEX.payerEndpoint.url}/${claim.provider.reference}`,
+                          url: `${window.PAYER_SERVER_BASE_URL}/${claim.provider.reference}`,
                           contentType: "application/fhir+json",
                           headers: {
                             authorization: `${accessTokenType} ${accessToken}`
@@ -2846,7 +2860,7 @@ let parsed;
                             valueDate: `${currentDate}`,
                           },
                         ];
-                        CDEX.claimPayloadAttachment.patient.reference = `Patient/${CDEX.patient.id}`;
+                        CDEX.claimPayloadAttachment.patient.reference = `Patient/${window.PATIENT_ID}`;
 
                         CDEX.attachmentRequestedPayload.id = `CDex-parameter-${resourcesId}`;
                         let operationOutcome = {
@@ -2867,7 +2881,7 @@ let parsed;
 
                         let configProvider = {
                           type: "GET",
-                          url: `${CDEX.payerEndpoint.url}/Claim/${$(
+                          url: `${window.PAYER_SERVER_BASE_URL}/Claim/${$(
                             "#currentClaimId"
                           ).text()}`,
                           contentType: "application/fhir+json",
@@ -2968,7 +2982,7 @@ let parsed;
                                   let attachment = {};
                                   let configProvider = {
                                     type: "PUT",
-                                    url: `${CDEX.payerEndpoint.url}/DocumentReference/CDex-Document-Reference-${resourcesId}`,
+                                    url: `${window.PAYER_SERVER_BASE_URL}/DocumentReference/CDex-Document-Reference-${resourcesId}`,
                                     data: JSON.stringify(
                                       CDEX.documentReferencePayload
                                     ),
@@ -3012,7 +3026,7 @@ let parsed;
                                     res.supportingInfo.push(supportingInfo);
                                     CLAIM.claimUpsert(
                                       res,
-                                      CDEX.payerEndpoint.url
+                                      window.PAYER_SERVER_BASE_URL
                                     ).then((updatedClaim) => {
                                       $("#req-claim-output").html(
                                         JSON.stringify(updatedClaim, null, "  ")
@@ -3111,7 +3125,7 @@ let parsed;
                               };
                             }
                           } else {
-                            CLAIM.claimUpsert(res, CDEX.payerEndpoint.url).then(
+                            CLAIM.claimUpsert(res, window.PAYER_SERVER_BASE_URL).then(
                               (updatedClaim) => {
                                 $("#req-claim-output").html(
                                   JSON.stringify(updatedClaim, null, "  ")
@@ -3125,7 +3139,7 @@ let parsed;
                             if ($(`#chk_${index}`).is(":checked")) {
                               configProvider = {
                                 type: "GET",
-                                url: `${CDEX.payerEndpoint.url}/${$(
+                                url: `${window.PAYER_SERVER_BASE_URL}/${$(
                                   `#chk_${index}`
                                 ).val()}`,
                                 contentType: "application/fhir+json",
@@ -3201,7 +3215,7 @@ let parsed;
                                                   text: "Medical records",
                                                 },
                                                 subject: {
-                                                  reference: `Patient/${CDEX.patient.id}`,
+                                                  reference: `Patient/${window.PATIENT_ID}`,
                                                   display: `${CDEX.patient.name[0].family}, ${CDEX.patient.name[0].given[0]}`,
                                                 },
                                                 date: "2021-10-25T20:16:29-07:00",
@@ -3242,14 +3256,14 @@ let parsed;
                                               },
                                             },
                                             {
-                                              fullUrl: `Patient/${CDEX.patient.id}`,
+                                              fullUrl: `Patient/${window.PATIENT_ID}`,
                                               resource: {
                                                 resourceType: "Patient",
-                                                id: `${CDEX.patient.id}`,
+                                                id: `${window.PATIENT_ID}`,
                                                 active: true,
                                                 name: [
                                                   {
-                                                    text: `${CDEX.patient.id}`,
+                                                    text: `${window.PATIENT_ID}`,
                                                     family: `${CDEX.patient.name[0].family}`,
                                                     given: [
                                                       `${CDEX.patient.name[0].given}`,
@@ -3452,7 +3466,7 @@ let parsed;
     const currentDate = new Date().toISOString().slice(0, 10);
     let task = JSON.stringify($("#upd-task-output").text());
 
-    CDEX.claimPayloadAttachment.patient.reference = `Patient/${CDEX.patient.id}`;
+    CDEX.claimPayloadAttachment.patient.reference = `Patient/${window.PATIENT_ID}`;
     attchRes = JSON.parse($("#quest-resp-output").html());
     taskReq = JSON.parse($("#requested-task-payload").html());
     const member = CDEX.patient.identifier.find(id => id.system === "http://example.org/cdex/payer/member-ids");
@@ -3557,7 +3571,7 @@ let parsed;
             },
           });
           configProvider.type = "PUT";
-          configProvider.url = `${CDEX.payerEndpoint.url}/Claim/${taskReq.reasonReference.identifier.value}`;
+          configProvider.url = `${window.PAYER_SERVER_BASE_URL}/Claim/${taskReq.reasonReference.identifier.value}`;
           configProvider.data = JSON.stringify(results);
           $.ajax(configProvider).then((claimRes) => {
             $("#req-claim-output").html(JSON.stringify(claimRes, null, "  "));
@@ -3768,7 +3782,7 @@ let parsed;
             });
             break;
           case "Patient":
-            CDEX.taskPayload.for.reference = `Patient/${CDEX.patient.id}`;//entry.resource.id;
+            CDEX.taskPayload.for.reference = `Patient/${window.PATIENT_ID}`;//entry.resource.id;
             break;
           case "PractitionerRole":
             CDEX.taskPayload.owner.reference = "Practitioner/cdex-example-practitioner";//entry.resource.practitioner.reference;
@@ -3901,6 +3915,7 @@ let parsed;
   });
 
   // FHIR.oauth2.ready(CDEX.initialize);
+  CDEX.initialize();
 
   CDEX.submitAttachments = (claimId) => {
     let operationOutcome = "";
@@ -3908,12 +3923,12 @@ let parsed;
     const resourcesId = Date.now();
     const fileName = $("#select-attch").get(0).files.item(0);
 
-    CDEX.claimPayloadAttachment.patient.reference = `Patient/${CDEX.patient.id}`;
+    CDEX.claimPayloadAttachment.patient.reference = `Patient/${window.PATIENT_ID}`;
 
     CDEX.attachmentPayload.id = `CDex-parameter-${resourcesId}`;
     CDEX.attachmentPayload.parameter[0].valueCode = "claim"; //To check: $('#radio-claim').is(':checked')?'claim':'prior-auth';
     CDEX.attachmentPayload.parameter[1].valueIdentifier.value = `${claimId}`;
-    CDEX.attachmentPayload.parameter[4].valueIdentifier.value = `${CDEX.patient.id}`;
+    CDEX.attachmentPayload.parameter[4].valueIdentifier.value = `${window.PATIENT_ID}`;
     CDEX.attachmentPayload.parameter[5].valueDate = $("#serviceDate").val();
     //Setting the parameters payload
     CDEX.attachmentPayload.parameter[6].part[1].valueCodeableConcept.coding[0].code = `${$(
@@ -3950,7 +3965,7 @@ let parsed;
             
           let configProvider = {
             type: "PUT",
-            url: `${CDEX.payerEndpoint.url}/DocumentReference/CDex-Document-Reference-${resourcesId}`,
+            url: `${window.PAYER_SERVER_BASE_URL}/DocumentReference/CDex-Document-Reference-${resourcesId}`,
             data: JSON.stringify(CDEX.documentReferencePayload),
             contentType: "application/json",
             headers: {
@@ -3990,7 +4005,7 @@ let parsed;
                   : "preauthorization";
                 CLAIM.claimUpsert(
                   CDEX.claimPayloadAttachment,
-                  CDEX.payerEndpoint.url
+                  window.PAYER_SERVER_BASE_URL
                 ).then((results) => {
                   $("#claim-output").html(JSON.stringify(results, null, "  "));
                 });
@@ -4019,7 +4034,7 @@ let parsed;
                     reference: `DocumentReference/CDex-Document-Reference-${resourcesId}`,
                   },
                 };
-                CLAIM.claimUpsert(results, CDEX.payerEndpoint.url).then(
+                CLAIM.claimUpsert(results, window.PAYER_SERVER_BASE_URL).then(
                   (results) => {
                     $("#claim-output").html(
                       JSON.stringify(results, null, "  ")
@@ -4070,16 +4085,16 @@ let parsed;
           resourceIdentifier = jsonContent.id;
         }
         if (jsonContent.resourceType !== "Bundle")
-          jsonContent.subject.reference = `Patient/${CDEX.patient.id}`;
+          jsonContent.subject.reference = `Patient/${window.PATIENT_ID}`;
         else {
           jsonContent.entry.forEach((resource) => {
             if (resource.resource.resourceType === "Patient")
-              resource.resource.id = `Patient/${CDEX.patient.id}`;
+              resource.resource.id = `Patient/${window.PATIENT_ID}`;
           });
         }
         configProvider = {
           type: "PUT",
-          url: `${CDEX.payerEndpoint.url}/${jsonContent.resourceType}/${resourceIdentifier}`,
+          url: `${window.PAYER_SERVER_BASE_URL}/${jsonContent.resourceType}/${resourceIdentifier}`,
           data: JSON.stringify(jsonContent),
           contentType: "application/json",
         };
@@ -4117,7 +4132,7 @@ let parsed;
                   : "preauthorization";
                 CLAIM.claimUpsert(
                   CDEX.claimPayloadAttachment,
-                  CDEX.payerEndpoint.url
+                  window.PAYER_SERVER_BASE_URL
                 ).then((results) => {
                   $("#claim-output").html(JSON.stringify(results, null, "  "));
                 });
@@ -4174,7 +4189,7 @@ let parsed;
                   }
                 }
                 //TODO: Line items association for unsolicited attachments.
-                CLAIM.claimUpsert(results, CDEX.payerEndpoint.url).then(
+                CLAIM.claimUpsert(results, window.PAYER_SERVER_BASE_URL).then(
                   (results) => {
                     $("#claim-output").html(
                       JSON.stringify(results, null, "  ")
@@ -4257,7 +4272,7 @@ let parsed;
     if ($("#search-criteria").val() === "Observation - HbA1c") {
       queryType = "Observation?patient=cdex-example-patient&code=4548-4";
     } else if ($("#search-criteria").val() !== "custom") {
-      queryType = `${$("#search-criteria").val()}?patient=${CDEX.patient.id}`;
+      queryType = `${$("#search-criteria").val()}?patient=${window.PATIENT_ID}`;
     } else {
       queryType = $("#customquery").val();
     }

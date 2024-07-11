@@ -10,7 +10,7 @@ if (!CDEX) {
 
 (function () {
   patientLookup = async (patient) => {
-    let url = CDEX.payerEndpoint.url + "/Patient/" + patient;
+    let url = window.PAYER_SERVER_BASE_URL + "/Patient/" + patient;
     $.ajax(url)
       .then((res) => {
         if (res.data.total > 0) {

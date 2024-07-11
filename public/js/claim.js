@@ -20,7 +20,7 @@ if (!CDEX) {
 
     let configProvider = {
       type: "GET",
-      url: `${CDEX.payerEndpoint.url}/Claim?patient=${patientId}`,
+      url: `${window.PAYER_SERVER_BASE_URL}/Claim?patient=${patientId}`,
       contentType: "application/json",
       headers: {
         authorization: `${accessTokenType} ${accessToken}`
@@ -44,7 +44,7 @@ if (!CDEX) {
 
     let configProvider = {
       type: "GET",
-      url: `${CDEX.payerEndpoint.url}/Claim/${claim}`,
+      url: `${window.PAYER_SERVER_BASE_URL}/Claim/${claim}`,
       contentType: "application/json",
       headers: {
         authorization: `${accessTokenType} ${accessToken}`
