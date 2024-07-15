@@ -219,7 +219,7 @@ if (!CDEX) {
     status: "active",
     priority: "routine",
     subject: {
-      reference: "Patient/cdex-example-patient",
+      reference: `Patient/${window.PATIENT_ID}`,
     },
     authoredOn: "TIMESTAMP",
     recipient: [
@@ -264,7 +264,7 @@ if (!CDEX) {
       ],
     },
     for: {
-      reference: "Patient/cdex-example-patient",
+      reference: `Patient/${window.PATIENT_ID}`,
     },
     authoredOn: "TIMESTAMP",
     lastModified: "TIMESTAMP",
@@ -272,7 +272,7 @@ if (!CDEX) {
       reference: window.PAYER_SERVER_BASE_URL + "/Organization/cdex-example-payer",
     },
     owner: {
-      reference: "Organization/cdex-example-provider",
+      reference: `Organization/${window.ORGANIZATION_ID}`,
     },
     reasonCode: {
       coding: [

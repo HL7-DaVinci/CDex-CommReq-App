@@ -89,7 +89,7 @@ let parsed;
   CDEX.completeTask = (taskId) => {
     const configProvider = {
       type: "GET",
-      url: `${CDEX.providerEndpoint.url}/Task/${taskId}`,
+      url: `${window.PROVIDER_SERVER_BASE_URL}/Task/${taskId}`,
       contentType: "application/fhir+json",
     };
     $.ajax(configProvider).then((taskResource) => {
@@ -266,7 +266,7 @@ let parsed;
         let promiseBinary;
         let config = {
             type: 'GET',
-            url: CDEX.providerEndpoint.url + attachment.url
+            url: window.PROVIDER_SERVER_BASE_URL + attachment.url
         };
 
         promiseBinary = $.ajax(config);
@@ -280,7 +280,7 @@ let parsed;
         let promiseBundle;
         let config = {
             type: 'GET',
-            url: CDEX.providerEndpoint.url + attachment.url
+            url: window.PROVIDER_SERVER_BASE_URL + attachment.url
         };
 
         promiseBundle = $.ajax(config);
@@ -3772,7 +3772,7 @@ let parsed;
             CDEX.taskPayload.reasonCode.coding[0].code = "preauthorization";
             CDEX.taskPayload.reasonCode.coding[0].display = "Pre-Authorization";
             CDEX.taskPayload.reasonCode.text = "preauthorization";
-            CDEX.taskPayload.requester.reference = "Organization/cdex-example-provider";//`${entry.resource.insurer.reference}`;
+            CDEX.taskPayload.requester.reference = `Organization/${window.ORGANIZATION_ID}`;//`${entry.resource.insurer.reference}`;
             entry.resource.item[0].extension.forEach(extension => {
               if(extension.url.includes("itemRequestedServiceDate")) {
                 CDEX.taskPayload.input.push({
@@ -4270,7 +4270,7 @@ let parsed;
   CDEX.directQueryRequest = () => {
     let queryType = "";
     if ($("#search-criteria").val() === "Observation - HbA1c") {
-      queryType = "Observation?patient=cdex-example-patient&code=4548-4";
+      queryType = `Observation?patient=${window.PATIENT_ID}&code=4548-4`;
     } else if ($("#search-criteria").val() !== "custom") {
       queryType = `${$("#search-criteria").val()}?patient=${window.PATIENT_ID}`;
     } else {

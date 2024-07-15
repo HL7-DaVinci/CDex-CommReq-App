@@ -42,7 +42,7 @@ router.post('/', async (req, res) => {
       reference: "https://api.logicahealth.org/DaVinciCDexProvider/open/Practitioner/cdex-example-practitioner"
     },
     onBehalfOf: {
-      reference: "https://api.logicahealth.org/DaVinciCDexProvider/open/Organization/cdex-example-provider"
+      reference: `${window.PROVIDER_SERVER_BASE_URL}/Organization/${window.ORGANIZATION_ID}`
     },
     data: base64JWS,
   }
