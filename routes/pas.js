@@ -3,8 +3,8 @@ const request = require('@cypress/request');
 const router = Router();
 const _ = require("underscore");
 
-const priorFHIRBase = process.env.PAS_SERVER_URL;
-const PAS_auth = "Bearer "+process.env.PAS_SERVER_TOKEN;
+const priorFHIRBase = "https://prior-auth.davinci.hl7.org/fhir";//process.env.PAS_SERVER_URL;
+const PAS_auth = "Bearer Y3YWq2l08kvFqy50fQJY";
 router.post("/", (req, res) => {
   req.headers["accept"] = "application/json";
   req.headers["content-type"] = "application/json";

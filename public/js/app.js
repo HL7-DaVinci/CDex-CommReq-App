@@ -3716,11 +3716,11 @@ let parsed;
     $.ajax(configProvider).then((response) => {
       parsed = JSON.parse(response);
       $("#preauth-text-output").html(JSON.stringify(parsed, null, 2));
+      CDEX.displayScreen("preauth-response-screen");
     }).catch(function (error) {
         $("#preauth-text-output").html(JSON.stringify(error, null, 2));
+        CDEX.displayScreen("preauth-response-screen");
       });
-
-    CDEX.displayScreen("preauth-response-screen");
   });
 
   $("#preauth-btn-restart").click(function () {

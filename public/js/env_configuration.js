@@ -13,7 +13,7 @@
     window["DTR_SERVER_URL"]="https://mydtrserver.com/cdex-services/start-dtr";
     window["DTR_SERVER_TOKEN"]="dtr_token";
     window["PAS_SERVER_URL"]="https://prior-auth.davinci.hl7.org/fhir";
-    window["PAS_SERVER_TOKEN"]="pas_token";
+    window["PAS_SERVER_TOKEN"]="Y3YWq2l08kvFqy50fQJY";//"pas_token";
     window["URL_SUBMIT_ATTACHMENT"]="https://cdex-commreq.davinci.hl7.org/$submit-attachment";
     window["URL_SUBMIT"]="https://cdex-commreq.davinci.hl7.org/$submit";
     window["ORGANIZATION_ID"]="cdex-example-provider";

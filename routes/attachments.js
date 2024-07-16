@@ -1,8 +1,9 @@
+//import '../public/js/env_configuration';
 const { Router } = require("express");
 const request = require('@cypress/request');
 const router = Router();
 const _ = require("underscore");
-const baseurl = process.env.PAYER_SERVER_BASE_URL       
+const baseurl = "https://cdex-payer-server.davinci.hl7.org/fhir";    
 
 router.post("/", (req, res) => {
   req.headers["accept"] = "application/fhir+json;charset=UTF-8";
