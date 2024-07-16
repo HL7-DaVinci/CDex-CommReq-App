@@ -1807,8 +1807,7 @@ let parsed;
     return promise;
   };
 
-  CDEX.loadData = () => {
-    $("#query-intro").html(CDEX.directQueryScenarioDescription.description);
+  CDEX.fetchPatient = () => {
     let configPayer = {
       type: "GET",
       url: `${window.PAYER_SERVER_BASE_URL}/Patient/${window.PATIENT_ID}`,
@@ -1824,6 +1823,11 @@ let parsed;
         "Please make sure that everything is OK with request configuration"
       )
     });
+  };
+
+  CDEX.loadData = () => {
+    $("#query-intro").html(CDEX.directQueryScenarioDescription.description);
+    CDEX.fetchPatient();
     /*try {
       CDEX.client.patient
         .read()
@@ -2286,16 +2290,7 @@ let parsed;
             CDEX.operationTaskPayload = task;
         }
     });
-    CDEX.client.api.fetchAll(
-      {
-        type: "Patient",
-        query: {
-                  _id: CDEX.operationTaskPayload.for.reference
-              }
-      },
-      [ "Patient.patientReference" ]).then(function(patients) {
-                                              CDEX.displayPatient(patients[0]);
-                                          });
+    CDEX.fetchPatient();
     if(CDEX.operationTaskPayload.input){
       CDEX.operationTaskPayload.input.forEach(function (content, index) {
         let description = "";
