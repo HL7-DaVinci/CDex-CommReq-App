@@ -9,7 +9,7 @@
     window["PAYER_SERVER_BASE_URL"] = "https://cdex-payer-server.davinci.hl7.org/fhir";
     window["PAYER_SERVER_TOKEN"] = "";
     window["PAYER_SERVER_TOKEN_TYPE"] = "";
-    window["PATIENT_ID"]="13db04df-0023-42dd-965c-a5c2b626b706";//"cdex-example-patient";
+    window["PATIENT_ID"]="cdex-example-patient";
     window["DTR_SERVER_URL"]="https://mydtrserver.com/cdex-services/start-dtr";
     window["DTR_SERVER_TOKEN"]="dtr_token";
     window["PAS_SERVER_URL"]="https://prior-auth.davinci.hl7.org/fhir";
