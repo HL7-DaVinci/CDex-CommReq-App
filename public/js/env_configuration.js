@@ -16,5 +16,5 @@
     window["PAS_SERVER_TOKEN"]="pas_token";
     window["URL_SUBMIT_ATTACHMENT"]="https://cdex-commreq.davinci.hl7.org/$submit-attachment";
     window["URL_SUBMIT"]="https://cdex-commreq.davinci.hl7.org/$submit";
-    window["ORGANIZATION_ID"]="organization-1";
+    window["ORGANIZATION_ID"]="cdex-example-provider";
 })(this);
