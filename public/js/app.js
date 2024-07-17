@@ -2431,7 +2431,7 @@ let parsed;
       (res) => {
         $("#tasks-list").html("");
         $("#questionnaire-list").html("");
-        if (res.total > 0) {
+        if (res.entry.length > 0 || res.total > 0) {
           res.entry.forEach((task) => {
             if (task.resource.code.coding[0].code === "attachment-request-questionnaire") {
                 let htmlBody = "";
