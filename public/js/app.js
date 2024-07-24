@@ -784,7 +784,7 @@ let parsed;
     } else {
       $("#config-select").val(CDEX.configSetting);
     }
-    $("#config-text").val(JSON.stringify(CDEX.providerEndpoint, null, 2));
+    $("#config-text").val(JSON.stringify(window.PROVIDER_SERVER_BASE_URL, null, 2));
     CDEX.displayScreen("config-screen");
   };
 
@@ -816,7 +816,7 @@ let parsed;
     
     let config = {
         type: 'PUT',
-        url: CDEX.providerEndpoint.url + CDEX.submitTaskEndpoint + "/" + CDEX.operationTaskPayload.id,
+        url: window.PROVIDER_SERVER_BASE_URL + CDEX.submitTaskEndpoint + "/" + CDEX.operationTaskPayload.id,
         data: JSON.stringify(CDEX.operationTaskPayload),
         contentType: "application/fhir+json"
     };
@@ -868,14 +868,14 @@ let parsed;
                   "type": attachment.contentType,
                   "category": CDEX.resources.docRef[index].category,
                   "index": index,
-                  "url":CDEX.providerEndpoint.url + attachment.url
+                  "url":window.PROVIDER_SERVER_BASE_URL + attachment.url
 
               }
               if (attachment.contentType === "application/pdf") {
                   if (attachment.url) {
                       let promiseBinary = new Promise((resolve, reject) => $.ajax({
                           type: 'GET',
-                          url: CDEX.providerEndpoint.url + attachment.url,
+                          url: window.PROVIDER_SERVER_BASE_URL + attachment.url,
                           success: function(data) {resolve(btoa(unescape(encodeURIComponent(data))))},
                           error: function(error) {reject(error)}
                       }));
@@ -889,7 +889,7 @@ let parsed;
               } else if (attachment.contentType === "application/hl7-v3+xml") {
                   let promiseBinary =  new Promise((resolve, reject) => $.ajax({
                       type: 'GET',
-                      url: CDEX.providerEndpoint.url + attachment.url,
+                      url: window.PROVIDER_SERVER_BASE_URL + attachment.url,
                       success: function(data) {resolve(btoa(new XMLSerializer().serializeToString(data.documentElement)))},
                       error: function(error) {reject(error)}
                   }));
@@ -899,7 +899,7 @@ let parsed;
                   let promiseBundle;
                   promiseBundle = new Promise((resolve, reject) => $.ajax({
                       type: 'GET',
-                      url: CDEX.providerEndpoint.url + attachment.url,
+                      url: window.PROVIDER_SERVER_BASE_URL + attachment.url,
                       success: function(data) {resolve(btoa(JSON.stringify(data)))},
                       error: function(error) {reject(error)}
                   }));
@@ -1304,7 +1304,7 @@ let parsed;
           let providerEndpoint =
             $("#customProviderEndpoint").val() !== ""
               ? $("#customProviderEndpoint").val()
-              : CDEX.providerEndpoint.url;
+              : window.PROVIDER_SERVER_BASE_URL;
 
           let accessToken = window.PROVIDER_SERVER_TOKEN
           let accessTokenType = window.PROVIDER_SERVER_TOKEN_TYPE
@@ -1375,7 +1375,7 @@ let parsed;
         let providerEndpoint =
           $("#customProviderEndpoint").val() !== ""
             ? $("#customProviderEndpoint").val()
-            : CDEX.providerEndpoint.url;
+            : window.PROVIDER_SERVER_BASE_URL;
         
         let accessToken = window.PROVIDER_SERVER_TOKEN
         let accessTokenType = window.PROVIDER_SERVER_TOKEN_TYPE
@@ -1383,7 +1383,7 @@ let parsed;
         let configProvider = {
           type: "PUT",
           url:
-            CDEX.providerEndpoint.url +
+          window.PROVIDER_SERVER_BASE_URL +
             CDEX.submitTaskEndpoint +
             "/" +
             $("#req-searchClaim").val().toString() +
@@ -1592,7 +1592,7 @@ let parsed;
     communicationRequest.id = CDEX.getGUID();
     communicationRequest.contained[0].id = CDEX.getGUID();
     communicationRequest.contained[0].identifier[0].system =
-      CDEX.providerEndpoint.url;
+    window.PROVIDER_SERVER_BASE_URL;
     communicationRequest.contained[0].identifier[0].value =
       CDEX.providerEndpoint.name;
     communicationRequest.recipient[0].reference =
@@ -1905,7 +1905,7 @@ let parsed;
       }
       let configPayer = {
         type: "PUT",
-        url: `${CDEX.providerEndpoint.url}${CDEX.submitTaskEndpoint}/${CDEX.operationTaskPayload.id}`,
+        url: `${window.PROVIDER_SERVER_BASE_URL}${CDEX.submitTaskEndpoint}/${CDEX.operationTaskPayload.id}`,
         data: JSON.stringify(CDEX.operationTaskPayload),
         contentType: "application/fhir+json",
       };
@@ -1915,7 +1915,7 @@ let parsed;
           "<p><strong>Task ID:</strong> " + updatedTask.id + "</p>"
         );
         $("#submit-endpoint").html(
-          `PUT ${CDEX.providerEndpoint.url}${CDEX.submitTaskEndpoint}/${CDEX.operationTaskPayload.id}`
+          `PUT ${window.PROVIDER_SERVER_BASE_URL}${CDEX.submitTaskEndpoint}/${CDEX.operationTaskPayload.id}`
         );
         $("#text-output").html(
           JSON.stringify(updatedTask, null, 2)
@@ -1947,7 +1947,7 @@ let parsed;
           let configProvider = {
             type: "PUT",
             url:
-              CDEX.providerEndpoint.url +
+            window.PROVIDER_SERVER_BASE_URL +
               CDEX.submitTaskEndpoint +
               `/${CDEX.taskPayload.id}`,
           data: JSON.stringify(CDEX.taskPayload),
@@ -1976,7 +1976,7 @@ let parsed;
                 commReq.about = [
                   {
                     reference:
-                      CDEX.providerEndpoint.url +
+                    window.PROVIDER_SERVER_BASE_URL +
                       CDEX.submitTaskEndpoint +
                       "/" +
                       CDEX.taskPayload.id,
@@ -2021,7 +2021,7 @@ let parsed;
                 let configProvider2 = {
                   type: "POST",
                   url:
-                  CDEX.providerEndpoint.url +
+                  window.PROVIDER_SERVER_BASE_URL +
                     CDEX.submitSubscriptionEndpoint,
                   data: JSON.stringify(CDEX.subscriptionPayload),
                   contentType: "application/fhir+json",
@@ -2138,7 +2138,7 @@ let parsed;
     let accessTokenType = window.PROVIDER_SERVER_TOKEN_TYPE;
     let configProvider = {
       type: "GET",
-      url: `${CDEX.providerEndpoint.url}/Task/${resourceId}`,
+      url: `${window.PROVIDER_SERVER_BASE_URL}/Task/${resourceId}`,
       contentType: "application/fhir+json",
       responseType: "blob",
       headers: {
@@ -2168,7 +2168,7 @@ let parsed;
   CDEX.getNotAttachmentRelatedTasks = () => {
     let configProvider = {
       type: "GET",
-      url: `${CDEX.providerEndpoint.url}/Task?_sort=-_lastUpdated&_patient=${window.PATIENT_ID}`,
+      url: `${window.PROVIDER_SERVER_BASE_URL}/Task?_sort=-_lastUpdated&_patient=${window.PATIENT_ID}`,
       contentType: "application/fhir+json",
     };
     $.ajax(configProvider).then(
@@ -2203,7 +2203,7 @@ let parsed;
                //validate task
               let conf = {
                   type: 'POST',
-                  url: CDEX.providerEndpoint.url + "/" + task.resourceType + "/$validate?profile=http://hl7.org/fhir/us/davinci-hrex/StructureDefinition/hrex-task-data-request",
+                  url: window.PROVIDER_SERVER_BASE_URL + "/" + task.resourceType + "/$validate?profile=http://hl7.org/fhir/us/davinci-hrex/StructureDefinition/hrex-task-data-request",
                   data: JSON.stringify(task),
                   contentType: "application/fhir+json",
                   accept: "application/fhir+json"
@@ -2231,7 +2231,7 @@ let parsed;
 
                       let config = {
                           type: 'PUT',
-                          url: `${CDEX.providerEndpoint.url}/Task/${task.resource.id}`,
+                          url: `${window.PROVIDER_SERVER_BASE_URL}/Task/${task.resource.id}`,
                           data: JSON.stringify(task.resource),
                           contentType: "application/fhir+json"
                       };
@@ -2315,7 +2315,7 @@ let parsed;
           let promise;
           let config = {
             type: 'GET',
-            url: CDEX.providerEndpoint.url + "/" + query
+            url: window.PROVIDER_SERVER_BASE_URL + "/" + query
           };
           CDEX.resources.queries.push({
             "question": description,
@@ -2370,7 +2370,7 @@ let parsed;
         }else if(code){
           const configProvider = {
             type: "GET",
-            url: `${CDEX.providerEndpoint.url}/DocumentReference?_patient=${window.PATIENT_ID}&type=${code}`,
+            url: `${window.PROVIDER_SERVER_BASE_URL}/DocumentReference?_patient=${window.PATIENT_ID}&type=${code}`,
             contentType: "application/fhir+json",
           };
           $.ajax(configProvider).then(function(documentReferences) {
@@ -2421,7 +2421,7 @@ let parsed;
     
     let configProvider = {
       type: "GET",
-      url: `${CDEX.providerEndpoint.url}/Task?_sort=-_lastUpdated&_patient=${window.PATIENT_ID}`,
+      url: `${window.PROVIDER_SERVER_BASE_URL}/Task?_sort=-_lastUpdated&_patient=${window.PATIENT_ID}`,
       contentType: "application/fhir+json",
       headers: {
         authorization: `${accessTokenType} ${accessToken}`
@@ -2441,7 +2441,7 @@ let parsed;
                                   <td><a href="#" id="btn-${task.resource.id}">${task.resource.id}</a></td>
                                   <td>${task.resource.meta.lastUpdated}</td>
                                   <td>
-                                      <a href="${CDEX.providerEndpoint.url}/Task/${task.resource.id}">
+                                      <a href="${window.PROVIDER_SERVER_BASE_URL}/Task/${task.resource.id}">
                                           Download
                                       </a>
                                   </td>
@@ -2453,7 +2453,7 @@ let parsed;
                                   <td>${task.resource.id}</td>
                                   <td>${task.resource.meta.lastUpdated}</td>
                                   <td>
-                                      <a href="${CDEX.providerEndpoint.url}/Task/${task.resource.id}">
+                                      <a href="${window.PROVIDER_SERVER_BASE_URL}/Task/${task.resource.id}">
                                           Download
                                       </a>
                                   </td>
@@ -2465,7 +2465,7 @@ let parsed;
                                   <td>${task.resource.id}</td>
                                   <td>${task.resource.meta.lastUpdated}</td>
                                   <td>
-                                      <a href="${CDEX.providerEndpoint.url}/Task/${task.resource.id}">
+                                      <a href="${window.PROVIDER_SERVER_BASE_URL}/Task/${task.resource.id}">
                                           Download
                                       </a>
                                   </td>
@@ -2484,7 +2484,7 @@ let parsed;
                   let questionnaireResponsePath = '';
                   let taskSettings = {
                     type: "GET",
-                    url: `${CDEX.providerEndpoint.url}/Task/${task.resource.id}`,
+                    url: `${window.PROVIDER_SERVER_BASE_URL}/Task/${task.resource.id}`,
                     contentType: "application/fhir+json",
                     headers: {
                       authorization: `${accessTokenType} ${accessToken}`
@@ -2507,7 +2507,7 @@ let parsed;
                         $.ajax(taskSettings);
                         let attchSettings = {
                           type: "GET",
-                          url: `${CDEX.providerEndpoint.url}/${questionnaireResponsePath}`,
+                          url: `${window.PROVIDER_SERVER_BASE_URL}/${questionnaireResponsePath}`,
                           contentType: "application/fhir+json",
                           headers: {
                             authorization: `${accessTokenType} ${accessToken}`
@@ -2642,7 +2642,7 @@ let parsed;
                               <td><a href="#" id="btn-${task.resource.id}">${task.resource.id}</a></td>
                               <td>${task.resource.meta.lastUpdated}</td>
                               <td>
-                                  <a href="${CDEX.providerEndpoint.url}/Task/${task.resource.id}">
+                                  <a href="${window.PROVIDER_SERVER_BASE_URL}/Task/${task.resource.id}">
                                       Download
                                   </a>
                               </td>
@@ -2678,7 +2678,7 @@ let parsed;
 
                   let provider = {
                     type: "GET",
-                    url: `${CDEX.providerEndpoint.url}/Task/${task.resource.id}`,
+                    url: `${window.PROVIDER_SERVER_BASE_URL}/Task/${task.resource.id}`,
                     contentType: "application/fhir+json",
                     headers: {
                       authorization: `${accessTokenType} ${accessToken}`
@@ -3735,7 +3735,7 @@ let parsed;
     parsed = JSON.parse($("#preauthtask-text-output").html());
      let configProvider = {
             type: "PUT",
-            url: `${CDEX.providerEndpoint.url}/Task/${parsed.id}`,
+            url: `${window.PROVIDER_SERVER_BASE_URL}/Task/${parsed.id}`,
             data: JSON.stringify(parsed),
             contentType: "application/json",
           };
@@ -4275,7 +4275,7 @@ let parsed;
     let accessTokenType = window.PROVIDER_SERVER_TOKEN_TYPE;
     let configPayer = {
       type: "GET",
-      url: `${CDEX.providerEndpoint.url}/${queryType}`,
+      url: `${window.PROVIDER_SERVER_BASE_URL}/${queryType}`,
       contentType: "application/fhir+json",
       headers: {
         authorization: `${accessTokenType} ${accessToken}`
