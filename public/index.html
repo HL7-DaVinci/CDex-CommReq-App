@@ -35,8 +35,8 @@
 
     <div id="task-intro-screen" class="card alert-info screen dvt"  style="display: block;">
         <div class="card-body">
-            <h5 class="card-title">CDex Scenarios Description</h5>
-            <p class='card-text' id='task-intro'>
+            <h4 class="card-title">CDex Scenarios Description</h4>
+            <!-- <p class='card-text' id='task-intro'>
                 In this scenario, the user works for a payer and wishes to
                 request clinical data from the provider to support
                 a post-payment audit. In the next screens, the user
@@ -47,30 +47,28 @@
                 of all the requested  data available. Data that can be
                 represented in FHIR and supported by the provider system
                 could be created using the CDex approach.
+            </p> -->
+            <p>
+                <b>Task Based Approach:</b><br>
+                A system that needs information about a patient/member and which can solicit that information using
+                the asynchronous CDEX Task based approach. For detailed documentation see:<br>
+                <a href="http://build.fhir.org/ig/HL7/davinci-ecdx/task-based-approach.html" target="_blank">
+                    http://build.fhir.org/ig/HL7/davinci-ecdx/task-based-approach.html
+                </a>
             </p>
+            <p>Example Transaction:</p>
+            <ul>
+                <li>Data Consumer creates a Task on the Data Source’s system soliciting a patient’s knee
+                    surgery report and then polls for updates to the Task.</li>
+                <li>Data Source completes the data request and updates the Task with the requested
+                    information and the status to “completed”.</li>
+                <li>The Data Consumer fetches the completed Task and the documents referenced in it.
+                </li>
+            </ul>
             <a href="#" class="btn btn-primary" id="btn-task" data-toggle="tooltip" data-placement="top">
                 Task Based Approach
-                <span>
-                    <b>Task Based Approach:</b><br>
-                    A system that needs information about a patient/member and which can solicit that information using
-                    the asynchronous CDEX Task based approach.<br>
-                    For detailed documentation see:
-                    http://build.fhir.org/ig/HL7/davinci-ecdx/task-based-approach.html<br>
-                    <ul>
-                        <li>
-                            Example Transaction:
-                            <ul>
-                                <li>Data Consumer creates a Task on the Data Source’s system soliciting a patient’s knee
-                                    surgery report and then polls for updates to the Task.</li>
-                                <li>Data Source completes the data request and updates the Task with the requested
-                                    information and the status to “completed”.</li>
-                                <li>The Data Consumer fetches the completed Task and the documents referenced in it.
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </span>
             </a>
+            <hr>
             <!-- Hiding Direct Query Button
                 <a href="#" class="btn btn-primary" id="btn-query" data-toggle="tooltip" data-placement="top">Direct Query
                 <span>
@@ -86,91 +84,87 @@
                     </ul>
                 </span>
             </a> -->
+            <p>
+                <b>Submit unsolicited attachment:<br></b>
+                Provider invokes the ‘$submit-attachment’ operation on the Payer’s endpoint to attach a document to
+                an existing Claim or Prior Authorization. The Data Consumer returns a success code For detailed documentation see:<br>
+                <a target="_blank" href="http://build.fhir.org/ig/HL7/davinci-ecdx/sending-attachments.html">
+                    http://build.fhir.org/ig/HL7/davinci-ecdx/sending-attachments.html
+                </a>
+            </p>
+            <p>Example Transaction:</p>
+            <ul>
+                <li>Provider submits a visit summary for a claim they are submitting to the Payer using
+                    $submit-attachment.</li>
+                <li>The Data Consumer returns a success code indicating that the $submit-attachment payload was
+                    recieved.</li>
+                <li>Association of the attachment to the Claim resource.</li>
+            </ul>
             <a href="#" class="btn btn-primary" id="btn-attach" data-toggle="tooltip" data-placement="top">Submit
                 Unsolicited Attachment
-                <span><b>Submit unsolicited attachment:<br></b>
-                    Provider invokes the ‘$submit-attachment’ operation on the Payer’s endpoint to attach a document to
-                    an existing Claim or Prior Authorization.
-                    <br>The Data Consumer returns a success code For detailed documentation see:
-                    http://build.fhir.org/ig/HL7/davinci-ecdx/sending-attachments.html
-                    <br>Example Transaction:
-                    <br>
-                    <ul>
-                        <li>Provider submits a visit summary for a claim they are submitting to the Payer using
-                            $submit-attachment.</li>
-                        <li>The Data Consumer returns a success code indicating that the $submit-attachment payload was
-                            recieved.</li>
-                        <li>Association of the attachment to the Claim resource.</li>
-                    </ul>
-                </span></a>
+            </a>
+            <hr>
+            <p>
+                <b>Requesting Attachments:</b><br>
+                Payer solicits additional information for a claim or prior authorization using the asynchronous CDEX
+                Task based approach. The actual data requested uses “attachments codes” or a FHIR Questionnaire. For detailed documentation see:<br>
+                <a href="http://build.fhir.org/ig/HL7/davinci-ecdx/requesting-attachments-code.html" target="_blank">
+                    http://build.fhir.org/ig/HL7/davinci-ecdx/requesting-attachments-code.html
+                </a>
+            </p>
+            <p>Example Transaction 1:</p>
+            <ul>
+                <li>Payer asks for a visit summary for a Payer's claim using Task using and attachment
+                    code</li>
+                <li>In a separate transaction the Provider submits the requested data using
+                    $submit-attachment to the Payer.</li>
+            </ul>
+            <p>Example Transaction 2:</p>
+            <ul>
+                <li>Payer asks for a additional data for a Payer's Home Oxygen Therapy Claim using a
+                    FHIR Questionnaire</li>
+                <li>In a separate transaction the Provider submits the completed FHIR
+                    QuestionnaireResponse using $submit-attachment to the Payer.</li>
+            </ul>
             <a href="#" class="btn btn-primary" id="btn-request-attach" data-toggle="tooltip"
                 data-placement="top">Request Attachment
-                <span><b>Requesting Attachments:<br></b>
-                    Payer solicits additional information for a claim or prior authorization using the asynchronous CDEX
-                    Task based approach.<br>
-                    The actual data requested uses “attachments codes” or a FHIR Questionnaire. For detailed
-                    documentation see:<br>
-                    http://build.fhir.org/ig/HL7/davinci-ecdx/requesting-attachments-code.html and
-                    http://build.fhir.org/ig/HL7/davinci-ecdx/requesting-attachments-code.html.<br>
-                    <ul>
-                        <li>
-                            Example Transaction 1:
-                            <ul>
-                                <li>Payer asks for a visit summary for a Payer’s claim using Task using and attachment
-                                    code</li>
-                                <li>In a separate transaction the Provider submits the requested data using
-                                    $submit-attachment to the Payer.</li>
-                            </ul>
-                        </li>
-                        <li>
-                            Example Transaction 2:
-                            <ul>
-                                <li>Payer asks for a additional data for a Payer’s Home Oxygen Therapy Claim using a
-                                    FHIR Questionnaire</li>
-                                <li>In a separate transaction the Provider submits the completed FHIR
-                                    QuestionnaireResponse using $submit-attachment to the Payer.</li>
-                            </ul>
-                        </li>
-                    </ul>
-                </span></a>
+            </a>
+            <hr>
+            <p>
+                <b>Submit Solicited (Requested) Attachment:<br></b>
+                In response to a Payer's request for attachment using an attachment code or a questionnaire, the Provider collects the information 
+                and Provider invokes the '$submit-attachment' operation on the Payer's endpoint to attach a document or QuestionnaireResponse to 
+                an existing Claim or Prior Authorization. The Data Consumer returns a success code For detailed documentation see:<br>
+                <a href="http://build.fhir.org/ig/HL7/davinci-ecdx/sending-attachments.html" target="_blank">
+                    http://build.fhir.org/ig/HL7/davinci-ecdx/sending-attachments.html
+                </a>
+            </p> 
+            <p>Example Transaction 1:</p>
+            <ul>
+                <li>In a separate transaction, Payer asks for a visit summary for a Payer's claim using
+                    Task using and attachment code.</li>
+                <li>The Provider submits the requested data using $submit-attachment to the Payer.</li>
+                <li>Association of the attachment to the Claim resource.</li>
+            </ul>
+            <p>Example Transaction 2:</p>
+            <ul>
+                <li>In a separate transaction, Payer asks for a additional data for a Payer's Home
+                    Oxygen Therapy Claim using a FHIR Questionnaire</li>
+                <li>The Provider submits the completed FHIR QuestionnaireResponse using
+                    $submit-attachment to the Payer.</li>
+                <li>Association of the attachment to the Claim resource.</li>
+            </ul>
             <a href="#" class="btn btn-primary" id="btn-submit-attach" data-toggle="tooltip" data-placement="top">Submit
                 Solicited Attachments
-                <span><b>Submit Solicited (Requested) Attachment:<br></b>
-                    In response to a Payer’s request for attachment using an attachment code or a questionnaire,
-                     the Provider collects the information and <br>
-                    Provider invokes the ‘$submit-attachment’ operation on the Payer’s endpoint to attach a document or
-                     QuestionnaireResponse to<br>
-                    an existing Claim or Prior Authorization.<br>
-                    The Data Consumer returns a success code For detailed documentation see:<br>
-                    http://build.fhir.org/ig/HL7/davinci-ecdx/sending-attachments.html<br>
-                    <ul>
-                        <li>
-                            Example Transaction 1:
-                            <ul>
-                                <li>In a separate transaction, Payer asks for a visit summary for a Payer’s claim using
-                                    Task using and attachment code.</li>
-                                <li>The Provider submits the requested data using $submit-attachment to the Payer.</li>
-                                <li>Association of the attachment to the Claim resource.</li>
-                            </ul>
-                        </li>
-                        <li>
-                            Example Transaction 2:
-                            <ul>
-                                <li>In a separate transaction, Payer asks for a additional data for a Payer’s Home
-                                    Oxygen Therapy Claim using a FHIR Questionnaire</li>
-                                <li>The Provider submits the completed FHIR QuestionnaireResponse using
-                                    $submit-attachment to the Payer.</li>
-                                <li>Association of the attachment to the Claim resource.</li>
-                            </ul>
-                        </li>
-                    </ul>
-                </span>
             </a>
+            <hr>
         </div>
+        <p>
+            <b>Submit PAS Request Bundle to PAS RI using the $submit Operation:</b>
+        </p>
         <div class="card-body">
             <a href="#" class="btn btn-secondary" id="btn-submit-priorauth" data-toggle="tooltip"
             data-placement="top">Submit Prior Auth Request
-            <span><b>Submit PAS Request Bundle to PAS RI using the $submit Operation<br></b></span>
         </a>
         </div>
     </div>
