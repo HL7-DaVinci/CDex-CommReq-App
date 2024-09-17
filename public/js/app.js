@@ -3934,7 +3934,18 @@ let parsed;
     ).text();
     CDEX.attachmentPayload.parameter[6].part[1].valueCodeableConcept.coding[0].display = `${displayValue}`;
 
-    if (fileName.type === "application/pdf" || fileName.type === "text/xml") {
+    if (fileName.type === "application/pdf" || 
+      fileName.type === "text/xml" ||
+      fileName.type === "text/csv" ||
+      fileName.type === "application/msword" ||
+      fileName.type === "image/gif" ||
+      fileName.type === "text/html" ||
+      fileName.type === "image/jpeg" ||
+      fileName.type === "application/rtf" ||
+      fileName.type === "image/tiff" ||
+      fileName.type === "application/xhtml+xml" ||
+      fileName.type === "application/vnd.ms-excel" ||
+      fileName.type === "image/png") {
       reader.readAsDataURL(fileName);
       reader.onloadend = (evt) => {
         if (evt.target.readyState === FileReader.DONE) {

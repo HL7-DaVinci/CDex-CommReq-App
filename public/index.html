@@ -56,15 +56,17 @@
                     http://build.fhir.org/ig/HL7/davinci-ecdx/task-based-approach.html
                 </a>
             </p>
-            <p>Example Transaction:</p>
-            <ul>
-                <li>Data Consumer creates a Task on the Data Source’s system soliciting a patient’s knee
-                    surgery report and then polls for updates to the Task.</li>
-                <li>Data Source completes the data request and updates the Task with the requested
-                    information and the status to “completed”.</li>
-                <li>The Data Consumer fetches the completed Task and the documents referenced in it.
-                </li>
-            </ul>
+            <p>
+                Example Transaction:
+                <ul>
+                    <li>Data Consumer creates a Task on the Data Source's system soliciting a patient's knee
+                        surgery report and then polls for updates to the Task.</li>
+                    <li>Data Source completes the data request and updates the Task with the requested
+                        information and the status to “completed”.</li>
+                    <li>The Data Consumer fetches the completed Task and the documents referenced in it.
+                    </li>
+                </ul>
+            </p>
             <a href="#" class="btn btn-primary" id="btn-task" data-toggle="tooltip" data-placement="top">
                 Task Based Approach
             </a>
@@ -86,20 +88,22 @@
             </a> -->
             <p>
                 <b>Submit unsolicited attachment:<br></b>
-                Provider invokes the ‘$submit-attachment’ operation on the Payer’s endpoint to attach a document to
+                Provider invokes the '$submit-attachment' operation on the Payer's endpoint to attach a document to
                 an existing Claim or Prior Authorization. The Data Consumer returns a success code For detailed documentation see:<br>
                 <a target="_blank" href="http://build.fhir.org/ig/HL7/davinci-ecdx/sending-attachments.html">
                     http://build.fhir.org/ig/HL7/davinci-ecdx/sending-attachments.html
                 </a>
             </p>
-            <p>Example Transaction:</p>
-            <ul>
-                <li>Provider submits a visit summary for a claim they are submitting to the Payer using
-                    $submit-attachment.</li>
-                <li>The Data Consumer returns a success code indicating that the $submit-attachment payload was
-                    recieved.</li>
-                <li>Association of the attachment to the Claim resource.</li>
-            </ul>
+            <p>
+                Example Transaction:
+                <ul>
+                    <li>Provider submits a visit summary for a claim they are submitting to the Payer using
+                        $submit-attachment.</li>
+                    <li>The Data Consumer returns a success code indicating that the $submit-attachment payload was
+                        recieved.</li>
+                    <li>Association of the attachment to the Claim resource.</li>
+                </ul>
+            </p>
             <a href="#" class="btn btn-primary" id="btn-attach" data-toggle="tooltip" data-placement="top">Submit
                 Unsolicited Attachment
             </a>
@@ -112,20 +116,24 @@
                     http://build.fhir.org/ig/HL7/davinci-ecdx/requesting-attachments-code.html
                 </a>
             </p>
-            <p>Example Transaction 1:</p>
-            <ul>
-                <li>Payer asks for a visit summary for a Payer's claim using Task using and attachment
-                    code</li>
-                <li>In a separate transaction the Provider submits the requested data using
-                    $submit-attachment to the Payer.</li>
-            </ul>
-            <p>Example Transaction 2:</p>
-            <ul>
-                <li>Payer asks for a additional data for a Payer's Home Oxygen Therapy Claim using a
-                    FHIR Questionnaire</li>
-                <li>In a separate transaction the Provider submits the completed FHIR
-                    QuestionnaireResponse using $submit-attachment to the Payer.</li>
-            </ul>
+            <p>
+                Example Transaction 1:
+                <ul>
+                    <li>Payer asks for a visit summary for a Payer's claim using Task using and attachment
+                        code</li>
+                    <li>In a separate transaction the Provider submits the requested data using
+                        $submit-attachment to the Payer.</li>
+                </ul>
+            </p>
+            <p>
+                Example Transaction 2:
+                <ul>
+                    <li>Payer asks for a additional data for a Payer's Home Oxygen Therapy Claim using a
+                        FHIR Questionnaire</li>
+                    <li>In a separate transaction the Provider submits the completed FHIR
+                        QuestionnaireResponse using $submit-attachment to the Payer.</li>
+                </ul>
+            </p>
             <a href="#" class="btn btn-primary" id="btn-request-attach" data-toggle="tooltip"
                 data-placement="top">Request Attachment
             </a>
@@ -139,33 +147,35 @@
                     http://build.fhir.org/ig/HL7/davinci-ecdx/sending-attachments.html
                 </a>
             </p> 
-            <p>Example Transaction 1:</p>
-            <ul>
-                <li>In a separate transaction, Payer asks for a visit summary for a Payer's claim using
-                    Task using and attachment code.</li>
-                <li>The Provider submits the requested data using $submit-attachment to the Payer.</li>
-                <li>Association of the attachment to the Claim resource.</li>
-            </ul>
-            <p>Example Transaction 2:</p>
-            <ul>
-                <li>In a separate transaction, Payer asks for a additional data for a Payer's Home
-                    Oxygen Therapy Claim using a FHIR Questionnaire</li>
-                <li>The Provider submits the completed FHIR QuestionnaireResponse using
-                    $submit-attachment to the Payer.</li>
-                <li>Association of the attachment to the Claim resource.</li>
-            </ul>
+            <p>
+                Example Transaction 1:
+                <ul>
+                    <li>In a separate transaction, Payer asks for a visit summary for a Payer's claim using
+                        Task using and attachment code.</li>
+                    <li>The Provider submits the requested data using $submit-attachment to the Payer.</li>
+                    <li>Association of the attachment to the Claim resource.</li>
+                </ul>
+            </p>
+            <p>
+                Example Transaction 2:
+                <ul>
+                    <li>In a separate transaction, Payer asks for a additional data for a Payer's Home
+                        Oxygen Therapy Claim using a FHIR Questionnaire</li>
+                    <li>The Provider submits the completed FHIR QuestionnaireResponse using
+                        $submit-attachment to the Payer.</li>
+                    <li>Association of the attachment to the Claim resource.</li>
+                </ul>
+            </p>
             <a href="#" class="btn btn-primary" id="btn-submit-attach" data-toggle="tooltip" data-placement="top">Submit
                 Solicited Attachments
             </a>
             <hr>
-        </div>
-        <p>
-            <b>Submit PAS Request Bundle to PAS RI using the $submit Operation:</b>
-        </p>
-        <div class="card-body">
+            <p>
+                <b>Submit PAS Request Bundle to PAS RI using the $submit Operation:</b>
+            </p>
             <a href="#" class="btn btn-secondary" id="btn-submit-priorauth" data-toggle="tooltip"
-            data-placement="top">Submit Prior Auth Request
-        </a>
+                data-placement="top">Submit Prior Auth Request
+            </a>
         </div>
     </div>
     <div></div>
