@@ -3945,7 +3945,10 @@ let parsed;
       fileName.type === "image/tiff" ||
       fileName.type === "application/xhtml+xml" ||
       fileName.type === "application/vnd.ms-excel" ||
-      fileName.type === "image/png") {
+      fileName.type === "image/png" ||
+      fileName.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+      fileName.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+      fileName.type === "application/vnd.ms-excel") {
       reader.readAsDataURL(fileName);
       reader.onloadend = (evt) => {
         if (evt.target.readyState === FileReader.DONE) {
