@@ -73,9 +73,43 @@ router.post("/", (req, res) => {
     patientLookup(memberId).then((value) => {
       if (value.resourceType !== "Patient" && value.resourceType !== "Bundle") {
         res.send(operationOutcome); //value
-      } else {
+      } else if(value.resourceType === "Bundle" && value.total === 0){
+        res.send(operationOutcome);
+      }else {
         claimLookup(claimId).then((value) => {
-          if (value.resourceType !== "Claim") {
+          switch (value.resourceType) {
+            case "Claim":
+              existingClaim = value;
+              claimExists = true;
+              break;
+          
+            case "Bundle":
+              if(value.total >= 1) {
+                existingClaim = value.entry[0];
+                claimExists = true;
+                break;
+              }
+              
+          
+            default:
+              existingClaim = "";
+              claimExists = false;
+              operationOutcome = {
+                resourceType: "OperationOutcome",
+                id: "outcome_noclaim",
+                issue: [
+                  {
+                    severity: "warning",
+                    code: "informational",
+                    details: {
+                      text: "Claim not found - will create base claim.",
+                    },
+                  },
+                ],
+              };
+              break;
+          }
+          /**if (value.resourceType !== "Claim" && value.resourceType !== "Bundle") {
             existingClaim = "";
             claimExists = false;
             operationOutcome = {
@@ -94,7 +128,7 @@ router.post("/", (req, res) => {
           } else {
             existingClaim = value;
             claimExists = true;
-          }
+          }**/
           let resourceId = resource.id
             ? resource.id
             : `CDex-${resource.resourceType}-${attachmentResource}`;
@@ -217,7 +251,7 @@ createResource = async (attch, attachmentResource) => {
 claimLookup = async (claimId) => {
   return new Promise((resolve, reject) => {
     request(
-      `${baseurl}/Claim/${claimId}`,
+      `${baseurl}/Claim/${claimId}`,//?identifier=${claimId}`,
       { json: true },
       function (claimerror, claimresp, claimbody) {
         if (!claimerror) resolve(claimbody);
@@ -232,7 +266,7 @@ claimLookup = async (claimId) => {
 patientLookup = async (memberId) => {
   return new Promise((resolve) => {
     request(
-      `${baseurl}/Patient?identifier=${memberId}`,
+      `${baseurl}/Patient/${memberId}`,//?identifier=${memberId}
       { json: true },
       (err, resp, body) => {
         if (!err) resolve(body);

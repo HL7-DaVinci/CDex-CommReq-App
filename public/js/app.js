@@ -2300,7 +2300,7 @@ let parsed;
           description = "Query: " + content.valueString;
           if (content.text) description += " (" + content.text + ")";
           query = content.valueString;
-        } else if (content.valueCodeableConcept?.coding[0].code) {
+        } else if (content.valueCodeableConcept?.coding[0].code && content.type.coding[0].code !== "purpose-of-use") {
           description = "Documents of type LOINC " + content.valueCodeableConcept.coding[0].code;
           if (content.valueCodeableConcept.text) description += " (" + content.valueCodeableConcept.text + ")";
           code = content.valueCodeableConcept.coding[0].code;
