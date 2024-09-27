@@ -2,6 +2,8 @@
 Clinical Data Exchange Communication Request Reference Implementation App.<br>
 This version of the RI is compliant with the STU2 version of the [Da Vinci Clinical Data Exchange (CDex) Implementation Guide](https://hl7.org/fhir/us/davinci-cdex/STU2/).
 
+A live demo is hosted by [HL7 FHIR Foundry](https://foundry.hl7.org/products/74a0eacd-3190-4324-b73b-603bdd7db154), where you may also download curated configurations to run yourself.
+
 ## Questions?
 Contact HealthLX with your requests:<br>
 email: joel.walker@healthlx.com <br>
