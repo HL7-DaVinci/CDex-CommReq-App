@@ -687,6 +687,43 @@ let parsed;
     });
   };
 
+  CDEX.populateUnsolicitedAttachments = async () => {
+    let accessToken = window.PAYER_SERVER_TOKEN;
+    let accessTokenType = window.PAYER_SERVER_TOKEN_TYPE;
+    let configProvider = {
+      type: "GET",
+      url: `${window.PROVIDER_SERVER_BASE_URL}/DocumentReference?_patient=${window.PATIENT_ID}`,
+      contentType: "application/fhir+json",
+      headers: {
+        authorization: `${accessTokenType} ${accessToken}`
+        }
+    
+    };
+    $.ajax(configProvider).then((res) => {
+      $("#total_attch").val(1);
+      $("#selection-list").html("");
+      let current_attch = parseInt($("#total_attch").val());
+      
+      if (res.total > 0) {
+        $("#selection-list-unsolicited").html('');
+        res.entry.forEach((resource) => {
+          $("#selection-list-unsolicited").append(`
+                                  <tr>
+                                      <td><input type="checkbox" id="chk_${current_attch}" name="chk_${current_attch}" value="DocumentReference/${resource.resource.id}"></td>
+                                      <td>${resource.resource.content[0].attachment.title}</td>
+                                      <td>${resource.resource.meta.lastUpdated}</td>
+                                      <td>-</td>
+                                  </tr>
+                              `);
+          $(".chosen-select").chosen({
+            no_results_text: "Oops, nothing found!",
+          });
+          current_attch++;
+        });
+      }
+    });
+  };
+
   CDEX.displayAttachmentScreen = () => {
     $("#subUnsAttchPayerEndpoint").hide();
     $("#subUnsAttchPayerEndpointLabel").hide();
@@ -723,29 +760,32 @@ let parsed;
             "</option>"
         );
       });
-      CDEX.displayScreen("attachment-submit-screen");
-      $("#type-claim").click(function () {
-        if ($(this).is(":checked")) {
-          $("#claimid").removeAttr("disabled");
-          $("#claimid").focus();
-          $("#submit-searchClaim").attr("disabled", "disabled");
-          $("#radio-claim").removeAttr("disabled");
-          $("#radio-auth").removeAttr("disabled");
-          $("#subUnsAttchPayerEndpoint").show();
-          $("#subUnsAttchPayerEndpointLabel").show();
-          $("#subUnsAttchPayerEndpointInfo").show();
-          $("#subUnsAttchPayerEndpointSpan").show();
-        } else {
-          $("#claimid").attr("disabled", "disabled");
-          $("#submit-searchClaim").removeAttr("disabled");
-          $("#radio-claim").attr("disabled", "disabled");
-          $("#radio-auth").attr("disabled", "disabled");
-          $("#subUnsAttchPayerEndpoint").hide();
-          $("#subUnsAttchPayerEndpointLabel").hide();
-          $("#subUnsAttchPayerEndpointInfo").hide();
-          $("#subUnsAttchPayerEndpointSpan").hide();
-        }
+      CDEX.populateUnsolicitedAttachments().then( () => {
+        CDEX.displayScreen("attachment-submit-screen");
+        $("#type-claim").click(function () {
+          if ($(this).is(":checked")) {
+            $("#claimid").removeAttr("disabled");
+            $("#claimid").focus();
+            $("#submit-searchClaim").attr("disabled", "disabled");
+            $("#radio-claim").removeAttr("disabled");
+            $("#radio-auth").removeAttr("disabled");
+            $("#subUnsAttchPayerEndpoint").show();
+            $("#subUnsAttchPayerEndpointLabel").show();
+            $("#subUnsAttchPayerEndpointInfo").show();
+            $("#subUnsAttchPayerEndpointSpan").show();
+          } else {
+            $("#claimid").attr("disabled", "disabled");
+            $("#submit-searchClaim").removeAttr("disabled");
+            $("#radio-claim").attr("disabled", "disabled");
+            $("#radio-auth").attr("disabled", "disabled");
+            $("#subUnsAttchPayerEndpoint").hide();
+            $("#subUnsAttchPayerEndpointLabel").hide();
+            $("#subUnsAttchPayerEndpointInfo").hide();
+            $("#subUnsAttchPayerEndpointSpan").hide();
+          }
+        });
       });
+      
     });
   };
 
@@ -2670,7 +2710,7 @@ let parsed;
                     task.resource.reasonReference.identifier.value :
                     task.resource.reasonReference.reference;
                   $("#attch-request-list").append(
-                    `<p><b>Claim: </b><span id="currentClaimId">${claimForTask}</span></p><p><b>Requested attachments: </b></p>`
+                    `<p><b>Claim: </b><span id="currentClaimId">${claimForTask.replaceAll("Claim/", "")}</span></p><p><b>Requested attachments: </b></p>`
                   );
                   let accessToken = window.PROVIDER_SERVER_TOKEN;
                   let accessTokenType = window.PROVIDER_SERVER_TOKEN_TYPE;
@@ -2721,7 +2761,7 @@ let parsed;
                       }
                     }
                   });
-                  CLAIM.claimLookupById(claimForTask).then((claim) => {
+                  CLAIM.claimLookupById(claimForTask.replaceAll("Claim/", "")).then((claim) => {
                     if (claim.item) {
                       let serviceDate = res.created;
                       $("#attch-request-list").append(`<br><h5>Line items</h5>

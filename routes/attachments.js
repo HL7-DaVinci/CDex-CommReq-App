@@ -70,7 +70,7 @@ router.post("/", (req, res) => {
       }
     });
 
-    patientLookup(memberId).then((value) => {
+    patientLookup(memberId, false).then((value) => {
       if (value.resourceType !== "Patient" && value.resourceType !== "Bundle") {
         res.send(operationOutcome); //value
       } else if(value.resourceType === "Bundle" && value.total === 0){
@@ -263,10 +263,11 @@ claimLookup = async (claimId) => {
   });
 };
 
-patientLookup = async (memberId) => {
+patientLookup = async (memberId, idSearch) => {
+  const parameter = idSearch ? '/' : '?identifier=';
   return new Promise((resolve) => {
     request(
-      `${baseurl}/Patient/${memberId}`,//?identifier=${memberId}
+      `${baseurl}/Patient${parameter}${memberId}`,
       { json: true },
       (err, resp, body) => {
         if (!err) resolve(body);
